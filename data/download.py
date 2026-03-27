@@ -18,12 +18,40 @@ from pathlib import Path
 from tqdm import tqdm
 
 
-# MIT-licensed .NET repositories (high quality, production C# code)
+# MIT-licensed repositories (high quality, production C# code)
+# All licenses verified via GitHub LICENSE files on 2026-03-27
 REPOS = [
-    ("dotnet", "runtime"),         # .NET runtime (~30K .cs files)
-    ("dotnet", "roslyn"),          # C# compiler (~15K .cs files)
-    ("dotnet", "aspnetcore"),      # ASP.NET web framework (~15K .cs files)
-    ("dotnet", "efcore"),          # Entity Framework ORM (~5K .cs files)
+    # --- Original 4 (.NET core) ---
+    ("dotnet", "runtime"),             # .NET runtime
+    ("dotnet", "roslyn"),              # C# compiler
+    ("dotnet", "aspnetcore"),          # ASP.NET web framework
+    ("dotnet", "efcore"),              # Entity Framework ORM
+
+    # --- .NET ecosystem ---
+    ("dotnet", "maui"),                # Cross-platform UI framework
+    ("dotnet", "orleans"),             # Cloud-native actor framework
+    ("dotnet", "machinelearning"),     # ML.NET
+    ("dotnet", "wpf"),                 # WPF framework
+    ("dotnet", "winforms"),            # WinForms framework
+    ("dotnet", "yarp"),                # Reverse proxy toolkit
+    ("dotnet", "reactive"),            # Reactive Extensions (Rx.NET)
+    ("dotnet", "BenchmarkDotNet"),     # Benchmarking library
+    ("dotnet", "eShop"),               # Reference eCommerce app
+
+    # --- Microsoft ---
+    ("microsoft", "semantic-kernel"),  # LLM orchestration framework
+    ("microsoft", "garnet"),           # High-performance cache store
+
+    # --- Popular libraries ---
+    ("JamesNK", "Newtonsoft.Json"),    # JSON serialization
+    ("icsharpcode", "ILSpy"),          # .NET decompiler
+    ("ppy", "osu"),                    # Rhythm game (diverse game patterns)
+    ("MudBlazor", "MudBlazor"),        # Blazor component library
+    ("Humanizr", "Humanizer"),         # String/date humanization utilities
+    ("autofac", "Autofac"),            # IoC/DI container
+    ("nunit", "nunit"),                # NUnit testing framework
+    ("bchavez", "Bogus"),              # Fake data generator
+    ("spectreconsole", "spectre.console"),  # Console UI library
 ]
 
 

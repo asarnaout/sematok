@@ -91,8 +91,8 @@ SEED_PATTERNS = [
 
 
 def _make_macro_token(index: int) -> str:
-    """Generate a macro token string like <|M001|>, <|M002|>, etc."""
-    return f"<|M{index:03d}|>"
+    """Generate a macro token string like <|M0001|>, <|M0002|>, etc."""
+    return f"<|M{index:04d}|>"
 
 
 class CompressionDictionary:

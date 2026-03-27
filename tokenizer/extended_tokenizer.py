@@ -1,7 +1,7 @@
 """
 Extended tokenizer: GPT-2 BPE (via tiktoken) + macro special tokens.
 
-Macro tokens like <|M001|> are registered as additional special tokens
+Macro tokens like <|M0001|> are registered as additional special tokens
 with IDs starting at 50257 (right after the base GPT-2 vocabulary).
 """
 
@@ -12,7 +12,7 @@ from sematok.dictionary import CompressionDictionary, _make_macro_token
 # GPT-2 base vocabulary size
 BASE_VOCAB_SIZE = 50257
 # Maximum number of macro tokens we support
-MAX_MACROS = 200
+MAX_MACROS = 9999
 
 
 def create_extended_encoding(
@@ -31,9 +31,9 @@ def create_extended_encoding(
     # maintaining consistent IDs based on the macro number.
     special_tokens = {}
     for macro_str in dictionary.macro_tokens:
-        # Extract the index from <|M001|> -> 1, <|M002|> -> 2, etc.
-        idx = int(macro_str[3:6])
-        token_id = BASE_VOCAB_SIZE + idx - 1  # M001 -> 50257, M002 -> 50258, etc.
+        # Extract the index from <|M0001|> -> 1, <|M0002|> -> 2, etc.
+        idx = int(macro_str[3:7])
+        token_id = BASE_VOCAB_SIZE + idx - 1  # M0001 -> 50257, M0002 -> 50258, etc.
         special_tokens[macro_str] = token_id
 
     # Also keep the base GPT-2 special tokens

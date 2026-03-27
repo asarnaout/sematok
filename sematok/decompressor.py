@@ -9,8 +9,8 @@ import re
 
 from sematok.dictionary import CompressionDictionary
 
-# Regex to match macro tokens like <|M001|>, <|M002|>, etc.
-MACRO_PATTERN = re.compile(r"<\|M(\d{3})\|>")
+# Regex to match macro tokens like <|M0001|>, <|M0002|>, etc.
+MACRO_PATTERN = re.compile(r"<\|M(\d{4})\|>")
 
 
 class Decompressor:
