@@ -1,0 +1,9 @@
+torch>=2.0
+tiktoken
+tree-sitter>=0.21
+tree-sitter-c-sharp
+datasets
+pyyaml
+tqdm
+numpy
+pytest

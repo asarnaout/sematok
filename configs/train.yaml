@@ -1,0 +1,11 @@
+batch_size: 8
+gradient_accumulation_steps: 4
+learning_rate: 3.0e-4
+weight_decay: 0.1
+warmup_steps: 200
+max_steps: 5000
+eval_interval: 500
+eval_steps: 50
+log_interval: 100
+dtype: float16
+gradient_checkpointing: false
