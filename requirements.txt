@@ -3,5 +3,4 @@ transformers
 tree-sitter>=0.21
 tree-sitter-c-sharp
 tqdm
-numpy
 pytest
