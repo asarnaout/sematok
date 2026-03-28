@@ -1,0 +1,5083 @@
+{
+  "patterns": [
+    {
+      "pattern": "/// <summary>",
+      "macro": "<|M001|>",
+      "category": "xmldoc"
+    },
+    {
+      "pattern": "/// </summary>",
+      "macro": "<|M002|>",
+      "category": "xmldoc"
+    },
+    {
+      "pattern": "[Obsolete(Obsoletions.LegacyFormatterImplMessage, DiagnosticId = Obsoletions.LegacyFormatterImplDiagId, UrlFormat = Obsoletions.SharedUrlFormat)]",
+      "macro": "<|M003|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <param name=\"",
+      "macro": "<|M004|>",
+      "category": "xmldoc"
+    },
+    {
+      "pattern": "[MethodImpl(MethodImplOptions.AggressiveInlining)]",
+      "macro": "<|M005|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "PlatformDetection), nameof(PlatformDetection",
+      "macro": "<|M006|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[Fact]",
+      "macro": "<|M007|>",
+      "category": "attribute"
+    },
+    {
+      "pattern": "Assert.Equal(",
+      "macro": "<|M008|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "{ get; set; }",
+      "macro": "<|M009|>",
+      "category": "property"
+    },
+    {
+      "pattern": "See <see href=\"https",
+      "macro": "<|M010|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= 0; i < count;",
+      "macro": "<|M011|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (int i = 0; i <",
+      "macro": "<|M012|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Roslyn.Utilities",
+      "macro": "<|M013|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// Initializes a new instance of",
+      "macro": "<|M014|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "CodeAnalysis.PooledObjects;",
+      "macro": "<|M015|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "a new instance of the <see cref=",
+      "macro": "<|M016|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ".</param>",
+      "macro": "<|M017|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// Initializes a new instance of the <see cref=",
+      "macro": "<|M018|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "MethodImplOptions.NoInlining)",
+      "macro": "<|M019|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "{ get; }",
+      "macro": "<|M020|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[InlineData(",
+      "macro": "<|M021|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public override string ToString(",
+      "macro": "<|M022|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "///     This is an internal",
+      "macro": "<|M023|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Debug.Assert(",
+      "macro": "<|M024|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <returns>",
+      "macro": "<|M025|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "the <see cref",
+      "macro": "<|M026|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Collections.Generic;",
+      "macro": "<|M027|>",
+      "category": "using"
+    },
+    {
+      "pattern": "/// <remarks>",
+      "macro": "<|M028|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public async Task",
+      "macro": "<|M029|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Initializes a new instance of the <see cref",
+      "macro": "<|M030|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ArgumentNullException.ThrowIfNull(",
+      "macro": "<|M031|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (var i = 0; i <",
+      "macro": "<|M032|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "get; set; } =",
+      "macro": "<|M033|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// </remarks>",
+      "macro": "<|M034|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <typeparam name=\"T",
+      "macro": "<|M035|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System;",
+      "macro": "<|M036|>",
+      "category": "using"
+    },
+    {
+      "pattern": "[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes",
+      "macro": "<|M037|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "int i = 0",
+      "macro": "<|M038|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public static void",
+      "macro": "<|M039|>",
+      "category": "modifier"
+    },
+    {
+      "pattern": "a <see cref=",
+      "macro": "<|M040|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Runtime.CompilerServices;",
+      "macro": "<|M041|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Console.WriteLine(",
+      "macro": "<|M042|>",
+      "category": "expression"
+    },
+    {
+      "pattern": "/ Initializes a new instance of the <see cref=",
+      "macro": "<|M043|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Assert.Throws<ArgumentNullException>",
+      "macro": "<|M044|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= 0; i < count; i++)",
+      "macro": "<|M045|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(int i = 0; i < count; i++",
+      "macro": "<|M046|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <inheritdoc",
+      "macro": "<|M047|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.Diagnostics.CodeAnalysis;",
+      "macro": "<|M048|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Runtime.InteropServices;",
+      "macro": "<|M049|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Diagnostics;",
+      "macro": "<|M050|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "of the <see cref",
+      "macro": "<|M051|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "int i = 0;",
+      "macro": "<|M052|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "internal sealed class",
+      "macro": "<|M053|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <param name=\"value",
+      "macro": "<|M054|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Collections.Immutable;",
+      "macro": "<|M055|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " 1, 2, 3, 4",
+      "macro": "<|M056|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(int i = 0; i < count; i++)",
+      "macro": "<|M057|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "nameof(",
+      "macro": "<|M058|>",
+      "category": "expression"
+    },
+    {
+      "pattern": "typeof(PlatformDetection), nameof(PlatformDetection",
+      "macro": "<|M059|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[Theory]",
+      "macro": "<|M060|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "   See <see href",
+      "macro": "<|M061|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<see langword=\"null",
+      "macro": "<|M062|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.CodeAnalysis.PooledObjects;",
+      "macro": "<|M063|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Threading.Tasks;",
+      "macro": "<|M064|>",
+      "category": "using"
+    },
+    {
+      "pattern": "for (var i = 0",
+      "macro": "<|M065|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Name { get; set; ",
+      "macro": "<|M066|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Assert.Throws<ArgumentNullException>(() ",
+      "macro": "<|M067|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public override bool Equals(object? obj)",
+      "macro": "<|M068|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Diagnostics.CodeAnalysis;",
+      "macro": "<|M069|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "   See <see href=\"https:/",
+      "macro": "<|M070|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <inheritdoc />",
+      "macro": "<|M071|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (int i =",
+      "macro": "<|M072|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= 0; i < count; i",
+      "macro": "<|M073|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "{ get; set; } =",
+      "macro": "<|M074|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " Initializes a new instance of the <see cref",
+      "macro": "<|M075|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "private sealed class",
+      "macro": "<|M076|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Xunit;",
+      "macro": "<|M077|>",
+      "category": "using"
+    },
+    {
+      "pattern": "int i = 0; i < count; i",
+      "macro": "<|M078|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " <see cref=",
+      "macro": "<|M079|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= false;",
+      "macro": "<|M080|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.Security.Cryptography.X509Certificates",
+      "macro": "<|M081|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Assert.Equal(1,",
+      "macro": "<|M082|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// </remarks",
+      "macro": "<|M083|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Assert.Equal(0,",
+      "macro": "<|M084|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "The <see cref=",
+      "macro": "<|M085|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (int i = 0; i < count;",
+      "macro": "<|M086|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "1, 2, 3,",
+      "macro": "<|M087|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "yield return new object[] {",
+      "macro": "<|M088|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <exception cref=\"ArgumentNullException\"",
+      "macro": "<|M089|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Initializes a new instance of the <see",
+      "macro": "<|M090|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "namespace System.Windows.Forms",
+      "macro": "<|M091|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Count; i++)",
+      "macro": "<|M092|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<typeparam name=",
+      "macro": "<|M093|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "var i = 0; i <",
+      "macro": "<|M094|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <param name",
+      "macro": "<|M095|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "get; private set; }",
+      "macro": "<|M096|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "int i = 0; i < count; i++)",
+      "macro": "<|M097|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Assert.Throws<ArgumentNullException>(() =>",
+      "macro": "<|M098|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <param name=\"context\">",
+      "macro": "<|M099|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Roslyn.Utilities;",
+      "macro": "<|M100|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Count == 0)",
+      "macro": "<|M101|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "object sender, EventArgs e)",
+      "macro": "<|M102|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <returns><see langword=\"true",
+      "macro": "<|M103|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "new instance of <see cref=",
+      "macro": "<|M104|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "is not null)",
+      "macro": "<|M105|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Assert.Equal(2,",
+      "macro": "<|M106|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.CodeAnalysis.Host.Mef;",
+      "macro": "<|M107|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " Initializes a new instance of the <see",
+      "macro": "<|M108|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "SR.Format(SR",
+      "macro": "<|M109|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "the <see",
+      "macro": "<|M110|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Assert.Equal(expected,",
+      "macro": "<|M111|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Composition;",
+      "macro": "<|M112|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Xunit.Abstractions;",
+      "macro": "<|M113|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Linq;",
+      "macro": "<|M114|>",
+      "category": "using"
+    },
+    {
+      "pattern": "// <param name=\"value",
+      "macro": "<|M115|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Threading;",
+      "macro": "<|M116|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.CodeAnalysis.Text",
+      "macro": "<|M117|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " get; } = new",
+      "macro": "<|M118|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "int j = 0; j ",
+      "macro": "<|M119|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.SemanticKernel;",
+      "macro": "<|M120|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "private static void",
+      "macro": "<|M121|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "i = 1; i",
+      "macro": "<|M122|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// Initializes a new instance of the <see",
+      "macro": "<|M123|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "get; set; ",
+      "macro": "<|M124|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " get; private set; ",
+      "macro": "<|M125|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <typeparam name=",
+      "macro": "<|M126|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "private readonly",
+      "macro": "<|M127|>",
+      "category": "modifier"
+    },
+    {
+      "pattern": "CodeAnalysis.CSharp.Syntax;",
+      "macro": "<|M128|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public string Name { get; set;",
+      "macro": "<|M129|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "{ get; private set; }",
+      "macro": "<|M130|>",
+      "category": "property"
+    },
+    {
+      "pattern": "  See <see href=",
+      "macro": "<|M131|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[MethodImpl(MethodImplOptions.NoInlining)]",
+      "macro": "<|M132|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " 2, 3, 4, 5",
+      "macro": "<|M133|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "1, 2, 3, 4",
+      "macro": "<|M134|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// Initializes a new instance of the <see cref",
+      "macro": "<|M135|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (int i = 1; i ",
+      "macro": "<|M136|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// Gets or sets the",
+      "macro": "<|M137|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Count > 0",
+      "macro": "<|M138|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <returns>",
+      "macro": "<|M139|>",
+      "category": "xmldoc"
+    },
+    {
+      "pattern": "for (var i = 0; i ",
+      "macro": "<|M140|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <typeparam name=\"T",
+      "macro": "<|M141|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "CSharp.Syntax;",
+      "macro": "<|M142|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[MemberData(nameof",
+      "macro": "<|M143|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Reflection;",
+      "macro": "<|M144|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// </param>",
+      "macro": "<|M145|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[EditorBrowsable(EditorBrowsableState",
+      "macro": "<|M146|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.CodeAnalysis",
+      "macro": "<|M147|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Length; i++)",
+      "macro": "<|M148|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<see langword=\"true\" /",
+      "macro": "<|M149|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "is null)",
+      "macro": "<|M150|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (int i = 0; i < count; i++",
+      "macro": "<|M151|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.Text;",
+      "macro": "<|M152|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<see langword=\"true\"",
+      "macro": "<|M153|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <exception cref=\"ArgumentNullException",
+      "macro": "<|M154|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "new instance of the <see",
+      "macro": "<|M155|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "#pragma warning disable CS0618",
+      "macro": "<|M156|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "yield return new object[] ",
+      "macro": "<|M157|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (var i = 0; i",
+      "macro": "<|M158|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " 0; i < count; i+",
+      "macro": "<|M159|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Diagnostics.CodeAnalysis",
+      "macro": "<|M160|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public partial class",
+      "macro": "<|M161|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.Diagnostics.CodeAnalysis",
+      "macro": "<|M162|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "namespace Microsoft.CodeAnalysis",
+      "macro": "<|M163|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "WriteLine(",
+      "macro": "<|M164|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <typeparam name=\"T\"",
+      "macro": "<|M165|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public static bool",
+      "macro": "<|M166|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "catch (Exception ex)",
+      "macro": "<|M167|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "private set; }",
+      "macro": "<|M168|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "CodeAnalysis.PooledObjects",
+      "macro": "<|M169|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <param name=\"value\"",
+      "macro": "<|M170|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "override void Dispose(bool disposing",
+      "macro": "<|M171|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public string Name { get; set",
+      "macro": "<|M172|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ">The <see cref=",
+      "macro": "<|M173|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <param name",
+      "macro": "<|M174|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (int i",
+      "macro": "<|M175|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "sender, EventArgs e)",
+      "macro": "<|M176|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " get; set; } ",
+      "macro": "<|M177|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (int j = 0; j <",
+      "macro": "<|M178|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.IO;",
+      "macro": "<|M179|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <returns><see langword=\"true",
+      "macro": "<|M180|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Dispose(bool disposing)",
+      "macro": "<|M181|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/>.</param>",
+      "macro": "<|M182|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public static int",
+      "macro": "<|M183|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "{ get; init; ",
+      "macro": "<|M184|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// </returns>",
+      "macro": "<|M185|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(var i = 0; i",
+      "macro": "<|M186|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.ML",
+      "macro": "<|M187|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "href=\"https:/",
+      "macro": "<|M188|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "get; private set; ",
+      "macro": "<|M189|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "</param>",
+      "macro": "<|M190|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "i = 0; i < count; i+",
+      "macro": "<|M191|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ArgumentNullException.ThrowIfNull",
+      "macro": "<|M192|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " cancellationToken).ConfigureAwait(false);",
+      "macro": "<|M193|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " See <see href=\"https:",
+      "macro": "<|M194|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "{ get; init; }",
+      "macro": "<|M195|>",
+      "category": "property"
+    },
+    {
+      "pattern": "System.Collections.Generic",
+      "macro": "<|M196|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <param name=\"value\"",
+      "macro": "<|M197|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Microsoft.CodeAnalysis.PooledObjects",
+      "macro": "<|M198|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/see> for more information",
+      "macro": "<|M199|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "see langword=\"null\"",
+      "macro": "<|M200|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "of <see cref=",
+      "macro": "<|M201|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// Initializes a new instance of the ",
+      "macro": "<|M202|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ Initializes a new instance of",
+      "macro": "<|M203|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "CodeAnalysis.Text;",
+      "macro": "<|M204|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Count > 0)",
+      "macro": "<|M205|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " <see langword=\"false\"",
+      "macro": "<|M206|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <exception cref=\"ArgumentNullException\">",
+      "macro": "<|M207|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "protected override void",
+      "macro": "<|M208|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "instance of <see cref",
+      "macro": "<|M209|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "get; } =",
+      "macro": "<|M210|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<see langword=\"true\"/>",
+      "macro": "<|M211|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<see langword=\"false\"",
+      "macro": "<|M212|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "an <see cref=",
+      "macro": "<|M213|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "{ get; } = new",
+      "macro": "<|M214|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "throw new ArgumentException(SR",
+      "macro": "<|M215|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Id { get; set; }",
+      "macro": "<|M216|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[MethodImpl(MethodImplOptions.NoInlining",
+      "macro": "<|M217|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public override bool",
+      "macro": "<|M218|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "cancellationToken).ConfigureAwait(false);",
+      "macro": "<|M219|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <see cref=",
+      "macro": "<|M220|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (int i = 0; i < count",
+      "macro": "<|M221|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public string Name { get; set; }",
+      "macro": "<|M222|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Assert.Equal(1",
+      "macro": "<|M223|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= Obsoletions.SharedUrlFormat)]",
+      "macro": "<|M224|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.CodeAnalysis.CSharp.Syntax;",
+      "macro": "<|M225|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(int i = 0;",
+      "macro": "<|M226|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "AssertExtensions.Throws<ArgumentNullException>(",
+      "macro": "<|M227|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<see langword=\"true\" ",
+      "macro": "<|M228|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ Gets or sets the",
+      "macro": "<|M229|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "IReadOnlyList<",
+      "macro": "<|M230|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "i = 0; i < count; i++)",
+      "macro": "<|M231|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public override void",
+      "macro": "<|M232|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (int j = 0;",
+      "macro": "<|M233|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= false)",
+      "macro": "<|M234|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Buffers;",
+      "macro": "<|M235|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<remarks>",
+      "macro": "<|M236|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.CodeAnalysis.Text;",
+      "macro": "<|M237|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "The <see cref",
+      "macro": "<|M238|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Microsoft.CodeAnalysis.CSharp",
+      "macro": "<|M239|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Text;",
+      "macro": "<|M240|>",
+      "category": "using"
+    },
+    {
+      "pattern": "!= null);",
+      "macro": "<|M241|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "MethodImplOptions.AggressiveInlining)",
+      "macro": "<|M242|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(var i = 0; i ",
+      "macro": "<|M243|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "a new instance of the <see cref",
+      "macro": "<|M244|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <param name=\"value\">The",
+      "macro": "<|M245|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "nameof(PlatformDetection",
+      "macro": "<|M246|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "UrlFormat = Obsoletions.SharedUrlFormat)]",
+      "macro": "<|M247|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " CancellationToken cancellationToken)",
+      "macro": "<|M248|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string Name { get; set;",
+      "macro": "<|M249|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes",
+      "macro": "<|M250|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Globalization;",
+      "macro": "<|M251|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "instance of the <see cref=",
+      "macro": "<|M252|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "typeof(PlatformDetection)",
+      "macro": "<|M253|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "of the <see cref=",
+      "macro": "<|M254|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "#nullable disable",
+      "macro": "<|M255|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " 0; i < count; i",
+      "macro": "<|M256|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public sealed class",
+      "macro": "<|M257|>",
+      "category": "modifier"
+    },
+    {
+      "pattern": "(int i = 0; i < count",
+      "macro": "<|M258|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "set; } =",
+      "macro": "<|M259|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.IO;",
+      "macro": "<|M260|>",
+      "category": "using"
+    },
+    {
+      "pattern": "param name=\"value\">The",
+      "macro": "<|M261|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(var i = 0;",
+      "macro": "<|M262|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "int i = 1; i ",
+      "macro": "<|M263|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.ComponentModel;",
+      "macro": "<|M264|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Length > 0)",
+      "macro": "<|M265|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "IEnumerable<",
+      "macro": "<|M266|>",
+      "category": "generic"
+    },
+    {
+      "pattern": "Name { get; set; }",
+      "macro": "<|M267|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "see langword=\"false",
+      "macro": "<|M268|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "int i = 1; i <",
+      "macro": "<|M269|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= 0; j <",
+      "macro": "<|M270|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[EditorBrowsable(EditorBrowsableState.Never)]",
+      "macro": "<|M271|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return true;",
+      "macro": "<|M272|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "var i = 0; i",
+      "macro": "<|M273|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Threading;",
+      "macro": "<|M274|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Microsoft.CodeAnalysis.CSharp.Syntax",
+      "macro": "<|M275|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "   See <see href=\"https:",
+      "macro": "<|M276|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " cancellationToken).ConfigureAwait(false)",
+      "macro": "<|M277|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Assert.Throws<InvalidOperationException>",
+      "macro": "<|M278|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.Win32.SafeHandles;",
+      "macro": "<|M279|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "var result =",
+      "macro": "<|M280|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (int i = 1; i <",
+      "macro": "<|M281|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <returns></returns>",
+      "macro": "<|M282|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (int i = 1; i",
+      "macro": "<|M283|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "the <see cref=",
+      "macro": "<|M284|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " <exception cref=",
+      "macro": "<|M285|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if (string.IsNullOrEmpty",
+      "macro": "<|M286|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<see langword=\"true\" />",
+      "macro": "<|M287|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(int j = 0; j ",
+      "macro": "<|M288|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "CancellationToken cancellationToken)",
+      "macro": "<|M289|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "new instance of the <see cref",
+      "macro": "<|M290|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "override bool Equals(object? obj)",
+      "macro": "<|M291|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (int i = 1;",
+      "macro": "<|M292|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[NotNullWhen(true)]",
+      "macro": "<|M293|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Throws<ArgumentNullException>(() ",
+      "macro": "<|M294|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Extensions.Logging;",
+      "macro": "<|M295|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "typeof(PlatformDetection), nameof",
+      "macro": "<|M296|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= default;",
+      "macro": "<|M297|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "typeparam name=",
+      "macro": "<|M298|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <returns><see langword=\"true",
+      "macro": "<|M299|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "CodeAnalysis;",
+      "macro": "<|M300|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ Initializes a new instance of the <see",
+      "macro": "<|M301|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Microsoft.Win32.SafeHandles;",
+      "macro": "<|M302|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return Task.CompletedTask;",
+      "macro": "<|M303|>",
+      "category": "expression"
+    },
+    {
+      "pattern": "var i = 0; i ",
+      "macro": "<|M304|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// Initializes a new instance",
+      "macro": "<|M305|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.CodeAnalysis.CSharp",
+      "macro": "<|M306|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "protected override void Dispose(bool disposing)",
+      "macro": "<|M307|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "a new instance of <see cref",
+      "macro": "<|M308|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return 100;",
+      "macro": "<|M309|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<exception cref=\"ArgumentNullException\"",
+      "macro": "<|M310|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ReadOnlySpan<byte>",
+      "macro": "<|M311|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// Gets the",
+      "macro": "<|M312|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.AspNetCore",
+      "macro": "<|M313|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "MethodImplOptions.NoInlining)]",
+      "macro": "<|M314|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Text.Json.Serialization;",
+      "macro": "<|M315|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "int i = 0; i < count; i+",
+      "macro": "<|M316|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Microsoft.Extensions.Logging",
+      "macro": "<|M317|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public static class",
+      "macro": "<|M318|>",
+      "category": "modifier"
+    },
+    {
+      "pattern": "return result;",
+      "macro": "<|M319|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " new Dictionary<string,",
+      "macro": "<|M320|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "internal static partial class",
+      "macro": "<|M321|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.Extensions.Logging;",
+      "macro": "<|M322|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.Threading.Tasks;",
+      "macro": "<|M323|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " get; set; }",
+      "macro": "<|M324|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "param name=",
+      "macro": "<|M325|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return 0;",
+      "macro": "<|M326|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "namespace Microsoft.AspNetCore",
+      "macro": "<|M327|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "{ get; set;",
+      "macro": "<|M328|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "CancellationToken cancellationToken = default)",
+      "macro": "<|M329|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Length == 0)",
+      "macro": "<|M330|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "to <see cref=",
+      "macro": "<|M331|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<see href=\"https",
+      "macro": "<|M332|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<see href=\"https:/",
+      "macro": "<|M333|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "i = 0; i < count; i++",
+      "macro": "<|M334|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string Name { get; set; }",
+      "macro": "<|M335|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "internal sealed partial class",
+      "macro": "<|M336|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "new object[] ",
+      "macro": "<|M337|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= 0; i < count",
+      "macro": "<|M338|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public static IEnumerable<object[]>",
+      "macro": "<|M339|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Assert.Throws<InvalidOperationException>((",
+      "macro": "<|M340|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "private static bool",
+      "macro": "<|M341|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "typeof(string)",
+      "macro": "<|M342|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <param name=\"value\"",
+      "macro": "<|M343|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ITestOutputHelper testOutputHelper)",
+      "macro": "<|M344|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<see langword=\"true\"/",
+      "macro": "<|M345|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "a <see cref",
+      "macro": "<|M346|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (int i = 0; i < count; i",
+      "macro": "<|M347|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "catch (Exception e)",
+      "macro": "<|M348|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (int i = 0; i < count; i+",
+      "macro": "<|M349|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <param name=\"options\">",
+      "macro": "<|M350|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "   See <see href=",
+      "macro": "<|M351|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <returns><see langword=\"true\"",
+      "macro": "<|M352|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ Initializes a new instance of the <see cref",
+      "macro": "<|M353|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[TestMethod]",
+      "macro": "<|M354|>",
+      "category": "attribute"
+    },
+    {
+      "pattern": "catch (Exception ex",
+      "macro": "<|M355|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "{ get; set",
+      "macro": "<|M356|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "#pragma warning disable",
+      "macro": "<|M357|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " 0; i < count;",
+      "macro": "<|M358|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Name { get; set;",
+      "macro": "<|M359|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Name { get;",
+      "macro": "<|M360|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ Gets or sets",
+      "macro": "<|M361|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "i = 0; i < count;",
+      "macro": "<|M362|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[AttributeUsage(AttributeTargets",
+      "macro": "<|M363|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " See <see href=\"https:/",
+      "macro": "<|M364|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Length; i++",
+      "macro": "<|M365|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <returns>The",
+      "macro": "<|M366|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (int j = 0; j",
+      "macro": "<|M367|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " <returns>The",
+      "macro": "<|M368|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(int i = 0; i < count; i+",
+      "macro": "<|M369|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[MethodImpl(MethodImplOptions.AggressiveInlining)",
+      "macro": "<|M370|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// Initializes a new instance of the <see cref=",
+      "macro": "<|M371|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Collections.ObjectModel;",
+      "macro": "<|M372|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "object sender,",
+      "macro": "<|M373|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return 1;",
+      "macro": "<|M374|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Microsoft.Extensions.DependencyInjection;",
+      "macro": "<|M375|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// Initializes a new instance of the ",
+      "macro": "<|M376|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (var i ",
+      "macro": "<|M377|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "throw new ArgumentNullException(nameof(",
+      "macro": "<|M378|>",
+      "category": "exception"
+    },
+    {
+      "pattern": " { 1, 2, 3",
+      "macro": "<|M379|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for <see cref=",
+      "macro": "<|M380|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.Runtime.CompilerServices",
+      "macro": "<|M381|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Text.Json;",
+      "macro": "<|M382|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<see langword=",
+      "macro": "<|M383|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <param name=\"value\">",
+      "macro": "<|M384|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= Obsoletions.SharedUrlFormat)",
+      "macro": "<|M385|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "see langword=\"null",
+      "macro": "<|M386|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Assert.Throws<InvalidOperationException>(() =",
+      "macro": "<|M387|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.Extensions.Options;",
+      "macro": "<|M388|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "</returns>",
+      "macro": "<|M389|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " new[] {",
+      "macro": "<|M390|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "static IEnumerable<object[]",
+      "macro": "<|M391|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <param name=\"value\">The",
+      "macro": "<|M392|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " <returns>A",
+      "macro": "<|M393|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "get; set;",
+      "macro": "<|M394|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(int i = 0; i < count; i",
+      "macro": "<|M395|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Assert.Throws<ArgumentNullException>(() =",
+      "macro": "<|M396|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.AspNetCore.Http",
+      "macro": "<|M397|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "0; i < count; i++)",
+      "macro": "<|M398|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// Initializes a new instance of the <see",
+      "macro": "<|M399|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " get; set;",
+      "macro": "<|M400|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Equal(2,",
+      "macro": "<|M401|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "throw new ArgumentException(",
+      "macro": "<|M402|>",
+      "category": "exception"
+    },
+    {
+      "pattern": "/// <see cref",
+      "macro": "<|M403|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "i = 0; i < count; i",
+      "macro": "<|M404|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Microsoft.CodeAnalysis.CSharp.Syntax;",
+      "macro": "<|M405|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ </remarks>",
+      "macro": "<|M406|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string.Empty;",
+      "macro": "<|M407|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[ActiveIssue(",
+      "macro": "<|M408|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <exception cref",
+      "macro": "<|M409|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public void Dispose()",
+      "macro": "<|M410|>",
+      "category": "signature"
+    },
+    {
+      "pattern": "CodeAnalysis.CSharp",
+      "macro": "<|M411|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "var i = 0;",
+      "macro": "<|M412|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "instance of the <see cref",
+      "macro": "<|M413|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[MethodImpl(MethodImplOptions.NoInlining)",
+      "macro": "<|M414|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= 1; i <",
+      "macro": "<|M415|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <exception cref=",
+      "macro": "<|M416|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <param name=\"name\">",
+      "macro": "<|M417|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (int j = 0; j ",
+      "macro": "<|M418|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ReadOnlySpan<",
+      "macro": "<|M419|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <inheritdoc",
+      "macro": "<|M420|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "//     This is an",
+      "macro": "<|M421|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(int i = 1; i ",
+      "macro": "<|M422|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (int i = 0; i < count; i++)",
+      "macro": "<|M423|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.Security.Cryptography",
+      "macro": "<|M424|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "object[] ",
+      "macro": "<|M425|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "1, 2, 3, 4, 5",
+      "macro": "<|M426|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <param name=\"name\"",
+      "macro": "<|M427|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "new InvalidOperationException(",
+      "macro": "<|M428|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public override string",
+      "macro": "<|M429|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (int",
+      "macro": "<|M430|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "override void Dispose(bool disposing)",
+      "macro": "<|M431|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Initializes a new instance of the <see cref=",
+      "macro": "<|M432|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <returns>A",
+      "macro": "<|M433|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <typeparam name=\"T\">The",
+      "macro": "<|M434|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string Name { get; set; ",
+      "macro": "<|M435|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.AspNetCore.Http;",
+      "macro": "<|M436|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <see cref",
+      "macro": "<|M437|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <param name=\"options\"",
+      "macro": "<|M438|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<see langword=\"null\"",
+      "macro": "<|M439|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Microsoft.Win32.SafeHandles",
+      "macro": "<|M440|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "protected override void Dispose(bool",
+      "macro": "<|M441|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "internal static class",
+      "macro": "<|M442|>",
+      "category": "modifier"
+    },
+    {
+      "pattern": "using Microsoft.Extensions.DependencyInjection;",
+      "macro": "<|M443|>",
+      "category": "using"
+    },
+    {
+      "pattern": "int i = 0; i < count",
+      "macro": "<|M444|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "0; i < count; i++",
+      "macro": "<|M445|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ Initializes a new instance of the ",
+      "macro": "<|M446|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Diagnostics.CodeAnalysis",
+      "macro": "<|M447|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "instance of the <see",
+      "macro": "<|M448|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "see langword=\"false\"",
+      "macro": "<|M449|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "langword=\"true\"",
+      "macro": "<|M450|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <exception cref=\"",
+      "macro": "<|M451|>",
+      "category": "xmldoc"
+    },
+    {
+      "pattern": ") => new",
+      "macro": "<|M452|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string name,",
+      "macro": "<|M453|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Runtime.CompilerServices",
+      "macro": "<|M454|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "throw new ArgumentNullException(nameof",
+      "macro": "<|M455|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "EditorBrowsableState.Never)",
+      "macro": "<|M456|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "a new instance of <see cref=",
+      "macro": "<|M457|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.ComponentModel;",
+      "macro": "<|M458|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "i = 1; i <",
+      "macro": "<|M459|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Collections;",
+      "macro": "<|M460|>",
+      "category": "using"
+    },
+    {
+      "pattern": "param name=\"value\"",
+      "macro": "<|M461|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Threading.Tasks",
+      "macro": "<|M462|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= null ||",
+      "macro": "<|M463|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "protected override bool",
+      "macro": "<|M464|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Diagnostics;",
+      "macro": "<|M465|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <param name=\"value",
+      "macro": "<|M466|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "</typeparam>",
+      "macro": "<|M467|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.Threading.Tasks",
+      "macro": "<|M468|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <typeparam name=\"T\">The",
+      "macro": "<|M469|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <typeparam name=\"T\">The",
+      "macro": "<|M470|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public string Name { get; set; ",
+      "macro": "<|M471|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "override bool Equals(object",
+      "macro": "<|M472|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.Maui.Controls;",
+      "macro": "<|M473|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<param name=\"context\"",
+      "macro": "<|M474|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "#nullable enable",
+      "macro": "<|M475|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "yield return new object[",
+      "macro": "<|M476|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[ConditionalFact",
+      "macro": "<|M477|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <param name=\"name\"",
+      "macro": "<|M478|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "PlatformDetection), nameof",
+      "macro": "<|M479|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <inheritdoc />",
+      "macro": "<|M480|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "j = 0; j <",
+      "macro": "<|M481|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "a new instance of the <see",
+      "macro": "<|M482|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.CodeAnalysis.Shared.Extensions;",
+      "macro": "<|M483|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Throws<InvalidOperationException>(() =",
+      "macro": "<|M484|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " 1, 2, 3,",
+      "macro": "<|M485|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "CancellationToken cancellationToken = default",
+      "macro": "<|M486|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// </returns>",
+      "macro": "<|M487|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " get; } =",
+      "macro": "<|M488|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if (string",
+      "macro": "<|M489|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<see langword=\"null\"/",
+      "macro": "<|M490|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.Diagnostics;",
+      "macro": "<|M491|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "See <see href=",
+      "macro": "<|M492|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <returns>",
+      "macro": "<|M493|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <exception cref=\"ArgumentNullException",
+      "macro": "<|M494|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "see cref=",
+      "macro": "<|M495|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <typeparam name",
+      "macro": "<|M496|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(int i =",
+      "macro": "<|M497|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "﻿using System;",
+      "macro": "<|M498|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public override int GetHashCode()",
+      "macro": "<|M499|>",
+      "category": "modifier"
+    },
+    {
+      "pattern": "see href=\"https:/",
+      "macro": "<|M500|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "CodeAnalysis.CSharp.Syntax",
+      "macro": "<|M501|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if (value",
+      "macro": "<|M502|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= new Dictionary<string,",
+      "macro": "<|M503|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if (value ",
+      "macro": "<|M504|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <returns>The",
+      "macro": "<|M505|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " <typeparam name=\"T\"",
+      "macro": "<|M506|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "1, 2, 3, 4,",
+      "macro": "<|M507|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.Win32.SafeHandles",
+      "macro": "<|M508|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "{ get; private set;",
+      "macro": "<|M509|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "j = 0; j ",
+      "macro": "<|M510|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <param name=\"context\"",
+      "macro": "<|M511|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "i = 0; i <",
+      "macro": "<|M512|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return new object[] {",
+      "macro": "<|M513|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string Name { get;",
+      "macro": "<|M514|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "AttributeUsage(AttributeTargets",
+      "macro": "<|M515|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// </remarks>",
+      "macro": "<|M516|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "int j = 0; j <",
+      "macro": "<|M517|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.Collections.Immutable;",
+      "macro": "<|M518|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/     This is an internal",
+      "macro": "<|M519|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " get; set; } =",
+      "macro": "<|M520|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ITestOutputHelper output)",
+      "macro": "<|M521|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// Gets or sets the",
+      "macro": "<|M522|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "void Dispose(bool disposing)",
+      "macro": "<|M523|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <returns><see langword=\"true\"",
+      "macro": "<|M524|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Length; i",
+      "macro": "<|M525|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "  See <see href",
+      "macro": "<|M526|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <inheritdoc /",
+      "macro": "<|M527|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "get; private set",
+      "macro": "<|M528|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "IList<",
+      "macro": "<|M529|>",
+      "category": "generic"
+    },
+    {
+      "pattern": "// <exception cref=",
+      "macro": "<|M530|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return new object[] ",
+      "macro": "<|M531|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " get; set",
+      "macro": "<|M532|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.Extensions.DependencyInjection",
+      "macro": "<|M533|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ".ConfigureAwait(false);",
+      "macro": "<|M534|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "#pragma warning restore",
+      "macro": "<|M535|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Runtime.CompilerServices;",
+      "macro": "<|M536|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<param name=\"value\">The",
+      "macro": "<|M537|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ".ConfigureAwait(false)",
+      "macro": "<|M538|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "{ get; private",
+      "macro": "<|M539|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Diagnostics.CodeAnalysis;",
+      "macro": "<|M540|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " <param name=\"value\">The",
+      "macro": "<|M541|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <exception",
+      "macro": "<|M542|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "EditorBrowsable(EditorBrowsableState.Never)]",
+      "macro": "<|M543|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "EditorBrowsable(EditorBrowsableState.Never)",
+      "macro": "<|M544|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Extensions.DependencyInjection;",
+      "macro": "<|M545|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " private set; }",
+      "macro": "<|M546|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Length; i+",
+      "macro": "<|M547|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= 0; i < count; i++",
+      "macro": "<|M548|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "is not null",
+      "macro": "<|M549|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "</remarks>",
+      "macro": "<|M550|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "langword=",
+      "macro": "<|M551|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ConfigureAwait(false);",
+      "macro": "<|M552|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "i = 0; i < count",
+      "macro": "<|M553|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.Runtime.InteropServices",
+      "macro": "<|M554|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "{ get; } ",
+      "macro": "<|M555|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Assert.Equal(2",
+      "macro": "<|M556|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using NUnit.Framework;",
+      "macro": "<|M557|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (int i ",
+      "macro": "<|M558|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " <param name=\"value",
+      "macro": "<|M559|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ </remarks",
+      "macro": "<|M560|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Count; i++",
+      "macro": "<|M561|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.Windows.Forms",
+      "macro": "<|M562|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "See <see href=\"https:/",
+      "macro": "<|M563|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string ToString(",
+      "macro": "<|M564|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "get; set; } ",
+      "macro": "<|M565|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public abstract class",
+      "macro": "<|M566|>",
+      "category": "modifier"
+    },
+    {
+      "pattern": "/ <inheritdoc /",
+      "macro": "<|M567|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= null) ",
+      "macro": "<|M568|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "href=\"https:",
+      "macro": "<|M569|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "var i = 0",
+      "macro": "<|M570|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= value;",
+      "macro": "<|M571|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <see cref=",
+      "macro": "<|M572|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "override string ToString()",
+      "macro": "<|M573|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " 0, 0, 0",
+      "macro": "<|M574|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "int i = 0; i < count;",
+      "macro": "<|M575|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <returns></returns>",
+      "macro": "<|M576|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "GetHashCode()",
+      "macro": "<|M577|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Count; i+",
+      "macro": "<|M578|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string, string>",
+      "macro": "<|M579|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "href=\"https",
+      "macro": "<|M580|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "new object[",
+      "macro": "<|M581|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return null;",
+      "macro": "<|M582|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<see cref",
+      "macro": "<|M583|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public override int GetHashCode(",
+      "macro": "<|M584|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " <see cref",
+      "macro": "<|M585|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <typeparam name",
+      "macro": "<|M586|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "get { return",
+      "macro": "<|M587|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<see langword=\"null\"/>",
+      "macro": "<|M588|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "UrlFormat = Obsoletions.SharedUrlFormat)",
+      "macro": "<|M589|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "CompilerServices;",
+      "macro": "<|M590|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " See <see href=\"https",
+      "macro": "<|M591|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Assert.Equal(0",
+      "macro": "<|M592|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Throws<InvalidOperationException>(() =>",
+      "macro": "<|M593|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Threading.Tasks",
+      "macro": "<|M594|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <exception",
+      "macro": "<|M595|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Microsoft.AspNetCore.Mvc",
+      "macro": "<|M596|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "CancellationToken cancellationToken",
+      "macro": "<|M597|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "see href=\"https",
+      "macro": "<|M598|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "UrlFormat = Obsoletions.SharedUrlFormat",
+      "macro": "<|M599|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <inheritdoc />",
+      "macro": "<|M600|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " <returns>",
+      "macro": "<|M601|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[MethodImpl(MethodImplOptions",
+      "macro": "<|M602|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// </remarks",
+      "macro": "<|M603|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " See <see href=",
+      "macro": "<|M604|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// Initializes a new instance of",
+      "macro": "<|M605|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (var",
+      "macro": "<|M606|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public static partial class",
+      "macro": "<|M607|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Security.Cryptography.X509Certificates",
+      "macro": "<|M608|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <param name=\"value\">The",
+      "macro": "<|M609|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "A <see cref=",
+      "macro": "<|M610|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<paramref name",
+      "macro": "<|M611|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "CodeAnalysis.Shared.Extensions;",
+      "macro": "<|M612|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <returns></returns",
+      "macro": "<|M613|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public static IEnumerable<object",
+      "macro": "<|M614|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " private set; ",
+      "macro": "<|M615|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "static IEnumerable<object[]>",
+      "macro": "<|M616|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <inheritdoc /",
+      "macro": "<|M617|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " <exception cref=\"ArgumentNullException\"",
+      "macro": "<|M618|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "AssertExtensions.Throws<ArgumentNullException>",
+      "macro": "<|M619|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <typeparam",
+      "macro": "<|M620|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(int i = 0; i < count;",
+      "macro": "<|M621|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "StringComparison.Ordinal)",
+      "macro": "<|M622|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(int i = 0",
+      "macro": "<|M623|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "!= null &&",
+      "macro": "<|M624|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <typeparam name=",
+      "macro": "<|M625|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<param name=\"value",
+      "macro": "<|M626|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string, string",
+      "macro": "<|M627|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <returns",
+      "macro": "<|M628|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ", nameof(PlatformDetection",
+      "macro": "<|M629|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "exception cref=",
+      "macro": "<|M630|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public override string ToString()",
+      "macro": "<|M631|>",
+      "category": "modifier"
+    },
+    {
+      "pattern": "<see href=",
+      "macro": "<|M632|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "void Dispose()",
+      "macro": "<|M633|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "throw new NotImplementedException()",
+      "macro": "<|M634|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "NotNullWhen(true)",
+      "macro": "<|M635|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <returns></returns>",
+      "macro": "<|M636|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <typeparam name=\"T",
+      "macro": "<|M637|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Text",
+      "macro": "<|M638|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Assert.Throws<ArgumentNullException>(",
+      "macro": "<|M639|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.Collections;",
+      "macro": "<|M640|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "{ 1, 2, 3",
+      "macro": "<|M641|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Collections.Generic;",
+      "macro": "<|M642|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.Extensions",
+      "macro": "<|M643|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string.IsNullOrEmpty(",
+      "macro": "<|M644|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <param name=\"options\"",
+      "macro": "<|M645|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return false;",
+      "macro": "<|M646|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Runtime.Intrinsics;",
+      "macro": "<|M647|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "yield return new object[]",
+      "macro": "<|M648|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "int GetHashCode(",
+      "macro": "<|M649|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "MethodImplOptions.AggressiveInlining)]",
+      "macro": "<|M650|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/     This is an",
+      "macro": "<|M651|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public static async Task",
+      "macro": "<|M652|>",
+      "category": "modifier"
+    },
+    {
+      "pattern": "System.Text.Json.Serialization",
+      "macro": "<|M653|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "CancellationToken cancellationToken =",
+      "macro": "<|M654|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "] { 1, 2, 3",
+      "macro": "<|M655|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <remarks",
+      "macro": "<|M656|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Assert.Throws<InvalidOperationException>(()",
+      "macro": "<|M657|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.AspNetCore.Mvc",
+      "macro": "<|M658|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<see cref=",
+      "macro": "<|M659|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "InteropServices;",
+      "macro": "<|M660|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "typeof(PlatformDetection",
+      "macro": "<|M661|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<see langword=\"false",
+      "macro": "<|M662|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "namespace System.Windows",
+      "macro": "<|M663|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= new List",
+      "macro": "<|M664|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ComponentModel;",
+      "macro": "<|M665|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.Globalization;",
+      "macro": "<|M666|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Length > 0",
+      "macro": "<|M667|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<paramref name=",
+      "macro": "<|M668|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "///     This is",
+      "macro": "<|M669|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "NUnit.Framework;",
+      "macro": "<|M670|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Linq",
+      "macro": "<|M671|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " get; set; ",
+      "macro": "<|M672|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<exception cref=",
+      "macro": "<|M673|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Task.CompletedTask;",
+      "macro": "<|M674|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Assert.Throws<InvalidOperationException>(() ",
+      "macro": "<|M675|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <param name=\"context\"",
+      "macro": "<|M676|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Dictionary<string, ",
+      "macro": "<|M677|>",
+      "category": "generic"
+    },
+    {
+      "pattern": "   See <see href=\"https",
+      "macro": "<|M678|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <returns><see langword=\"true\"",
+      "macro": "<|M679|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "get; private set;",
+      "macro": "<|M680|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "///     This is an",
+      "macro": "<|M681|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <typeparam name=",
+      "macro": "<|M682|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " <typeparam name",
+      "macro": "<|M683|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " 0; i < count; i++",
+      "macro": "<|M684|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Throws<ArgumentNullException>(() =>",
+      "macro": "<|M685|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.Runtime.InteropServices;",
+      "macro": "<|M686|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<see langword",
+      "macro": "<|M687|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Diagnostics",
+      "macro": "<|M688|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ".ConfigureAwait(false",
+      "macro": "<|M689|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "instance of <see cref=",
+      "macro": "<|M690|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= new Dictionary<string",
+      "macro": "<|M691|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "0; i < count; i+",
+      "macro": "<|M692|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "cancellationToken).ConfigureAwait(false",
+      "macro": "<|M693|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[NotNullWhen(true)",
+      "macro": "<|M694|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " 2, 3, 4",
+      "macro": "<|M695|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[EditorBrowsable(EditorBrowsableState.Never",
+      "macro": "<|M696|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "=> throw new",
+      "macro": "<|M697|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "override int GetHashCode(",
+      "macro": "<|M698|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " set; } =",
+      "macro": "<|M699|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "j = 0; j",
+      "macro": "<|M700|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "see langword=\"true\"",
+      "macro": "<|M701|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.CodeAnalysis.Shared.Extensions",
+      "macro": "<|M702|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Microsoft.CodeAnalysis.Shared.Extensions;",
+      "macro": "<|M703|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "OrdinalIgnoreCase)",
+      "macro": "<|M704|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<exception cref",
+      "macro": "<|M705|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "new object[] {",
+      "macro": "<|M706|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "</summary>",
+      "macro": "<|M707|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Buffers",
+      "macro": "<|M708|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <exception cref=\"ArgumentNullException\"",
+      "macro": "<|M709|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Collections.Immutable",
+      "macro": "<|M710|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "i = 1; i ",
+      "macro": "<|M711|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.Text.Json",
+      "macro": "<|M712|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "int i = 0; i < count; i++",
+      "macro": "<|M713|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(int j = 0; j <",
+      "macro": "<|M714|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "new instance of the <see cref=",
+      "macro": "<|M715|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(var i = 0",
+      "macro": "<|M716|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= new Dictionary",
+      "macro": "<|M717|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Assert.Throws<InvalidOperationException>(",
+      "macro": "<|M718|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<returns></returns>",
+      "macro": "<|M719|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ Initializes a new",
+      "macro": "<|M720|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Equal(1,",
+      "macro": "<|M721|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<typeparam name=\"T\"",
+      "macro": "<|M722|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// </param>",
+      "macro": "<|M723|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[RequiresUnreferencedCode",
+      "macro": "<|M724|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "private set; ",
+      "macro": "<|M725|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Runtime.InteropServices;",
+      "macro": "<|M726|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[Serializable]",
+      "macro": "<|M727|>",
+      "category": "attribute"
+    },
+    {
+      "pattern": "protected virtual void Dispose(bool disposing)",
+      "macro": "<|M728|>",
+      "category": "signature"
+    },
+    {
+      "pattern": "NotImplementedException();",
+      "macro": "<|M729|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <inheritdoc ",
+      "macro": "<|M730|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <typeparam",
+      "macro": "<|M731|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <returns></returns",
+      "macro": "<|M732|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= 0; i < count; i+",
+      "macro": "<|M733|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (int i = 0",
+      "macro": "<|M734|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " <returns><see langword=\"true\"",
+      "macro": "<|M735|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.Threading;",
+      "macro": "<|M736|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "EditorBrowsable(EditorBrowsableState.Never",
+      "macro": "<|M737|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "NotImplementedException(",
+      "macro": "<|M738|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Microsoft.AspNetCore.Http;",
+      "macro": "<|M739|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.IO",
+      "macro": "<|M740|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= new byte",
+      "macro": "<|M741|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= null &&",
+      "macro": "<|M742|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "AspNetCore.Mvc",
+      "macro": "<|M743|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ">The <see cref",
+      "macro": "<|M744|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Threading.Tasks;",
+      "macro": "<|M745|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= null);",
+      "macro": "<|M746|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <returns>A",
+      "macro": "<|M747|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "void Dispose(",
+      "macro": "<|M748|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Microsoft.CodeAnalysis.PooledObjects;",
+      "macro": "<|M749|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "see langword=\"true",
+      "macro": "<|M750|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Microsoft.Extensions.DependencyInjection",
+      "macro": "<|M751|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "MemberData(nameof",
+      "macro": "<|M752|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[MemberData",
+      "macro": "<|M753|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// Initializes a",
+      "macro": "<|M754|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Runtime.InteropServices",
+      "macro": "<|M755|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "override int GetHashCode()",
+      "macro": "<|M756|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Windows",
+      "macro": "<|M757|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// Initializes a",
+      "macro": "<|M758|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <inheritdoc",
+      "macro": "<|M759|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <returns>A",
+      "macro": "<|M760|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<param name",
+      "macro": "<|M761|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " <typeparam name=",
+      "macro": "<|M762|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <returns",
+      "macro": "<|M763|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " get; private set; }",
+      "macro": "<|M764|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for <see cref",
+      "macro": "<|M765|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "get; } = new",
+      "macro": "<|M766|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "override string ToString(",
+      "macro": "<|M767|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "//     This is an internal",
+      "macro": "<|M768|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Roslyn.Utilities;",
+      "macro": "<|M769|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ Initializes a new instance of the",
+      "macro": "<|M770|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Assert.Throws<InvalidOperationException>(() =>",
+      "macro": "<|M771|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public override int",
+      "macro": "<|M772|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= null |",
+      "macro": "<|M773|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "void Dispose(bool disposing",
+      "macro": "<|M774|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ Initializes a new instance",
+      "macro": "<|M775|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "langword=\"false\"",
+      "macro": "<|M776|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <remarks",
+      "macro": "<|M777|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<typeparam name",
+      "macro": "<|M778|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "object[] {",
+      "macro": "<|M779|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Collections.Immutable;",
+      "macro": "<|M780|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// Initializes a new",
+      "macro": "<|M781|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Throws<ArgumentException>",
+      "macro": "<|M782|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Globalization",
+      "macro": "<|M783|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return new object[]",
+      "macro": "<|M784|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Count == 0",
+      "macro": "<|M785|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "//     This is",
+      "macro": "<|M786|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Xunit.Abstractions;",
+      "macro": "<|M787|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "=> true;",
+      "macro": "<|M788|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public static IEnumerable<object[]",
+      "macro": "<|M789|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/exception>",
+      "macro": "<|M790|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "== null ||",
+      "macro": "<|M791|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "== null |",
+      "macro": "<|M792|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <see cref=",
+      "macro": "<|M793|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "langword=\"null\"",
+      "macro": "<|M794|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "throw new NotImplementedException(",
+      "macro": "<|M795|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "new object[]",
+      "macro": "<|M796|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "!= null ",
+      "macro": "<|M797|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/returns>",
+      "macro": "<|M798|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "GetHashCode(",
+      "macro": "<|M799|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " 1, 2, 3",
+      "macro": "<|M800|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <param name=\"name\"",
+      "macro": "<|M801|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.AspNetCore.Mvc;",
+      "macro": "<|M802|>",
+      "category": "using"
+    },
+    {
+      "pattern": "System.Text.Json.Serialization;",
+      "macro": "<|M803|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ </returns>",
+      "macro": "<|M804|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <param",
+      "macro": "<|M805|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "!= null &",
+      "macro": "<|M806|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <typeparam name",
+      "macro": "<|M807|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// Initializes a new",
+      "macro": "<|M808|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/remarks>",
+      "macro": "<|M809|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Cryptography.X509Certificates",
+      "macro": "<|M810|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string Name { get",
+      "macro": "<|M811|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/typeparam>",
+      "macro": "<|M812|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Throws<ArgumentNullException>(() =",
+      "macro": "<|M813|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <param name=\"context\"",
+      "macro": "<|M814|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " 0; i < count; i++)",
+      "macro": "<|M815|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public string Name { get",
+      "macro": "<|M816|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "new Dictionary<string,",
+      "macro": "<|M817|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " <exception cref",
+      "macro": "<|M818|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <exception",
+      "macro": "<|M819|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <typeparam",
+      "macro": "<|M820|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " <remarks>",
+      "macro": "<|M821|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " nameof(PlatformDetection",
+      "macro": "<|M822|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public string Name { get;",
+      "macro": "<|M823|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ </param>",
+      "macro": "<|M824|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " Initializes a new instance of the <see cref=",
+      "macro": "<|M825|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.Runtime.CompilerServices;",
+      "macro": "<|M826|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// Initializes a new instance of the <see cref",
+      "macro": "<|M827|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (var i =",
+      "macro": "<|M828|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <returns></returns",
+      "macro": "<|M829|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Net",
+      "macro": "<|M830|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public static IEnumerable<object[",
+      "macro": "<|M831|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " get; } ",
+      "macro": "<|M832|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "foreach (var",
+      "macro": "<|M833|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Text.Json",
+      "macro": "<|M834|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// Gets the",
+      "macro": "<|M835|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " <param name",
+      "macro": "<|M836|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(var i =",
+      "macro": "<|M837|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.Reflection;",
+      "macro": "<|M838|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "AspNetCore.Http",
+      "macro": "<|M839|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "IOptions<",
+      "macro": "<|M840|>",
+      "category": "generic"
+    },
+    {
+      "pattern": "MethodImpl(MethodImplOptions.NoInlining)",
+      "macro": "<|M841|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "see langword=",
+      "macro": "<|M842|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ Gets the",
+      "macro": "<|M843|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "  See <see href=\"https",
+      "macro": "<|M844|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "throw new InvalidOperationException(",
+      "macro": "<|M845|>",
+      "category": "exception"
+    },
+    {
+      "pattern": "> throw new",
+      "macro": "<|M846|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <exception cref=",
+      "macro": "<|M847|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "of <see cref",
+      "macro": "<|M848|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ <typeparam name=\"T\"",
+      "macro": "<|M849|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "{ get; set; } ",
+      "macro": "<|M850|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.Extensions.Logging",
+      "macro": "<|M851|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <typeparam name=\"T\"",
+      "macro": "<|M852|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <remarks",
+      "macro": "<|M853|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Throws<InvalidOperationException>(() ",
+      "macro": "<|M854|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "The <see",
+      "macro": "<|M855|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// Initializes a new instance of the",
+      "macro": "<|M856|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<param name=\"value\"",
+      "macro": "<|M857|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Threading",
+      "macro": "<|M858|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Dictionary<string,",
+      "macro": "<|M859|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ">The <see",
+      "macro": "<|M860|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " </para>",
+      "macro": "<|M861|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <exception cref",
+      "macro": "<|M862|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "public void Dispose(",
+      "macro": "<|M863|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "see href=\"https:",
+      "macro": "<|M864|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// Initializes a new instance",
+      "macro": "<|M865|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<returns>",
+      "macro": "<|M866|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<returns>The",
+      "macro": "<|M867|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <param name=",
+      "macro": "<|M868|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.Collections.Immutable",
+      "macro": "<|M869|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.CodeAnalysis.CSharp.Syntax",
+      "macro": "<|M870|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/ Initializes a",
+      "macro": "<|M871|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "of the <see",
+      "macro": "<|M872|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <inheritdoc ",
+      "macro": "<|M873|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Throws<ArgumentNullException>(",
+      "macro": "<|M874|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Length == 0",
+      "macro": "<|M875|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[NotNullWhen(true)] out",
+      "macro": "<|M876|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "System.Linq;",
+      "macro": "<|M877|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " get; private set;",
+      "macro": "<|M878|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Throws<ArgumentNullException",
+      "macro": "<|M879|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(var i = 0; i <",
+      "macro": "<|M880|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "{ get; } =",
+      "macro": "<|M881|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "MethodImpl(MethodImplOptions.NoInlining)]",
+      "macro": "<|M882|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// <returns",
+      "macro": "<|M883|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "MethodImplOptions.NoInlining",
+      "macro": "<|M884|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <see cref",
+      "macro": "<|M885|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "// <remarks>",
+      "macro": "<|M886|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return new object[",
+      "macro": "<|M887|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using Microsoft.CodeAnalysis.PooledObjects",
+      "macro": "<|M888|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "protected override void Dispose(bool disposing",
+      "macro": "<|M889|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Abstractions;",
+      "macro": "<|M890|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "== null ",
+      "macro": "<|M891|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " set; } ",
+      "macro": "<|M892|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= string.Empty;",
+      "macro": "<|M893|>",
+      "category": "expression"
+    },
+    {
+      "pattern": "/     This is",
+      "macro": "<|M894|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "/// Gets or sets",
+      "macro": "<|M895|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "AspNetCore.Http;",
+      "macro": "<|M896|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Throws<ArgumentNullException>",
+      "macro": "<|M897|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Reflection",
+      "macro": "<|M898|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "<summary>",
+      "macro": "<|M899|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for (var i",
+      "macro": "<|M900|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Microsoft.Extensions.Logging;",
+      "macro": "<|M901|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "int i = 0; i <",
+      "macro": "<|M902|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Microsoft.AspNetCore.Http",
+      "macro": "<|M903|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.Runtime",
+      "macro": "<|M904|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "using System.ComponentModel",
+      "macro": "<|M905|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[Obsolete]",
+      "macro": "<|M906|>",
+      "category": "attribute"
+    },
+    {
+      "pattern": "using System.Text.Json.Serialization",
+      "macro": "<|M907|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string ToString()",
+      "macro": "<|M908|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "catch (Exception",
+      "macro": "<|M909|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "{ get; private set",
+      "macro": "<|M910|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ConfigureAwait(false)",
+      "macro": "<|M911|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "not null)",
+      "macro": "<|M912|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "throw new NotImplementedException();",
+      "macro": "<|M913|>",
+      "category": "exception"
+    },
+    {
+      "pattern": "// Initializes a new instance of the",
+      "macro": "<|M914|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " get; private set",
+      "macro": "<|M915|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "throw new NotSupportedException();",
+      "macro": "<|M916|>",
+      "category": "exception"
+    },
+    {
+      "pattern": "ILogger<",
+      "macro": "<|M917|>",
+      "category": "generic"
+    }
+  ],
+  "templates": [
+    {
+      "template": "int {0} = 0;",
+      "macro": "<|T001|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "{0} = (int){1}.{2}",
+      "macro": "<|T002|>",
+      "slots": 3,
+      "category": "ast_template"
+    },
+    {
+      "template": "this.{0} = {0};",
+      "macro": "<|T003|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "private int {0};",
+      "macro": "<|T004|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "private bool {0};",
+      "macro": "<|T005|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "throw new CryptographicException({0}.{1}, {2});",
+      "macro": "<|T006|>",
+      "slots": 3,
+      "category": "template"
+    },
+    {
+      "template": "int {0} = 1;",
+      "macro": "<|T007|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "string? {0} = null",
+      "macro": "<|T008|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "var {0} = 0;",
+      "macro": "<|T009|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "byte[] {0}",
+      "macro": "<|T010|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "[Category({0}.{1})]",
+      "macro": "<|T011|>",
+      "slots": 2,
+      "category": "template"
+    },
+    {
+      "template": "int {0} = -1;",
+      "macro": "<|T012|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "int {0};",
+      "macro": "<|T013|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "public double {0};",
+      "macro": "<|T014|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "await base.{0}();",
+      "macro": "<|T015|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "double {0} = 0;",
+      "macro": "<|T016|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "public string {0};",
+      "macro": "<|T017|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "{0}.ToString()",
+      "macro": "<|T018|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "uint {0} = 0;",
+      "macro": "<|T019|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": ".{0}(",
+      "macro": "<|T020|>",
+      "slots": 1,
+      "category": "template"
+    },
+    {
+      "template": "public int {0};",
+      "macro": "<|T021|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "private string {0};",
+      "macro": "<|T022|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "GetValue({0})",
+      "macro": "<|T023|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "const int {0} = 10;",
+      "macro": "<|T024|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "long {0} = 0;",
+      "macro": "<|T025|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "throw new CryptographicException({0}.{1});",
+      "macro": "<|T026|>",
+      "slots": 2,
+      "category": "template"
+    },
+    {
+      "template": "string? {0}",
+      "macro": "<|T027|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "const int {0} = 100;",
+      "macro": "<|T028|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "[{0}]",
+      "macro": "<|T029|>",
+      "slots": 1,
+      "category": "template"
+    },
+    {
+      "template": "public override async Task ProvideCompletionsAsync(CompletionContext {0})",
+      "macro": "<|T030|>",
+      "slots": 1,
+      "category": "template"
+    },
+    {
+      "template": "int? {0}",
+      "macro": "<|T031|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "var {0} = {1};",
+      "macro": "<|T032|>",
+      "slots": 2,
+      "category": "ast_template"
+    },
+    {
+      "template": "internal int {0};",
+      "macro": "<|T033|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "this.{0} = {1};",
+      "macro": "<|T034|>",
+      "slots": 2,
+      "category": "ast_template"
+    },
+    {
+      "template": "base.{0}()",
+      "macro": "<|T035|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "var {0} = new ContainerBuilder();",
+      "macro": "<|T036|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "byte[]? {0}",
+      "macro": "<|T037|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "int[] {0}",
+      "macro": "<|T038|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "new StringReader({0})",
+      "macro": "<|T039|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "int {0} = {1};",
+      "macro": "<|T040|>",
+      "slots": 2,
+      "category": "ast_template"
+    },
+    {
+      "template": "var {0} = {1}.{2};",
+      "macro": "<|T041|>",
+      "slots": 3,
+      "category": "ast_template"
+    },
+    {
+      "template": "string {0};",
+      "macro": "<|T042|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "bool {0} = true",
+      "macro": "<|T043|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "double {0};",
+      "macro": "<|T044|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "const int {0} = 2;",
+      "macro": "<|T045|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "object? {0}",
+      "macro": "<|T046|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "using Bitmap {0} = new(10, 10);",
+      "macro": "<|T047|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "private int {0} = 0;",
+      "macro": "<|T048|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "{0}.ThrowIfNull({1});",
+      "macro": "<|T049|>",
+      "slots": 2,
+      "category": "ast_template"
+    },
+    {
+      "template": "{0} = this;",
+      "macro": "<|T050|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "return ({0}, {1});",
+      "macro": "<|T051|>",
+      "slots": 2,
+      "category": "ast_template"
+    },
+    {
+      "template": "public const int {0} = 1;",
+      "macro": "<|T052|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "const int {0} = 3;",
+      "macro": "<|T053|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "bool {0};",
+      "macro": "<|T054|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "return {0}.ToString();",
+      "macro": "<|T055|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "{0} = new({1});",
+      "macro": "<|T056|>",
+      "slots": 2,
+      "category": "ast_template"
+    },
+    {
+      "template": "const int {0} = 1;",
+      "macro": "<|T057|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "bool? {0}",
+      "macro": "<|T058|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "byte[] {0};",
+      "macro": "<|T059|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "var {0} = 1;",
+      "macro": "<|T060|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "string {0} = \"\"",
+      "macro": "<|T061|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "public uint {0};",
+      "macro": "<|T062|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "private object? {0};",
+      "macro": "<|T063|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "void* {0}",
+      "macro": "<|T064|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "{0} = true",
+      "macro": "<|T065|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "ReferenceEquals({0}, {1})",
+      "macro": "<|T066|>",
+      "slots": 2,
+      "category": "ast_template"
+    },
+    {
+      "template": "new PropertyChangedCallback({0})",
+      "macro": "<|T067|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "private long {0};",
+      "macro": "<|T068|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "{0}.Dispose();",
+      "macro": "<|T069|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "this.{0}()",
+      "macro": "<|T070|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "var {0} = {1}.{2}();",
+      "macro": "<|T071|>",
+      "slots": 3,
+      "category": "ast_template"
+    },
+    {
+      "template": "const int {0} = -1;",
+      "macro": "<|T072|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "public T {0};",
+      "macro": "<|T073|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "{0}.{1}.Equals({2}.{1})",
+      "macro": "<|T074|>",
+      "slots": 3,
+      "category": "ast_template"
+    },
+    {
+      "template": "throw new SerializationException({0}.{1});",
+      "macro": "<|T075|>",
+      "slots": 2,
+      "category": "template"
+    },
+    {
+      "template": "return {0}.{1};",
+      "macro": "<|T076|>",
+      "slots": 2,
+      "category": "ast_template"
+    },
+    {
+      "template": "{0} = default",
+      "macro": "<|T077|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "{0}.Equals({1})",
+      "macro": "<|T078|>",
+      "slots": 2,
+      "category": "ast_template"
+    },
+    {
+      "template": "string {0} = {1}.ToString();",
+      "macro": "<|T079|>",
+      "slots": 2,
+      "category": "ast_template"
+    },
+    {
+      "template": "private const int {0} = 1;",
+      "macro": "<|T080|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "var {0} = await {1}.{2}();",
+      "macro": "<|T081|>",
+      "slots": 3,
+      "category": "ast_template"
+    },
+    {
+      "template": "char.{0}({1})",
+      "macro": "<|T082|>",
+      "slots": 2,
+      "category": "ast_template"
+    }
+  ]
+}

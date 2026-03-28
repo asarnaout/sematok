@@ -13,14 +13,16 @@ import random
 import re
 from pathlib import Path
 
-import tiktoken
+from transformers import AutoTokenizer
 
 from sematok.compressor import Compressor
 from sematok.dictionary import CompressionDictionary
 from sematok.lexer import get_safe_ranges
 
-MACRO_RE = re.compile(r"<\|M\d{4}\|>")
-TEMPLATE_RE = re.compile(r"<\|T(\d{4}):([^|]*)\|>")
+MACRO_RE = re.compile(r"<\|M\d{3}\|>")
+TEMPLATE_RE = re.compile(r"<\|T(\d{3}):([^|]*)\|>")
+
+QWEN_MODEL = "Qwen/Qwen2.5-Coder-1.5B-Instruct"
 
 
 def measure_compression(
@@ -37,7 +39,7 @@ def measure_compression(
     """
     d = CompressionDictionary.load(dictionary_path)
     compressor = Compressor(d)
-    enc = tiktoken.get_encoding("gpt2")
+    enc = AutoTokenizer.from_pretrained(QWEN_MODEL)
 
     files = sorted(corpus_dir.glob("*.cs"))
     random.seed(seed)
@@ -51,7 +53,7 @@ def measure_compression(
 
     for f in sample:
         source = f.read_text(encoding="utf-8", errors="replace")
-        total_original += len(enc.encode(source))
+        total_original += len(enc.encode(source, add_special_tokens=False))
 
         try:
             safe_ranges = get_safe_ranges(source, allow_xmldoc=True)
@@ -65,7 +67,7 @@ def measure_compression(
             pattern = d.macro_to_pattern.get(macro, "")
             if pattern:
                 total_macros += 1
-                total_savings += len(enc.encode(pattern)) - 1
+                total_savings += len(enc.encode(pattern, add_special_tokens=False)) - 1
 
         # Count template macro savings
         for match in TEMPLATE_RE.finditer(compressed):
@@ -77,9 +79,9 @@ def measure_compression(
                 expanded = template
                 for i, arg in enumerate(args):
                     expanded = expanded.replace(f"{{{i}}}", arg)
-                expanded_tokens = len(enc.encode(expanded))
+                expanded_tokens = len(enc.encode(expanded, add_special_tokens=False))
                 # The T macro itself is 1 token, plus args are tokenized
-                macro_tokens = 1 + len(enc.encode(":" + ",".join(args)))
+                macro_tokens = 1 + len(enc.encode(":" + ",".join(args), add_special_tokens=False))
                 saved = expanded_tokens - macro_tokens
                 if saved > 0:
                     total_template_macros += 1

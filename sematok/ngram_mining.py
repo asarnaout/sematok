@@ -19,7 +19,7 @@ import re
 from collections import Counter, defaultdict
 from pathlib import Path
 
-import tiktoken
+from transformers import AutoTokenizer
 from tqdm import tqdm
 
 from sematok.lexer import get_safe_ranges
@@ -60,7 +60,7 @@ def extract_safe_segments(source: str) -> list[str]:
     for start, end in safe_ranges:
         chunk = source_bytes[start:end].decode("utf-8", errors="replace")
         for line in chunk.split("\n"):
-            stripped = line.rstrip("\r")
+            stripped = line.strip()
             if len(stripped) >= MIN_CHAR_LENGTH:
                 segments.append(stripped)
 
@@ -231,7 +231,7 @@ def ngram_pass2(
 def filter_and_score_ngrams(
     pattern_counter: Counter,
     pattern_repos: dict[str, set[str]],
-    enc: tiktoken.Encoding,
+    enc,
     min_frequency: int = MIN_FREQUENCY,
     min_repos: int = MIN_REPOS,
     min_token_span: int = MIN_TOKEN_SPAN,
@@ -312,7 +312,7 @@ def mine_ngram_patterns(
     )
 
     print("N-gram mining: Filtering and scoring...")
-    enc = tiktoken.get_encoding("gpt2")
+    enc = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-Coder-1.5B-Instruct")
     scored = filter_and_score_ngrams(
         pattern_counter, pattern_repos, enc,
         min_frequency, min_repos, min_token_span,

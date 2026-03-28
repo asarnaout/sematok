@@ -33,17 +33,20 @@ _parser = _create_parser()
 def _collect_unsafe_ranges(
     node: Node, source_bytes: bytes | None = None, allow_xmldoc: bool = False,
 ) -> list[tuple[int, int]]:
-    """Recursively collect byte ranges of unsafe nodes."""
+    """Collect byte ranges of unsafe nodes (iterative to handle deep ASTs)."""
     ranges = []
-    if node.type in UNSAFE_NODE_TYPES:
-        if allow_xmldoc and node.type == "comment" and source_bytes is not None:
-            text = source_bytes[node.start_byte:node.end_byte]
-            if text.startswith(b"///"):
-                return ranges  # XML doc comment -- treat as safe
-        ranges.append((node.start_byte, node.end_byte))
-        return ranges  # Don't recurse into unsafe nodes
-    for child in node.children:
-        ranges.extend(_collect_unsafe_ranges(child, source_bytes, allow_xmldoc))
+    stack = [node]
+    while stack:
+        cur = stack.pop()
+        if cur.type in UNSAFE_NODE_TYPES:
+            if allow_xmldoc and cur.type == "comment" and source_bytes is not None:
+                text = source_bytes[cur.start_byte:cur.end_byte]
+                if text.startswith(b"///"):
+                    stack.extend(reversed(cur.children))
+                    continue  # XML doc comment -- treat as safe
+            ranges.append((cur.start_byte, cur.end_byte))
+            continue  # Don't recurse into unsafe nodes
+        stack.extend(reversed(cur.children))
     return ranges
 
 

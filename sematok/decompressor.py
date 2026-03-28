@@ -9,14 +9,14 @@ import re
 
 from sematok.dictionary import CompressionDictionary
 
-# Regex to match exact macro tokens like <|M0001|>, <|M0002|>, etc.
-MACRO_PATTERN = re.compile(r"<\|M(\d{4})\|>")
+# Regex to match exact macro tokens like <|M001|>, <|M0002|>, etc.
+MACRO_PATTERN = re.compile(r"<\|M(\d{3})\|>")
 
-# Regex to match template macro tokens like <|T0001:_logger,logger|>
-TEMPLATE_MACRO_PATTERN = re.compile(r"<\|T(\d{4}):([^|]*)\|>")
+# Regex to match template macro tokens like <|T001:_logger,logger|>
+TEMPLATE_MACRO_PATTERN = re.compile(r"<\|T(\d{3}):([^|]*)\|>")
 
 # Matches either M or T macros (for contains_macros / list_macros)
-ANY_MACRO_PATTERN = re.compile(r"<\|[MT]\d{4}(?::[^|]*)?\|>")
+ANY_MACRO_PATTERN = re.compile(r"<\|[MT]\d{3}(?::[^|]*)?\|>")
 
 
 class Decompressor:
