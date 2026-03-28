@@ -363,6 +363,8 @@ def build_mined_dictionary(
     use_ngrams: bool = True,
     use_templates: bool = True,
     max_templates: int = 500,
+    use_ast_templates: bool = True,
+    max_ast_templates: int = 1000,
 ) -> tuple[CompressionDictionary, list[tuple[str, int, int, float, int]]]:
     """
     Build a compression dictionary by combining seed patterns with mined patterns.
@@ -431,6 +433,26 @@ def build_mined_dictionary(
                 break
         print(f"Added {added_templates} templates (total: {d.template_count})")
 
+    if use_ast_templates:
+        from sematok.ast_mining import mine_ast_templates
+
+        ast_template_results = mine_ast_templates(
+            corpus_dir,
+            top_n=max_ast_templates,
+            min_repos=min_repos,
+            max_files=max_files,
+            exclude_repos=exclude_repos,
+        )
+        added_ast = 0
+        for template_str, freq, slot_count, score, repo_count in ast_template_results:
+            if template_str in d.template_to_macro:
+                continue
+            d.add_template(template_str, slot_count, category="ast_template")
+            added_ast += 1
+            if added_ast >= max_ast_templates:
+                break
+        print(f"Added {added_ast} AST-mined templates (total: {d.template_count})")
+
     return d, mined
 
 
@@ -450,6 +472,8 @@ def main():
     parser.add_argument("--no-ngrams", action="store_true", help="Skip n-gram mining (regex only)")
     parser.add_argument("--no-templates", action="store_true", help="Skip template mining")
     parser.add_argument("--max-templates", type=int, default=500, help="Max template patterns")
+    parser.add_argument("--no-ast-templates", action="store_true", help="Skip AST subtree mining")
+    parser.add_argument("--max-ast-templates", type=int, default=1000, help="Max AST-mined templates")
     parser.add_argument("--verbose", action="store_true", help="Print all accepted patterns")
     args = parser.parse_args()
 
@@ -463,6 +487,8 @@ def main():
         use_ngrams=not args.no_ngrams,
         use_templates=not args.no_templates,
         max_templates=args.max_templates,
+        use_ast_templates=not args.no_ast_templates,
+        max_ast_templates=args.max_ast_templates,
     )
 
     d.save(args.output)

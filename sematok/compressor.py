@@ -2,8 +2,9 @@
 Compresses C# source code by replacing boilerplate patterns with macro tokens.
 
 Uses longest-match-first strategy to avoid partial replacements.
-Cascading replacement is safe because <|M...|> and <|T...:args|> delimiters
-cannot appear in any C# pattern, preventing cross-boundary false matches.
+During the replacement cascade, null-byte delimited placeholders are used
+instead of final <|M...|> tokens to prevent patterns starting with '>'
+or ending with '<' from colliding with macro delimiters.
 
 Two-pass pipeline:
   1. Exact macros (<|M...|>) via str.replace, longest-first
@@ -13,6 +14,11 @@ Two-pass pipeline:
 import re
 
 from sematok.dictionary import CompressionDictionary
+
+# During replacement, use \x00 delimiters that cannot appear in source text.
+# Converted to final <|...|> format after all replacements are done.
+_PLACEHOLDER_PREFIX = "\x00M"
+_PLACEHOLDER_SUFFIX = "\x00"
 
 # Capture group for a C# identifier
 _CS_IDENT = r"([a-zA-Z_]\w*)"
@@ -95,12 +101,25 @@ class Compressor:
             text = regex.sub(_replace, text)
         return text
 
+    @staticmethod
+    def _finalize_placeholders(text: str) -> str:
+        """Convert null-byte placeholders to final <|M...|> macro tokens."""
+        return re.sub(
+            _PLACEHOLDER_PREFIX + r"(\d{4})" + _PLACEHOLDER_SUFFIX,
+            r"<|M\1|>",
+            text,
+        )
+
     def _compress_simple(self, source: str) -> str:
         """Naive compression: replace patterns everywhere (no lexer awareness)."""
         result = source
         for pattern in self._sorted_patterns:
             macro = self.dictionary.pattern_to_macro[pattern]
-            result = result.replace(pattern, macro)
+            # Use null-byte placeholder during cascade to prevent delimiter collisions
+            idx = macro[3:7]  # extract "0001" from "<|M0001|>"
+            placeholder = _PLACEHOLDER_PREFIX + idx + _PLACEHOLDER_SUFFIX
+            result = result.replace(pattern, placeholder)
+        result = self._finalize_placeholders(result)
         if self._template_regexes:
             result = self._apply_templates(result)
         return result
@@ -130,7 +149,10 @@ class Compressor:
             chunk = source[start:end]
             for pattern in self._sorted_patterns:
                 macro = self.dictionary.pattern_to_macro[pattern]
-                chunk = chunk.replace(pattern, macro)
+                idx = macro[3:7]
+                placeholder = _PLACEHOLDER_PREFIX + idx + _PLACEHOLDER_SUFFIX
+                chunk = chunk.replace(pattern, placeholder)
+            chunk = self._finalize_placeholders(chunk)
             if self._template_regexes:
                 chunk = self._apply_templates(chunk)
             result_parts.append(chunk)
