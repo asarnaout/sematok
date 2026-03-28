@@ -1,9 +1,7 @@
 torch>=2.0
-tiktoken
+transformers
 tree-sitter>=0.21
 tree-sitter-c-sharp
-datasets
-pyyaml
 tqdm
 numpy
 pytest
