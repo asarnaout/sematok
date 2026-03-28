@@ -13,6 +13,20 @@ from pathlib import Path
 # Format: (pattern_string, category)
 # These will be refined by frequency mining (mining.py) once we have a corpus.
 SEED_PATTERNS = [
+    # Indentation (compresses 6-10% of tokens that are pure whitespace)
+    # Ordered longest-first so greedy cascade decomposes correctly
+    ("                        ", "indent"),  # 24 spaces (6 levels)
+    ("                    ", "indent"),      # 20 spaces (5 levels)
+    ("                ", "indent"),          # 16 spaces (4 levels)
+    ("            ", "indent"),              # 12 spaces (3 levels)
+    ("        ", "indent"),                  # 8 spaces (2 levels)
+    ("    ", "indent"),                      # 4 spaces (1 level)
+    ("\t\t\t\t\t", "indent"),                # 5 tabs
+    ("\t\t\t\t", "indent"),                  # 4 tabs
+    ("\t\t\t", "indent"),                    # 3 tabs
+    ("\t\t", "indent"),                      # 2 tabs
+    ("\t", "indent"),                        # 1 tab
+
     # Using directives (very high frequency)
     ("using System;", "using"),
     ("using System.Collections.Generic;", "using"),

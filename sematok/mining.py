@@ -321,6 +321,38 @@ def merge_mining_results(
     return sorted(by_pattern.values(), key=lambda x: x[3], reverse=True)
 
 
+def deduplicate_substrings(
+    results: list[tuple[str, int, int, float, int]],
+) -> list[tuple[str, int, int, float, int]]:
+    """
+    Remove patterns that are substrings of longer patterns.
+
+    Processes longest patterns first. A shorter pattern is dropped if it
+    appears as a substring of any already-accepted longer pattern.
+    This eliminates fragment overlap (e.g. five partial for-loop variants)
+    and near-duplicates differing by trailing punctuation.
+
+    Returns deduplicated list sorted by score descending.
+    """
+    # Process longest patterns first -- they subsume shorter ones
+    by_length = sorted(results, key=lambda x: len(x[0]), reverse=True)
+
+    kept = []
+    kept_patterns: list[str] = []
+
+    for entry in by_length:
+        pattern = entry[0]
+        if any(pattern in kp for kp in kept_patterns):
+            continue
+        kept.append(entry)
+        kept_patterns.append(pattern)
+
+    kept.sort(key=lambda x: x[3], reverse=True)
+    before = len(results)
+    print(f"Substring dedup: {before} -> {len(kept)} patterns ({before - len(kept)} removed)")
+    return kept
+
+
 def build_mined_dictionary(
     corpus_dir: Path,
     top_n: int = 9999,

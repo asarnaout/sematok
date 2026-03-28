@@ -2,7 +2,8 @@
 Compresses C# source code by replacing boilerplate patterns with macro tokens.
 
 Uses longest-match-first strategy to avoid partial replacements.
-Optionally uses tree-sitter safe zones to skip strings and comments.
+Cascading replacement is safe because <|M...|> and <|T...:args|> delimiters
+cannot appear in any C# pattern, preventing cross-boundary false matches.
 
 Two-pass pipeline:
   1. Exact macros (<|M...|>) via str.replace, longest-first
