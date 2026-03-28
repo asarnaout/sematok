@@ -107,19 +107,19 @@ def find_identifiers_in_range(
     Returns [(text, start_byte, end_byte, parent_type), ...] sorted by position.
     """
     results = []
+    stack = [root_node]
 
-    def _walk(node: Node):
+    while stack:
+        node = stack.pop()
         # Skip nodes entirely outside the range
         if node.end_byte <= start or node.start_byte >= end:
-            return
+            continue
         if node.type == "identifier" and node.start_byte >= start and node.end_byte <= end:
             text = source_bytes[node.start_byte:node.end_byte].decode("utf-8", errors="replace")
             parent_type = node.parent.type if node.parent else ""
             results.append((text, node.start_byte, node.end_byte, parent_type))
-        for child in node.children:
-            _walk(child)
+        stack.extend(reversed(node.children))
 
-    _walk(root_node)
     results.sort(key=lambda x: x[1])
     return results
 
@@ -171,15 +171,14 @@ def normalize_candidate(
     # We need to re-walk to get the nodes (find_identifiers_in_range returns tuples)
     nodes_by_pos: dict[int, Node] = {}
 
-    def _collect_nodes(node: Node):
+    stack = [root_node]
+    while stack:
+        node = stack.pop()
         if node.end_byte <= candidate_start or node.start_byte >= candidate_end:
-            return
+            continue
         if node.type == "identifier" and node.start_byte >= candidate_start:
             nodes_by_pos[node.start_byte] = node
-        for child in node.children:
-            _collect_nodes(child)
-
-    _collect_nodes(root_node)
+        stack.extend(reversed(node.children))
 
     # Determine which identifiers to normalize
     normalizable: list[tuple[str, int, int]] = []  # (text, rel_start, rel_end)

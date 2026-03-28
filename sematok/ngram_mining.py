@@ -60,7 +60,7 @@ def extract_safe_segments(source: str) -> list[str]:
     for start, end in safe_ranges:
         chunk = source_bytes[start:end].decode("utf-8", errors="replace")
         for line in chunk.split("\n"):
-            stripped = line.rstrip("\r")
+            stripped = line.strip()
             if len(stripped) >= MIN_CHAR_LENGTH:
                 segments.append(stripped)
 
