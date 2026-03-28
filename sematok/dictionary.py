@@ -63,6 +63,7 @@ SEED_PATTERNS = [
     ("return Task.CompletedTask;", "expression"),
     ("= string.Empty;", "expression"),
     ("= new();", "expression"),
+    ("nameof(", "expression"),
 
     # Attribute patterns
     ("[ApiController]", "attribute"),

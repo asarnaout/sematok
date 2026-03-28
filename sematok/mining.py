@@ -139,6 +139,12 @@ CANDIDATE_PATTERNS = [
 
     # String validation methods
     re.compile(r"string\.IsNullOr(?:Empty|WhiteSpace)\("),
+
+    # LINQ terminal methods
+    re.compile(r"\.(?:ToList|ToArray|ToDictionary|ToHashSet|FirstOrDefault|SingleOrDefault|LastOrDefault|First|Single|Last|Count|Any|All)\("),
+
+    # Common method calls (zero-arg, pure boilerplate)
+    re.compile(r"\.(?:ToString|GetType|GetHashCode|Equals|Dispose|GetAwaiter)\(\)"),
 ]
 
 
