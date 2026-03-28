@@ -130,6 +130,13 @@ CANDIDATE_PATTERNS = [
     # Null-checking boilerplate
     re.compile(r"\?\?\s*throw\s+new\s+\w+Exception\("),
     re.compile(r"is\s+(?:not\s+)?null"),
+
+    # Generic constraints
+    re.compile(r"where\s+\w+\s*:\s*(?:class|struct|notnull|new\(\)|unmanaged)"),
+    re.compile(r"where\s+\w+\s*:\s*(?:IComparable|IEquatable|IEnumerable|IDisposable|ICloneable)<\w+>"),
+
+    # String validation methods
+    re.compile(r"string\.IsNullOr(?:Empty|WhiteSpace)\("),
 ]
 
 
@@ -209,9 +216,14 @@ def mine_patterns(
     min_token_span: int = MIN_TOKEN_SPAN,
     min_repos: int = MIN_REPOS,
     max_files: int | None = None,
+    exclude_repos: list[str] | None = None,
 ) -> list[tuple[str, int, int, float, int]]:
     """
     Mine frequent boilerplate patterns from a corpus of C# files.
+
+    Args:
+        exclude_repos: Repo names to skip (e.g. held-out eval repos).
+            This ensures the dictionary is built only from training data.
 
     Returns:
         List of (pattern, frequency, token_count, score, repo_count) tuples
@@ -222,12 +234,20 @@ def mine_patterns(
 
     # Load repo mapping for cross-repo validation
     file_to_repo = _load_file_repo_map(corpus_dir)
+    exclude_set = set(exclude_repos) if exclude_repos else set()
 
     # Track global frequency and per-repo presence
     pattern_counter: Counter = Counter()
     pattern_repos: dict[str, set[str]] = defaultdict(set)
 
     cs_files = sorted(corpus_dir.glob("*.cs"))
+
+    # Exclude eval repo files from mining
+    if exclude_set and file_to_repo:
+        before = len(cs_files)
+        cs_files = [f for f in cs_files if file_to_repo.get(f.name, "unknown") not in exclude_set]
+        print(f"Excluded {before - len(cs_files)} files from {len(exclude_set)} eval repos")
+
     if max_files:
         cs_files = cs_files[:max_files]
 
@@ -241,9 +261,9 @@ def mine_patterns(
         repo = file_to_repo.get(f.name, "unknown")
         candidates = extract_candidates_from_file(source)
 
-        # Deduplicate per file to avoid one file inflating counts
+        # Deduplicate per file: count each pattern at most once per file
         unique_candidates = set(candidates)
-        pattern_counter.update(candidates)
+        pattern_counter.update(unique_candidates)
         for c in unique_candidates:
             pattern_repos[c].add(repo)
 
@@ -280,12 +300,17 @@ def build_mined_dictionary(
     include_seeds: bool = True,
     min_repos: int = MIN_REPOS,
     max_files: int | None = None,
-) -> CompressionDictionary:
+    exclude_repos: list[str] | None = None,
+) -> tuple[CompressionDictionary, list[tuple[str, int, int, float, int]]]:
     """
     Build a compression dictionary by combining seed patterns with mined patterns.
 
     Seed patterns are always included first. Mined patterns fill the remaining
     slots up to top_n total patterns.
+
+    Returns:
+        (dictionary, mined_patterns) -- the dictionary and the raw mined results
+        for downstream display/analysis.
     """
     if include_seeds:
         d = CompressionDictionary.from_seed()
@@ -294,10 +319,12 @@ def build_mined_dictionary(
         d = CompressionDictionary()
         remaining = top_n
 
+    mined = []
     if remaining > 0:
         mined = mine_patterns(
             corpus_dir, top_n=remaining * 2,
             min_repos=min_repos, max_files=max_files,
+            exclude_repos=exclude_repos,
         )
         added = 0
         for pattern, freq, tok_count, score, repo_count in mined:
@@ -309,7 +336,7 @@ def build_mined_dictionary(
                 break
         print(f"Added {added} mined patterns (total: {d.size})")
 
-    return d
+    return d, mined
 
 
 def main():
@@ -321,27 +348,28 @@ def main():
     parser.add_argument("--min-freq", type=int, default=MIN_FREQUENCY, help="Min frequency across corpus")
     parser.add_argument("--max-files", type=int, default=None)
     parser.add_argument("--no-seeds", action="store_true", help="Don't include seed patterns")
+    parser.add_argument(
+        "--exclude-repos", type=str, nargs="+", default=None,
+        help="Repos to exclude from mining (e.g. held-out eval repos)",
+    )
     parser.add_argument("--verbose", action="store_true", help="Print all accepted patterns")
     args = parser.parse_args()
 
-    d = build_mined_dictionary(
+    d, mined = build_mined_dictionary(
         Path(args.corpus),
         top_n=args.top,
         include_seeds=not args.no_seeds,
         min_repos=args.min_repos,
         max_files=args.max_files,
+        exclude_repos=args.exclude_repos,
     )
 
     d.save(args.output)
     print(f"\nDictionary saved to {args.output}")
     print(f"Stats: {d.stats()}")
 
-    # Print top patterns
+    # Print top patterns (reuse results from build, no re-scan)
     print(f"\nTop 30 mined patterns by score:")
-    mined = mine_patterns(
-        Path(args.corpus), top_n=30,
-        min_repos=args.min_repos, max_files=args.max_files,
-    )
     for pattern, freq, tok_count, score, repo_count in mined[:30]:
         in_dict = "+" if pattern in d.pattern_to_macro else " "
         print(
