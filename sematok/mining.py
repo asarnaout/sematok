@@ -26,129 +26,15 @@ from pathlib import Path
 from transformers import AutoTokenizer
 from tqdm import tqdm
 
-from sematok.dictionary import CompressionDictionary, SEED_PATTERNS
+from sematok.dictionary import CompressionDictionary
+from sematok.languages import get_language
 from sematok.lexer import get_safe_ranges
 
 QWEN_MODEL = "Qwen/Qwen2.5-Coder-1.5B-Instruct"
 
 
-# --- Candidate pattern extraction regexes (applied to safe zones only) ---
-
-CANDIDATE_PATTERNS = [
-    # Using directives
-    re.compile(r"using\s+[\w.]+;"),
-
-    # Attribute patterns -- require 3+ char name to reject [0], [i], [1] etc.
-    # Negative lookbehind: reject if preceded by a word char or ')' to avoid
-    # matching array indexers like buffer[length] or func()[result].
-    re.compile(r"(?<![)\w])\[\w{3,}(?:\([^)\n]*\))?\]"),
-
-    # Property accessors
-    re.compile(r"\{\s*get;\s*(?:(?:private|protected|internal)\s+)?set;\s*\}"),
-    re.compile(r"\{\s*get;\s*(?:init|internal\s+set|protected\s+set);\s*\}"),
-    re.compile(r"\{\s*get;\s*\}"),
-
-    # Access modifier combos (2-4 keywords before a type/name)
-    re.compile(
-        r"(?:public|private|protected|internal)\s+"
-        r"(?:static\s+)?(?:readonly\s+)?"
-        r"(?:virtual\s+|override\s+|abstract\s+|sealed\s+|async\s+)?"
-        r"(?:partial\s+)?"
-        r"(?:class|struct|interface|enum|record|void|string|int|bool|long|double|float|decimal|byte|char|object"
-        r"|Task|Task<\w+>|IActionResult|ActionResult)"
-    ),
-
-    # Common method signatures (with parameter lists)
-    re.compile(
-        r"(?:public|private|protected|internal)\s+"
-        r"(?:static\s+)?(?:override\s+)?(?:async\s+)?"
-        r"(?:void|string|int|bool|Task|Task<\w+>)\s+"
-        r"\w+\([^)\n]{0,80}\)"
-    ),
-
-    # Throw patterns
-    re.compile(r"throw\s+new\s+\w+(?:Exception|Error)\([^)\n]*\);"),
-
-    # Common framework expressions
-    re.compile(r"Console\.(?:Write|WriteLine|ReadLine|Read)\("),
-    re.compile(r"return\s+Task\.(?:CompletedTask|FromResult|Delay|Run)\b"),
-    re.compile(r"=\s*(?:string\.Empty|new\(\)|default!?|Array\.Empty<\w+>\(\));"),
-    re.compile(r"Debug\.(?:Assert|WriteLine|Write)\("),
-    re.compile(r"ArgumentNullException\.ThrowIfNull\("),
-
-    # XML doc
-    re.compile(
-        r"///\s*<(?:summary|/summary|param\s+name=\"[^\"\n]*\"|returns|/returns"
-        r"|exception\s+cref=\"[^\"\n]*\"|remarks|/remarks|value|/value"
-        r"|inheritdoc\s*/|see\s+cref=\"[^\"\n]*\"\s*/?)>"
-    ),
-
-    # Generic type patterns
-    re.compile(
-        r"(?:IEnumerable|IList|ICollection|IDictionary|IReadOnlyList|IReadOnlyCollection"
-        r"|IReadOnlyDictionary|Dictionary|List|HashSet|SortedSet|Queue|Stack"
-        r"|ConcurrentDictionary|Task|ValueTask|Func|Action|Lazy"
-        r"|ILogger|IOptions|IServiceProvider|IConfiguration"
-        r"|ReadOnlySpan|Span|Memory|ReadOnlyMemory"
-        r"|Nullable|KeyValuePair)<"
-    ),
-
-    # Namespace/class scaffolding
-    re.compile(r"namespace\s+[\w.]+"),
-
-    # Common attributes (multi-word, framework-specific)
-    re.compile(r"\[(?:MethodImpl|DllImport|MarshalAs|StructLayout|FieldOffset)\([^)\n]+\)\]"),
-    re.compile(r"\[(?:Conditional|Obsolete|Description|Category|DefaultValue)\([^)\n]*\)\]"),
-    re.compile(
-        r"\[(?:Theory|Fact|InlineData|MemberData|ClassData"
-        r"|TestMethod|TestClass|TestCategory"
-        r"|ConditionalFact|ConditionalTheory"
-        r"|ApiController|Route|HttpGet|HttpPost|HttpPut|HttpDelete|HttpPatch"
-        r"|Authorize|AllowAnonymous"
-        r"|Required|StringLength|Range|MaxLength|MinLength"
-        r"|JsonProperty|JsonPropertyName|JsonIgnore"
-        r"|Serializable|Flags|Browsable)\b[^]\n]*\]"
-    ),
-
-    # Interface implementation declarations
-    re.compile(r":\s*(?:IDisposable|IAsyncDisposable|IEquatable<\w+>|IComparable<\w+>|ICloneable|IEnumerable<\w+>)"),
-
-    # Common parameter patterns (boilerplate, not logic)
-    re.compile(r"CancellationToken\s+cancellationToken"),
-    re.compile(r"IServiceProvider\s+serviceProvider"),
-    re.compile(r"ILogger<\w+>\s+logger"),
-
-    # Async/dispose boilerplate
-    re.compile(r"ConfigureAwait\(false\)"),
-    re.compile(r"\.GetAwaiter\(\)\.GetResult\(\)"),
-    re.compile(r"async\s+ValueTask"),
-    re.compile(r"async\s+Task<\w+>"),
-
-    # Assertion patterns (test boilerplate)
-    re.compile(r"Assert\.(?:Equal|NotEqual|True|False|Null|NotNull|Throws|Contains|Empty|Same|NotSame"
-               r"|IsType|IsAssignableFrom|InRange|Collection|Single)\b"),
-
-    # Common pragma/preprocessor
-    re.compile(r"#pragma\s+warning\s+(?:disable|restore)\s+[\w,\s]+"),
-    re.compile(r"#if\s+!?(?:NET\w*|NETCOREAPP|NETSTANDARD|DEBUG|RELEASE|WINDOWS)"),
-
-    # Null-checking boilerplate
-    re.compile(r"\?\?\s*throw\s+new\s+\w+Exception\("),
-    re.compile(r"is\s+(?:not\s+)?null"),
-
-    # Generic constraints
-    re.compile(r"where\s+\w+\s*:\s*(?:class|struct|notnull|new\(\)|unmanaged)"),
-    re.compile(r"where\s+\w+\s*:\s*(?:IComparable|IEquatable|IEnumerable|IDisposable|ICloneable)<\w+>"),
-
-    # String validation methods
-    re.compile(r"string\.IsNullOr(?:Empty|WhiteSpace)\("),
-
-    # LINQ terminal methods
-    re.compile(r"\.(?:ToList|ToArray|ToDictionary|ToHashSet|FirstOrDefault|SingleOrDefault|LastOrDefault|First|Single|Last|Count|Any|All)\("),
-
-    # Common method calls (zero-arg, pure boilerplate)
-    re.compile(r"\.(?:ToString|GetType|GetHashCode|Equals|Dispose|GetAwaiter)\(\)"),
-]
+# Loaded from language config. Module-level ref kept for imports by other modules.
+CANDIDATE_PATTERNS = get_language("csharp").candidate_patterns
 
 
 # --- Quality filter thresholds ---

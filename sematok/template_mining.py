@@ -25,6 +25,7 @@ from tqdm import tqdm
 from tree_sitter import Node
 
 from sematok.lexer import get_safe_ranges, parse_source
+from sematok.languages import get_language
 from sematok.mining import (
     CANDIDATE_PATTERNS,
     MIN_CHAR_LENGTH,
@@ -39,61 +40,11 @@ MIN_TEMPLATE_FREQUENCY = 30
 MAX_SLOTS = 6
 MIN_SLOTS = 1
 
-# Parent node types where an `identifier` is structural (defines the pattern)
-FIXED_PARENT_TYPES = {
-    "class_declaration",
-    "struct_declaration",
-    "interface_declaration",
-    "enum_declaration",
-    "record_declaration",
-    "constructor_declaration",
-    "method_declaration",
-    "property_declaration",
-    "object_creation_expression",
-    "invocation_expression",
-    "variable_declaration",  # type name in a declaration, not the var name
-    "generic_name",
-    "using_directive",
-    "attribute",
-    "base_list",
-    "namespace_declaration",
-    "qualified_name",
-    "type_argument_list",
-}
-
-# Parent node types where an `identifier` is a user-chosen name (normalizable)
-NORMALIZE_PARENT_TYPES = {
-    "variable_declarator",
-    "member_access_expression",
-    "assignment_expression",
-    "binary_expression",
-    "return_statement",
-    "argument",
-}
-
-# Well-known names that should never be normalized even if parent says so
-STRUCTURAL_NAMES = {
-    # Keywords tree-sitter may label as identifier
-    "nameof", "sizeof", "typeof", "default", "value", "get", "set", "init",
-    "add", "remove", "var", "dynamic", "global", "async", "await",
-    # Common framework types
-    "Console", "Task", "ValueTask", "String", "Object", "Math",
-    "List", "Dictionary", "HashSet", "Array", "Tuple",
-    "ILogger", "IOptions", "IConfiguration", "IServiceProvider",
-    "IEnumerable", "IList", "ICollection", "IDictionary",
-    "IDisposable", "IAsyncDisposable", "ICloneable",
-    "CancellationToken", "StringBuilder", "EventArgs",
-    "Debug", "Assert", "Trace",
-    # Common exception types
-    "Exception", "ArgumentNullException", "InvalidOperationException",
-    "NotImplementedException", "NotSupportedException", "ArgumentException",
-    "ArgumentOutOfRangeException", "NullReferenceException",
-    "ObjectDisposedException", "OperationCanceledException",
-    # Common method names that are structural
-    "Dispose", "ToString", "GetHashCode", "Equals", "GetType",
-    "ConfigureAwait", "GetAwaiter", "GetResult",
-    "ThrowIfNull", "IsNullOrEmpty", "IsNullOrWhiteSpace",
-}
+# Loaded from language config
+_lang = get_language("csharp")
+FIXED_PARENT_TYPES = _lang.fixed_parent_types
+NORMALIZE_PARENT_TYPES = _lang.normalize_parent_types
+STRUCTURAL_NAMES = _lang.structural_names
 
 
 def find_identifiers_in_range(

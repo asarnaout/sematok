@@ -19,6 +19,7 @@ from pathlib import Path
 from transformers import AutoTokenizer
 from tqdm import tqdm
 
+from sematok.languages import get_language
 from sematok.lexer import get_safe_ranges, parse_source
 from sematok.mining import MIN_CHAR_LENGTH, MIN_REPOS, _get_bpe_token_count, _load_file_repo_map
 from sematok.template_mining import MAX_SLOTS, should_normalize
@@ -32,29 +33,8 @@ MIN_AST_TEMPLATE_FREQUENCY = 30
 MIN_TOKEN_SPAN = 3
 PRUNE_INTERVAL = 5000
 
-# Node types that represent complete syntactic units worth mining as subtree roots.
-SUBTREE_ROOT_TYPES = {
-    # Statements
-    "expression_statement",
-    "local_declaration_statement",
-    "return_statement",
-    "throw_statement",
-    "throw_expression",
-    "if_statement",
-    "for_each_statement",
-    "using_statement",
-    # Declarations
-    "field_declaration",
-    "property_declaration",
-    "constructor_declaration",
-    "method_declaration",
-    "parameter",
-    "attribute_list",
-    # Expressions
-    "invocation_expression",
-    "object_creation_expression",
-    "assignment_expression",
-}
+# Loaded from language config
+SUBTREE_ROOT_TYPES = get_language("csharp").subtree_root_types
 
 
 def _subtree_depth(node) -> int:
