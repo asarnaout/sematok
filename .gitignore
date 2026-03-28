@@ -9,6 +9,9 @@ data/finetune/
 out/
 models/
 
+# Caches
+unsloth_compiled_cache/
+
 # Python
 __pycache__/
 *.pyc
