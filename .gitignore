@@ -3,6 +3,7 @@ data/repos/
 data/raw_cs/
 data/compressed/
 data/baseline/
+data/finetune/
 
 # Model checkpoints
 out/
