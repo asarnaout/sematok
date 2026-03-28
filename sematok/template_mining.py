@@ -20,7 +20,7 @@ import re
 from collections import Counter, defaultdict
 from pathlib import Path
 
-import tiktoken
+from transformers import AutoTokenizer
 from tqdm import tqdm
 from tree_sitter import Node
 
@@ -310,7 +310,7 @@ def mine_templates(
             template_repos[t].add(repo)
 
     # Filter and score
-    enc = tiktoken.get_encoding("gpt2")
+    enc = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-Coder-1.5B-Instruct")
     scored = []
     rejected = {"low_freq": 0, "few_repos": 0, "few_slots": 0, "many_slots": 0}
 

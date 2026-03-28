@@ -18,15 +18,18 @@ Usage:
 
 import argparse
 import json
+import random
 import re
 from collections import Counter, defaultdict
 from pathlib import Path
 
-import tiktoken
+from transformers import AutoTokenizer
 from tqdm import tqdm
 
 from sematok.dictionary import CompressionDictionary, SEED_PATTERNS
 from sematok.lexer import get_safe_ranges
+
+QWEN_MODEL = "Qwen/Qwen2.5-Coder-1.5B-Instruct"
 
 
 # --- Candidate pattern extraction regexes (applied to safe zones only) ---
@@ -160,9 +163,9 @@ MIN_CHAR_LENGTH = 8
 MIN_REPOS = 2
 
 
-def _get_bpe_token_count(text: str, enc: tiktoken.Encoding) -> int:
+def _get_bpe_token_count(text: str, enc) -> int:
     """Count how many BPE tokens a text requires."""
-    return len(enc.encode(text))
+    return len(enc.encode(text, add_special_tokens=False))
 
 
 def _load_file_repo_map(corpus_dir: Path) -> dict[str, str]:
@@ -238,7 +241,7 @@ def mine_patterns(
         sorted by score descending.
         Score = frequency * (token_count - 1), representing total tokens saved.
     """
-    enc = tiktoken.get_encoding("gpt2")
+    enc = AutoTokenizer.from_pretrained(QWEN_MODEL)
 
     # Load repo mapping for cross-repo validation
     file_to_repo = _load_file_repo_map(corpus_dir)
@@ -353,9 +356,119 @@ def deduplicate_substrings(
     return kept
 
 
+def _score_on_corpus(
+    d: CompressionDictionary,
+    corpus_dir: Path,
+    sample_size: int = 2000,
+    seed: int = 42,
+    exclude_repos: list[str] | None = None,
+) -> dict[str, int]:
+    """
+    Score every dictionary entry by actual corpus impact using Qwen's tokenizer.
+
+    Compresses a sample of files and counts how many Qwen BPE tokens each
+    macro saves. Returns {macro_or_template: total_tokens_saved}.
+    """
+    from sematok.compressor import Compressor
+
+    enc = AutoTokenizer.from_pretrained(QWEN_MODEL)
+    compressor = Compressor(d)
+
+    file_to_repo = _load_file_repo_map(corpus_dir)
+    exclude_set = set(exclude_repos) if exclude_repos else set()
+
+    files = sorted(corpus_dir.glob("*.cs"))
+    if exclude_set and file_to_repo:
+        files = [f for f in files if file_to_repo.get(f.name, "unknown") not in exclude_set]
+
+    random.seed(seed)
+    sample = random.sample(files, min(sample_size, len(files)))
+
+    macro_re = re.compile(r"<\|M\d{3}\|>")
+    template_re = re.compile(r"<\|T(\d{3}):([^|]*)\|>")
+
+    scores: Counter = Counter()
+
+    print(f"\nScoring {len(sample)} files for corpus impact...")
+    for f in tqdm(sample, desc="Scoring"):
+        source = f.read_text(encoding="utf-8", errors="replace")
+        try:
+            safe_ranges = get_safe_ranges(source, allow_xmldoc=True)
+        except Exception:
+            safe_ranges = [(0, len(source.encode("utf-8")))]
+
+        compressed = compressor.compress(source, safe_ranges=safe_ranges)
+
+        for macro in macro_re.findall(compressed):
+            pattern = d.macro_to_pattern.get(macro, "")
+            if pattern:
+                saving = len(enc.encode(pattern, add_special_tokens=False)) - 1
+                if saving > 0:
+                    scores[macro] += saving
+
+        for match in template_re.finditer(compressed):
+            macro_base = f"<|T{match.group(1)}|>"
+            args = match.group(2).split(",")
+            template = d.macro_to_template.get(macro_base, "")
+            if template:
+                expanded = template
+                for i, arg in enumerate(args):
+                    expanded = expanded.replace(f"{{{i}}}", arg)
+                expanded_tokens = len(enc.encode(expanded, add_special_tokens=False))
+                macro_tokens = 1 + len(enc.encode(":" + ",".join(args), add_special_tokens=False))
+                saving = expanded_tokens - macro_tokens
+                if saving > 0:
+                    scores[macro_base] += saving
+
+    return dict(scores)
+
+
+def _rebuild_top_n(
+    d: CompressionDictionary,
+    scores: dict[str, int],
+    top_n: int,
+) -> CompressionDictionary:
+    """
+    Rebuild a dictionary with only the top N entries by corpus impact score.
+
+    Entries that never fired (score=0) are dropped. Remaining entries are
+    ranked by total Qwen tokens saved and assigned fresh sequential macro IDs.
+    """
+    ranked = sorted(scores.items(), key=lambda x: -x[1])
+
+    new_d = CompressionDictionary()
+    kept_patterns = 0
+    kept_templates = 0
+
+    for macro, score in ranked:
+        if kept_patterns + kept_templates >= top_n:
+            break
+
+        if macro in d.macro_to_pattern:
+            pattern = d.macro_to_pattern[macro]
+            category = d.pattern_categories.get(pattern, "mined")
+            new_d.add_pattern(pattern, category=category)
+            kept_patterns += 1
+        elif macro in d.macro_to_template:
+            template = d.macro_to_template[macro]
+            slots = d.template_slots[template]
+            category = d.template_categories.get(template, "template")
+            new_d.add_template(template, slots, category=category)
+            kept_templates += 1
+
+    total = kept_patterns + kept_templates
+    print(f"\nTrimmed to top {total}: {kept_patterns} exact + {kept_templates} templates")
+    if ranked:
+        top_score = ranked[0][1]
+        cutoff_score = ranked[min(top_n - 1, len(ranked) - 1)][1] if len(ranked) >= top_n else 0
+        print(f"Score range: {top_score} (best) ... {cutoff_score} (cutoff)")
+
+    return new_d
+
+
 def build_mined_dictionary(
     corpus_dir: Path,
-    top_n: int = 9999,
+    top_n: int = 999,
     include_seeds: bool = True,
     min_repos: int = MIN_REPOS,
     max_files: int | None = None,
@@ -365,53 +478,57 @@ def build_mined_dictionary(
     max_templates: int = 500,
     use_ast_templates: bool = True,
     max_ast_templates: int = 1000,
+    score_sample_size: int = 2000,
 ) -> tuple[CompressionDictionary, list[tuple[str, int, int, float, int]]]:
     """
-    Build a compression dictionary by combining seed patterns with mined patterns.
+    Build a compression dictionary by mining broadly, then scoring and trimming.
 
-    Seed patterns are always included first. Mined patterns (regex + n-gram)
-    fill the remaining slots up to top_n total patterns.
+    Pipeline:
+    1. Mine all candidates (seeds + regex + n-gram + templates + AST templates)
+       with generous internal limits
+    2. Score every entry by actual Qwen corpus impact on a file sample
+    3. Keep only the top_n entries by total tokens saved
 
     Returns:
-        (dictionary, mined_patterns) -- the dictionary and the raw mined results
-        for downstream display/analysis.
+        (dictionary, mined_patterns) -- the final trimmed dictionary and the
+        raw mined results for downstream display/analysis.
     """
+    # --- Phase 1: Mine broadly ---
+    INTERNAL_LIMIT = 10000  # mine many candidates, trim later
+
     if include_seeds:
         d = CompressionDictionary.from_seed()
-        remaining = top_n - d.size
     else:
         d = CompressionDictionary()
-        remaining = top_n
+
+    regex_mined = mine_patterns(
+        corpus_dir, top_n=INTERNAL_LIMIT,
+        min_repos=min_repos, max_files=max_files,
+        exclude_repos=exclude_repos,
+    )
 
     mined = []
-    if remaining > 0:
-        regex_mined = mine_patterns(
-            corpus_dir, top_n=remaining * 2,
+    if use_ngrams:
+        from sematok.ngram_mining import mine_ngram_patterns
+
+        ngram_mined = mine_ngram_patterns(
+            corpus_dir, top_n=INTERNAL_LIMIT,
             min_repos=min_repos, max_files=max_files,
             exclude_repos=exclude_repos,
         )
+        mined = merge_mining_results(regex_mined, ngram_mined)
+    else:
+        mined = regex_mined
 
-        if use_ngrams:
-            from sematok.ngram_mining import mine_ngram_patterns
-
-            ngram_mined = mine_ngram_patterns(
-                corpus_dir, top_n=remaining * 2,
-                min_repos=min_repos, max_files=max_files,
-                exclude_repos=exclude_repos,
-            )
-            mined = merge_mining_results(regex_mined, ngram_mined)
-        else:
-            mined = regex_mined
-
-        added = 0
-        for pattern, freq, tok_count, score, repo_count in mined:
-            if pattern in d.pattern_to_macro:
-                continue
-            d.add_pattern(pattern, category="mined")
-            added += 1
-            if added >= remaining:
-                break
-        print(f"Added {added} mined patterns (total: {d.size})")
+    added = 0
+    for pattern, freq, tok_count, score, repo_count in mined:
+        if pattern in d.pattern_to_macro:
+            continue
+        d.add_pattern(pattern, category="mined")
+        added += 1
+        if added >= INTERNAL_LIMIT:
+            break
+    print(f"Added {added} mined patterns (total: {d.size})")
 
     if use_templates:
         from sematok.template_mining import mine_templates
@@ -453,6 +570,16 @@ def build_mined_dictionary(
                 break
         print(f"Added {added_ast} AST-mined templates (total: {d.template_count})")
 
+    total_before = d.size + d.template_count
+    print(f"\nTotal candidates before scoring: {total_before} ({d.size} exact + {d.template_count} templates)")
+
+    # --- Phase 2: Score on corpus and trim to top_n ---
+    if total_before > top_n:
+        scores = _score_on_corpus(d, corpus_dir, sample_size=score_sample_size, exclude_repos=exclude_repos)
+        d = _rebuild_top_n(d, scores, top_n)
+    else:
+        print(f"Only {total_before} entries — no trimming needed (target: {top_n})")
+
     return d, mined
 
 
@@ -460,7 +587,7 @@ def main():
     parser = argparse.ArgumentParser(description="Mine C# boilerplate patterns")
     parser.add_argument("--corpus", type=str, required=True, help="Directory with .cs files")
     parser.add_argument("--output", type=str, default="sematok/dictionary.json")
-    parser.add_argument("--top", type=int, default=9999, help="Max patterns in dictionary (actual count depends on quality filters)")
+    parser.add_argument("--top", type=int, default=999, help="Final dictionary size after corpus impact scoring")
     parser.add_argument("--min-repos", type=int, default=MIN_REPOS, help="Min repos a pattern must appear in")
     parser.add_argument("--min-freq", type=int, default=MIN_FREQUENCY, help="Min frequency across corpus")
     parser.add_argument("--max-files", type=int, default=None)
@@ -474,6 +601,7 @@ def main():
     parser.add_argument("--max-templates", type=int, default=500, help="Max template patterns")
     parser.add_argument("--no-ast-templates", action="store_true", help="Skip AST subtree mining")
     parser.add_argument("--max-ast-templates", type=int, default=1000, help="Max AST-mined templates")
+    parser.add_argument("--score-sample", type=int, default=2000, help="Number of files to sample for corpus impact scoring")
     parser.add_argument("--verbose", action="store_true", help="Print all accepted patterns")
     args = parser.parse_args()
 
@@ -489,6 +617,7 @@ def main():
         max_templates=args.max_templates,
         use_ast_templates=not args.no_ast_templates,
         max_ast_templates=args.max_ast_templates,
+        score_sample_size=args.score_sample,
     )
 
     d.save(args.output)
