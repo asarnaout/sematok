@@ -1,8 +1,8 @@
 """
-Download C# source files from MIT-licensed GitHub repositories.
+Download source files from MIT-licensed GitHub repositories.
 
-Shallow-clones repos into data/repos/, then extracts all .cs files
-into data/raw_cs/ for training.
+Shallow-clones repos into data/repos/, then extracts source files
+into data/raw_<lang>/ for training.
 
 Usage:
     python -m data.download --output data/raw_cs
@@ -17,42 +17,7 @@ from pathlib import Path
 
 from tqdm import tqdm
 
-
-# MIT-licensed repositories (high quality, production C# code)
-# All licenses verified via GitHub LICENSE files on 2026-03-27
-REPOS = [
-    # --- Original 4 (.NET core) ---
-    ("dotnet", "runtime"),             # .NET runtime
-    ("dotnet", "roslyn"),              # C# compiler
-    ("dotnet", "aspnetcore"),          # ASP.NET web framework
-    ("dotnet", "efcore"),              # Entity Framework ORM
-
-    # --- .NET ecosystem ---
-    ("dotnet", "maui"),                # Cross-platform UI framework
-    ("dotnet", "orleans"),             # Cloud-native actor framework
-    ("dotnet", "machinelearning"),     # ML.NET
-    ("dotnet", "wpf"),                 # WPF framework
-    ("dotnet", "winforms"),            # WinForms framework
-    ("dotnet", "yarp"),                # Reverse proxy toolkit
-    ("dotnet", "reactive"),            # Reactive Extensions (Rx.NET)
-    ("dotnet", "BenchmarkDotNet"),     # Benchmarking library
-    ("dotnet", "eShop"),               # Reference eCommerce app
-
-    # --- Microsoft ---
-    ("microsoft", "semantic-kernel"),  # LLM orchestration framework
-    ("microsoft", "garnet"),           # High-performance cache store
-
-    # --- Popular libraries ---
-    ("JamesNK", "Newtonsoft.Json"),    # JSON serialization
-    ("icsharpcode", "ILSpy"),          # .NET decompiler
-    ("ppy", "osu"),                    # Rhythm game (diverse game patterns)
-    ("MudBlazor", "MudBlazor"),        # Blazor component library
-    ("Humanizr", "Humanizer"),         # String/date humanization utilities
-    ("autofac", "Autofac"),            # IoC/DI container
-    ("nunit", "nunit"),                # NUnit testing framework
-    ("bchavez", "Bogus"),              # Fake data generator
-    ("spectreconsole", "spectre.console"),  # Console UI library
-]
+from sematok.languages import get_language
 
 
 def clone_repo(org: str, name: str, repos_dir: Path) -> Path:
@@ -72,17 +37,18 @@ def clone_repo(org: str, name: str, repos_dir: Path) -> Path:
     return repo_dir
 
 
-def extract_cs_files(
+def extract_source_files(
     repos_dir: Path,
     output_dir: Path,
+    file_extension: str = ".cs",
     min_length: int = 100,
     max_length: int = 50000,
     max_files: int | None = None,
 ) -> int:
     """
-    Walk all cloned repos and copy .cs files to the output directory.
+    Walk all cloned repos and copy source files to the output directory.
 
-    Filters by length, skips test files optionally, and renames to sequential numbering.
+    Filters by length, skips auto-generated files, and renames to sequential numbering.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
     meta_path = output_dir / "metadata.jsonl"
@@ -96,10 +62,10 @@ def extract_cs_files(
                 continue
 
             repo_name = repo_dir.name
-            cs_files = list(repo_dir.rglob("*.cs"))
-            print(f"  {repo_name}: {len(cs_files)} .cs files found")
+            src_files = list(repo_dir.rglob(f"*{file_extension}"))
+            print(f"  {repo_name}: {len(src_files)} {file_extension} files found")
 
-            for cs_file in tqdm(cs_files, desc=f"  {repo_name}", leave=False):
+            for cs_file in tqdm(src_files, desc=f"  {repo_name}", leave=False):
                 # Skip auto-generated files
                 if any(
                     skip in str(cs_file).lower()
@@ -120,7 +86,7 @@ def extract_cs_files(
                     continue
 
                 # Save
-                out_path = output_dir / f"{count:06d}.cs"
+                out_path = output_dir / f"{count:06d}{file_extension}"
                 out_path.write_text(content, encoding="utf-8")
 
                 meta = {
@@ -143,31 +109,34 @@ def extract_cs_files(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Download C# training data from MIT repos")
+    parser = argparse.ArgumentParser(description="Download training data from MIT repos")
     parser.add_argument("--output", type=str, default="data/raw_cs", help="Output directory")
     parser.add_argument("--repos-dir", type=str, default="data/repos", help="Where to clone repos")
     parser.add_argument("--max-files", type=int, default=None, help="Max files to extract")
     parser.add_argument("--min-length", type=int, default=100)
     parser.add_argument("--max-length", type=int, default=50000)
+    parser.add_argument("--language", type=str, default="csharp", help="Language config to use")
     args = parser.parse_args()
 
+    lang = get_language(args.language)
     repos_dir = Path(args.repos_dir)
     repos_dir.mkdir(parents=True, exist_ok=True)
 
     # Step 1: Clone repos
     print("Cloning repositories...")
-    for org, name in REPOS:
+    for org, name in lang.repos:
         try:
             clone_repo(org, name, repos_dir)
         except subprocess.CalledProcessError as e:
             print(f"  {org}/{name}: FAILED to clone ({e})")
             continue
 
-    # Step 2: Extract .cs files
-    print("\nExtracting .cs files...")
-    count = extract_cs_files(
+    # Step 2: Extract source files
+    print(f"\nExtracting {lang.file_extension} files...")
+    count = extract_source_files(
         repos_dir,
         Path(args.output),
+        file_extension=lang.file_extension,
         min_length=args.min_length,
         max_length=args.max_length,
         max_files=args.max_files,

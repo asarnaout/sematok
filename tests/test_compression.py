@@ -4,7 +4,8 @@ import json
 import tempfile
 from pathlib import Path
 
-from sematok.dictionary import CompressionDictionary, SEED_PATTERNS
+from sematok.dictionary import CompressionDictionary
+from sematok.languages import get_language
 from sematok.compressor import Compressor
 from sematok.decompressor import Decompressor
 from sematok.lexer import get_safe_ranges, get_unsafe_ranges
@@ -14,7 +15,7 @@ from sematok.lexer import get_safe_ranges, get_unsafe_ranges
 
 def test_dictionary_from_seed():
     d = CompressionDictionary.from_seed()
-    assert d.size == len(SEED_PATTERNS)
+    assert d.size == len(get_language("csharp").seed_patterns)
     assert d.size > 0
 
 

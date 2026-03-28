@@ -27,11 +27,9 @@ from sematok.dictionary import CompressionDictionary
 from sematok.lexer import get_safe_ranges
 
 
-DEFAULT_EVAL_REPOS = [
-    "ppy--osu",
-    "JamesNK--Newtonsoft.Json",
-    "nunit--nunit",
-]
+from sematok.languages import get_language
+
+DEFAULT_EVAL_REPOS = get_language("csharp").eval_repos
 
 
 def _load_file_repo_map(corpus_dir: Path) -> dict[str, str]:

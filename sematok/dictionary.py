@@ -1,5 +1,5 @@
 """
-Compression dictionary mapping C# boilerplate patterns to single macro tokens.
+Compression dictionary mapping boilerplate patterns to single macro tokens.
 
 Each pattern is a multi-token string that gets replaced by a single macro token
 like <|M001|>. The dictionary is bidirectional and supports JSON serialization.
@@ -8,87 +8,7 @@ like <|M001|>. The dictionary is bidirectional and supports JSON serialization.
 import json
 from pathlib import Path
 
-
-# Seed patterns: hand-picked C# boilerplate sorted by estimated frequency and token savings.
-# Format: (pattern_string, category)
-# These will be refined by frequency mining (mining.py) once we have a corpus.
-SEED_PATTERNS = [
-    # Using directives (very high frequency)
-    ("using System;", "using"),
-    ("using System.Collections.Generic;", "using"),
-    ("using System.Linq;", "using"),
-    ("using System.Text;", "using"),
-    ("using System.Threading.Tasks;", "using"),
-    ("using System.IO;", "using"),
-    ("using Microsoft.Extensions.DependencyInjection;", "using"),
-    ("using Microsoft.AspNetCore.Mvc;", "using"),
-    ("using System.Collections;", "using"),
-    ("using Xunit;", "using"),
-
-    # Property patterns (extremely high frequency)
-    ("{ get; set; }", "property"),
-    ("{ get; private set; }", "property"),
-    ("{ get; init; }", "property"),
-    ("{ get; internal set; }", "property"),
-    ("{ get; protected set; }", "property"),
-
-    # Access modifier + keyword combos (high frequency)
-    ("public static void", "modifier"),
-    ("public static async Task", "modifier"),
-    ("public override string ToString()", "modifier"),
-    ("public override bool Equals(object", "modifier"),
-    ("public override int GetHashCode()", "modifier"),
-    ("private readonly", "modifier"),
-    ("public abstract class", "modifier"),
-    ("public sealed class", "modifier"),
-    ("internal static class", "modifier"),
-    ("public static class", "modifier"),
-
-    # Common method signatures
-    ("public static void Main(string[] args)", "signature"),
-    ("static void Main(string[] args)", "signature"),
-    ("public void Dispose()", "signature"),
-    ("protected virtual void Dispose(bool disposing)", "signature"),
-
-    # Exception patterns
-    ("throw new ArgumentNullException(nameof(", "exception"),
-    ("throw new NotImplementedException();", "exception"),
-    ("throw new InvalidOperationException(", "exception"),
-    ("throw new ArgumentException(", "exception"),
-    ("throw new NotSupportedException();", "exception"),
-
-    # Common expressions
-    ("Console.WriteLine(", "expression"),
-    ("Console.ReadLine();", "expression"),
-    ("return Task.CompletedTask;", "expression"),
-    ("= string.Empty;", "expression"),
-    ("= new();", "expression"),
-    ("nameof(", "expression"),
-
-    # Attribute patterns
-    ("[ApiController]", "attribute"),
-    ("[HttpGet]", "attribute"),
-    ("[HttpPost]", "attribute"),
-    ("[Serializable]", "attribute"),
-    ("[Obsolete]", "attribute"),
-    ("[TestMethod]", "attribute"),
-    ("[Fact]", "attribute"),
-
-    # Generic type patterns
-    ("IEnumerable<", "generic"),
-    ("IList<", "generic"),
-    ("Dictionary<string, ", "generic"),
-    ("ILogger<", "generic"),
-    ("IOptions<", "generic"),
-    ("Task<IActionResult>", "generic"),
-
-    # XML doc patterns
-    ("/// <summary>", "xmldoc"),
-    ("/// </summary>", "xmldoc"),
-    ("/// <param name=\"", "xmldoc"),
-    ("/// <returns>", "xmldoc"),
-    ("/// <exception cref=\"", "xmldoc"),
-]
+from sematok.languages import get_language
 
 
 def _make_macro_token(index: int) -> str:
@@ -116,10 +36,11 @@ class CompressionDictionary:
         self._template_index: int = 0
 
     @classmethod
-    def from_seed(cls) -> "CompressionDictionary":
+    def from_seed(cls, language: str = "csharp") -> "CompressionDictionary":
         """Create a dictionary from the hand-picked seed patterns."""
+        lang = get_language(language)
         d = cls()
-        for i, (pattern, category) in enumerate(SEED_PATTERNS, start=1):
+        for i, (pattern, category) in enumerate(lang.seed_patterns, start=1):
             macro = _make_macro_token(i)
             d.pattern_to_macro[pattern] = macro
             d.macro_to_pattern[macro] = pattern

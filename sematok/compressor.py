@@ -14,14 +14,15 @@ Two-pass pipeline:
 import re
 
 from sematok.dictionary import CompressionDictionary
+from sematok.languages import get_language
 
 # During replacement, use \x00 delimiters that cannot appear in source text.
 # Converted to final <|...|> format after all replacements are done.
 _PLACEHOLDER_PREFIX = "\x00M"
 _PLACEHOLDER_SUFFIX = "\x00"
 
-# Capture group for a C# identifier
-_CS_IDENT = r"([a-zA-Z_]\w*)"
+# Identifier pattern loaded from language config
+_IDENT = get_language("csharp").ident_pattern
 _SLOT_RE = re.compile(r"\{(\d+)\}")
 
 
@@ -78,7 +79,7 @@ class Compressor:
                     if slot_idx not in seen_groups:
                         group_num += 1
                         seen_groups[slot_idx] = group_num
-                        regex_parts.append(_CS_IDENT)
+                        regex_parts.append(_IDENT)
                     else:
                         # Backreference to first occurrence of this slot
                         regex_parts.append(f"\\{seen_groups[slot_idx]}")

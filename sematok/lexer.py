@@ -1,49 +1,56 @@
 """
-Tree-sitter based C# lexer for safe-zone detection.
+Tree-sitter based lexer for safe-zone detection.
 
-Identifies regions in C# source code where compression is safe (not inside
+Identifies regions in source code where compression is safe (not inside
 string literals, comments, or other contexts where pattern replacement could
 break semantics).
 """
 
-import tree_sitter_c_sharp as tscsharp
-from tree_sitter import Language, Parser, Node
+from tree_sitter import Parser, Node
 
-CS_LANGUAGE = Language(tscsharp.language())
+from sematok.languages import LanguageConfig, get_language
 
-# Node types that are UNSAFE for compression (content should not be modified)
-UNSAFE_NODE_TYPES = {
-    "comment",
-    "string_literal",
-    "verbatim_string_literal",
-    "interpolated_string_expression",
-    "raw_string_literal",
-    "character_literal",
-}
+_lang: LanguageConfig | None = None
+_parser: Parser | None = None
 
 
-def _create_parser() -> Parser:
-    return Parser(CS_LANGUAGE)
+def _get_lang() -> LanguageConfig:
+    global _lang
+    if _lang is None:
+        _lang = get_language("csharp")
+    return _lang
 
 
-# Module-level parser (reusable, not thread-safe)
-_parser = _create_parser()
+def _get_parser() -> Parser:
+    global _parser
+    if _parser is None:
+        _parser = Parser(_get_lang().tree_sitter_language)
+    return _parser
+
+
+def set_language(lang: LanguageConfig) -> None:
+    """Switch the lexer to a different language."""
+    global _lang, _parser
+    _lang = lang
+    _parser = Parser(lang.tree_sitter_language)
 
 
 def _collect_unsafe_ranges(
     node: Node, source_bytes: bytes | None = None, allow_xmldoc: bool = False,
 ) -> list[tuple[int, int]]:
     """Collect byte ranges of unsafe nodes (iterative to handle deep ASTs)."""
+    lang = _get_lang()
     ranges = []
     stack = [node]
     while stack:
         cur = stack.pop()
-        if cur.type in UNSAFE_NODE_TYPES:
-            if allow_xmldoc and cur.type == "comment" and source_bytes is not None:
+        if cur.type in lang.unsafe_node_types:
+            if (allow_xmldoc and cur.type == "comment"
+                    and source_bytes is not None and lang.safe_comment_prefix):
                 text = source_bytes[cur.start_byte:cur.end_byte]
-                if text.startswith(b"///"):
+                if text.startswith(lang.safe_comment_prefix):
                     stack.extend(reversed(cur.children))
-                    continue  # XML doc comment -- treat as safe
+                    continue  # doc comment -- treat as safe
             ranges.append((cur.start_byte, cur.end_byte))
             continue  # Don't recurse into unsafe nodes
         stack.extend(reversed(cur.children))
@@ -96,29 +103,29 @@ def get_safe_ranges(source: str, allow_xmldoc: bool = False) -> list[tuple[int, 
         Ranges refer to byte offsets in the UTF-8 encoded source.
     """
     source_bytes = source.encode("utf-8")
-    tree = _parser.parse(source_bytes)
+    tree = _get_parser().parse(source_bytes)
     unsafe = _collect_unsafe_ranges(tree.root_node, source_bytes, allow_xmldoc)
     return _invert_ranges(unsafe, len(source_bytes))
 
 
 def get_unsafe_ranges(source: str, allow_xmldoc: bool = False) -> list[tuple[int, int]]:
     """
-    Parse C# source code and return byte ranges where compression is NOT safe.
+    Parse source code and return byte ranges where compression is NOT safe.
 
     Returns ranges covering string literals, comments, and character literals.
     """
     source_bytes = source.encode("utf-8")
-    tree = _parser.parse(source_bytes)
+    tree = _get_parser().parse(source_bytes)
     return _collect_unsafe_ranges(tree.root_node, source_bytes, allow_xmldoc)
 
 
 def parse_source(source: str) -> tuple[Node, bytes]:
-    """Parse C# source, return (root_node, source_bytes).
+    """Parse source, return (root_node, source_bytes).
 
     Callers can walk the AST to find identifier nodes within byte ranges.
     """
     source_bytes = source.encode("utf-8")
-    tree = _parser.parse(source_bytes)
+    tree = _get_parser().parse(source_bytes)
     return tree.root_node, source_bytes
 
 
