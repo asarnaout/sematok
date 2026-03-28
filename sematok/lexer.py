@@ -109,6 +109,16 @@ def get_unsafe_ranges(source: str, allow_xmldoc: bool = False) -> list[tuple[int
     return _collect_unsafe_ranges(tree.root_node, source_bytes, allow_xmldoc)
 
 
+def parse_source(source: str) -> tuple[Node, bytes]:
+    """Parse C# source, return (root_node, source_bytes).
+
+    Callers can walk the AST to find identifier nodes within byte ranges.
+    """
+    source_bytes = source.encode("utf-8")
+    tree = _parser.parse(source_bytes)
+    return tree.root_node, source_bytes
+
+
 def classify_source(source: str) -> dict:
     """
     Classify source into safe/unsafe regions with statistics.

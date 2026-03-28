@@ -329,6 +329,8 @@ def build_mined_dictionary(
     max_files: int | None = None,
     exclude_repos: list[str] | None = None,
     use_ngrams: bool = True,
+    use_templates: bool = True,
+    max_templates: int = 500,
 ) -> tuple[CompressionDictionary, list[tuple[str, int, int, float, int]]]:
     """
     Build a compression dictionary by combining seed patterns with mined patterns.
@@ -377,6 +379,26 @@ def build_mined_dictionary(
                 break
         print(f"Added {added} mined patterns (total: {d.size})")
 
+    if use_templates:
+        from sematok.template_mining import mine_templates
+
+        template_results = mine_templates(
+            corpus_dir,
+            top_n=max_templates,
+            min_repos=min_repos,
+            max_files=max_files,
+            exclude_repos=exclude_repos,
+        )
+        added_templates = 0
+        for template_str, freq, slot_count, score, repo_count in template_results:
+            if template_str in d.template_to_macro:
+                continue
+            d.add_template(template_str, slot_count)
+            added_templates += 1
+            if added_templates >= max_templates:
+                break
+        print(f"Added {added_templates} templates (total: {d.template_count})")
+
     return d, mined
 
 
@@ -394,6 +416,8 @@ def main():
         help="Repos to exclude from mining (e.g. held-out eval repos)",
     )
     parser.add_argument("--no-ngrams", action="store_true", help="Skip n-gram mining (regex only)")
+    parser.add_argument("--no-templates", action="store_true", help="Skip template mining")
+    parser.add_argument("--max-templates", type=int, default=500, help="Max template patterns")
     parser.add_argument("--verbose", action="store_true", help="Print all accepted patterns")
     args = parser.parse_args()
 
@@ -405,6 +429,8 @@ def main():
         max_files=args.max_files,
         exclude_repos=args.exclude_repos,
         use_ngrams=not args.no_ngrams,
+        use_templates=not args.no_templates,
+        max_templates=args.max_templates,
     )
 
     d.save(args.output)

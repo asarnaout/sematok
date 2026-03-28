@@ -96,6 +96,11 @@ def _make_macro_token(index: int) -> str:
     return f"<|M{index:04d}|>"
 
 
+def _make_template_token(index: int) -> str:
+    """Generate a template token string like <|T0001|>, <|T0002|>, etc."""
+    return f"<|T{index:04d}|>"
+
+
 class CompressionDictionary:
     """Bidirectional mapping between C# patterns and macro tokens."""
 
@@ -103,6 +108,12 @@ class CompressionDictionary:
         self.pattern_to_macro: dict[str, str] = {}
         self.macro_to_pattern: dict[str, str] = {}
         self.pattern_categories: dict[str, str] = {}
+        # Template macro fields
+        self.template_to_macro: dict[str, str] = {}
+        self.macro_to_template: dict[str, str] = {}
+        self.template_slots: dict[str, int] = {}
+        self.template_categories: dict[str, str] = {}
+        self._template_index: int = 0
 
     @classmethod
     def from_seed(cls) -> "CompressionDictionary":
@@ -126,6 +137,18 @@ class CompressionDictionary:
         self.pattern_categories[pattern] = category
         return macro
 
+    def add_template(self, template: str, slot_count: int, category: str = "template") -> str:
+        """Add a template pattern. Returns the assigned template macro token."""
+        if template in self.template_to_macro:
+            return self.template_to_macro[template]
+        self._template_index += 1
+        macro = _make_template_token(self._template_index)
+        self.template_to_macro[template] = macro
+        self.macro_to_template[macro] = template
+        self.template_slots[template] = slot_count
+        self.template_categories[template] = category
+        return macro
+
     def remove_pattern(self, pattern: str) -> None:
         """Remove a pattern from the dictionary."""
         if pattern in self.pattern_to_macro:
@@ -147,6 +170,20 @@ class CompressionDictionary:
         """All patterns sorted by length descending (for longest-match-first compression)."""
         return sorted(self.pattern_to_macro.keys(), key=len, reverse=True)
 
+    @property
+    def template_count(self) -> int:
+        return len(self.template_to_macro)
+
+    @property
+    def templates_by_length(self) -> list[str]:
+        """All templates sorted by length descending (for longest-match-first matching)."""
+        return sorted(self.template_to_macro.keys(), key=len, reverse=True)
+
+    @property
+    def all_macro_tokens(self) -> list[str]:
+        """All macro tokens (M + T), sorted, for tokenizer vocabulary."""
+        return sorted(list(self.macro_to_pattern.keys()) + list(self.macro_to_template.keys()))
+
     def save(self, path: str | Path) -> None:
         """Save dictionary to JSON."""
         path = Path(path)
@@ -158,7 +195,16 @@ class CompressionDictionary:
                     "category": self.pattern_categories.get(pattern, "unknown"),
                 }
                 for pattern, macro in self.pattern_to_macro.items()
-            ]
+            ],
+            "templates": [
+                {
+                    "template": template,
+                    "macro": macro,
+                    "slots": self.template_slots[template],
+                    "category": self.template_categories.get(template, "template"),
+                }
+                for template, macro in self.template_to_macro.items()
+            ],
         }
         path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
 
@@ -172,6 +218,13 @@ class CompressionDictionary:
             d.pattern_to_macro[entry["pattern"]] = entry["macro"]
             d.macro_to_pattern[entry["macro"]] = entry["pattern"]
             d.pattern_categories[entry["pattern"]] = entry.get("category", "unknown")
+        for entry in data.get("templates", []):
+            d.template_to_macro[entry["template"]] = entry["macro"]
+            d.macro_to_template[entry["macro"]] = entry["template"]
+            d.template_slots[entry["template"]] = entry["slots"]
+            d.template_categories[entry["template"]] = entry.get("category", "template")
+            idx = int(entry["macro"][3:7])
+            d._template_index = max(d._template_index, idx)
         return d
 
     def stats(self) -> dict:
@@ -179,8 +232,11 @@ class CompressionDictionary:
         categories = {}
         for pattern, cat in self.pattern_categories.items():
             categories[cat] = categories.get(cat, 0) + 1
+        for template, cat in self.template_categories.items():
+            categories[cat] = categories.get(cat, 0) + 1
         return {
             "total_patterns": self.size,
+            "total_templates": self.template_count,
             "categories": categories,
             "avg_pattern_length_chars": (
                 sum(len(p) for p in self.pattern_to_macro) / self.size
@@ -190,4 +246,4 @@ class CompressionDictionary:
         }
 
     def __repr__(self) -> str:
-        return f"CompressionDictionary({self.size} patterns)"
+        return f"CompressionDictionary({self.size} patterns, {self.template_count} templates)"

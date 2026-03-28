@@ -9,8 +9,14 @@ import re
 
 from sematok.dictionary import CompressionDictionary
 
-# Regex to match macro tokens like <|M0001|>, <|M0002|>, etc.
+# Regex to match exact macro tokens like <|M0001|>, <|M0002|>, etc.
 MACRO_PATTERN = re.compile(r"<\|M(\d{4})\|>")
+
+# Regex to match template macro tokens like <|T0001:_logger,logger|>
+TEMPLATE_MACRO_PATTERN = re.compile(r"<\|T(\d{4}):([^|]*)\|>")
+
+# Matches either M or T macros (for contains_macros / list_macros)
+ANY_MACRO_PATTERN = re.compile(r"<\|[MT]\d{4}(?::[^|]*)?\|>")
 
 
 class Decompressor:
@@ -23,26 +29,34 @@ class Decompressor:
         """
         Decompress a string by replacing all macro tokens with original patterns.
 
-        Args:
-            compressed: String containing macro tokens like <|M001|>.
-
-        Returns:
-            Original C# source code with all macro tokens expanded.
+        Expands template macros (T) first, then exact macros (M).
         """
 
+        def _replace_template(match: re.Match) -> str:
+            macro_base = f"<|T{match.group(1)}|>"
+            args = match.group(2).split(",")
+            template = self.dictionary.macro_to_template.get(macro_base)
+            if template is None:
+                return match.group(0)
+            result = template
+            for i, arg in enumerate(args):
+                result = result.replace(f"{{{i}}}", arg)
+            return result
+
         def _replace_macro(match: re.Match) -> str:
-            macro = match.group(0)  # e.g., <|M001|>
+            macro = match.group(0)
             if macro in self.dictionary.macro_to_pattern:
                 return self.dictionary.macro_to_pattern[macro]
-            # Unknown macro token -- leave it as-is (shouldn't happen with a valid dictionary)
             return macro
 
-        return MACRO_PATTERN.sub(_replace_macro, compressed)
+        result = TEMPLATE_MACRO_PATTERN.sub(_replace_template, compressed)
+        result = MACRO_PATTERN.sub(_replace_macro, result)
+        return result
 
     def contains_macros(self, text: str) -> bool:
-        """Check if a string contains any macro tokens."""
-        return bool(MACRO_PATTERN.search(text))
+        """Check if a string contains any macro tokens (M or T)."""
+        return bool(ANY_MACRO_PATTERN.search(text))
 
     def list_macros(self, text: str) -> list[str]:
-        """Return all macro tokens found in the text."""
-        return MACRO_PATTERN.findall(text)
+        """Return all macro tokens found in the text (M and T)."""
+        return ANY_MACRO_PATTERN.findall(text)
