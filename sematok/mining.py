@@ -302,6 +302,25 @@ def mine_patterns(
     return scored[:top_n]
 
 
+def merge_mining_results(
+    regex_results: list[tuple[str, int, int, float, int]],
+    ngram_results: list[tuple[str, int, int, float, int]],
+) -> list[tuple[str, int, int, float, int]]:
+    """
+    Merge regex-mined and n-gram-mined patterns.
+
+    Deduplicates by pattern string, keeping the entry with higher frequency.
+    Returns merged list sorted by score descending.
+    """
+    by_pattern: dict[str, tuple[str, int, int, float, int]] = {}
+    for result_list in [regex_results, ngram_results]:
+        for entry in result_list:
+            pattern = entry[0]
+            if pattern not in by_pattern or entry[1] > by_pattern[pattern][1]:
+                by_pattern[pattern] = entry
+    return sorted(by_pattern.values(), key=lambda x: x[3], reverse=True)
+
+
 def build_mined_dictionary(
     corpus_dir: Path,
     top_n: int = 9999,
@@ -309,12 +328,13 @@ def build_mined_dictionary(
     min_repos: int = MIN_REPOS,
     max_files: int | None = None,
     exclude_repos: list[str] | None = None,
+    use_ngrams: bool = True,
 ) -> tuple[CompressionDictionary, list[tuple[str, int, int, float, int]]]:
     """
     Build a compression dictionary by combining seed patterns with mined patterns.
 
-    Seed patterns are always included first. Mined patterns fill the remaining
-    slots up to top_n total patterns.
+    Seed patterns are always included first. Mined patterns (regex + n-gram)
+    fill the remaining slots up to top_n total patterns.
 
     Returns:
         (dictionary, mined_patterns) -- the dictionary and the raw mined results
@@ -329,11 +349,24 @@ def build_mined_dictionary(
 
     mined = []
     if remaining > 0:
-        mined = mine_patterns(
+        regex_mined = mine_patterns(
             corpus_dir, top_n=remaining * 2,
             min_repos=min_repos, max_files=max_files,
             exclude_repos=exclude_repos,
         )
+
+        if use_ngrams:
+            from sematok.ngram_mining import mine_ngram_patterns
+
+            ngram_mined = mine_ngram_patterns(
+                corpus_dir, top_n=remaining * 2,
+                min_repos=min_repos, max_files=max_files,
+                exclude_repos=exclude_repos,
+            )
+            mined = merge_mining_results(regex_mined, ngram_mined)
+        else:
+            mined = regex_mined
+
         added = 0
         for pattern, freq, tok_count, score, repo_count in mined:
             if pattern in d.pattern_to_macro:
@@ -360,6 +393,7 @@ def main():
         "--exclude-repos", type=str, nargs="+", default=None,
         help="Repos to exclude from mining (e.g. held-out eval repos)",
     )
+    parser.add_argument("--no-ngrams", action="store_true", help="Skip n-gram mining (regex only)")
     parser.add_argument("--verbose", action="store_true", help="Print all accepted patterns")
     args = parser.parse_args()
 
@@ -370,6 +404,7 @@ def main():
         min_repos=args.min_repos,
         max_files=args.max_files,
         exclude_repos=args.exclude_repos,
+        use_ngrams=not args.no_ngrams,
     )
 
     d.save(args.output)
