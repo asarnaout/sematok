@@ -40,10 +40,14 @@ The macro layer works as pre/post-processing -- the model's original tokenizer s
 | Safe zones | Tree-sitter (strings, comments) | None | N/A |
 | Templates | Yes (`<\|T...:args\|>`) | No | No |
 | Capability retention test | Yes | No | Partial |
+| Corpus | 96K files from 24 production repos | LeetCode + HumanEval | Wikipedia + code |
+| Pattern scoring | Corpus impact (actual token savings) | Frequency threshold | N/A |
+
+**A note on corpus choice:** Token Sugar reports 12.9-15.1% compression on competitive programming code (LeetCode, HumanEval), where the same algorithmic templates repeat across thousands of solutions. Sematok measures on production C# code from 24 open-source repos (dotnet/runtime, aspnetcore, Roslyn, osu, etc.), where code is significantly more diverse. The compression gap reflects domain difficulty, not methodology quality. Production codebases are the deployment target for this kind of optimization, so we believe testing on enterprise code provides a more realistic signal.
 
 ## Current Results
 
-**7.20% token compression** measured with the Qwen2.5-Coder tokenizer (152K vocab) on enterprise C# code. Token Sugar reports 12.9-15.1% on Python competitive programming with GPT-4 tokenizer -- the numbers are in the same ballpark given the different domains and tokenizers.
+**7.20% token compression** measured with the Qwen2.5-Coder tokenizer (152K vocab) on enterprise C# code.
 
 The compression ratio is a proxy metric. The real test is post-fine-tuning: does the model learn the macros and retain its other capabilities.
 
