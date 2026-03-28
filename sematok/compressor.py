@@ -89,13 +89,13 @@ class Compressor:
                 pass  # Skip invalid regexes
 
     def _apply_templates(self, text: str) -> str:
-        """Apply template macros, replacing matches with <|T0001:arg1,arg2|>."""
+        """Apply template macros, replacing matches with <|T001:arg1,arg2|>."""
         for template, regex, macro_base in self._template_regexes:
             slot_count = self.dictionary.template_slots[template]
 
             def _replace(m, _macro_base=macro_base):
                 args = ",".join(m.groups())
-                # macro_base is "<|T0001|>", convert to "<|T0001:args|>"
+                # macro_base is "<|T001|>", convert to "<|T001:args|>"
                 return _macro_base[:-2] + ":" + args + "|>"
 
             text = regex.sub(_replace, text)
@@ -105,7 +105,7 @@ class Compressor:
     def _finalize_placeholders(text: str) -> str:
         """Convert null-byte placeholders to final <|M...|> macro tokens."""
         return re.sub(
-            _PLACEHOLDER_PREFIX + r"(\d{4})" + _PLACEHOLDER_SUFFIX,
+            _PLACEHOLDER_PREFIX + r"(\d{3})" + _PLACEHOLDER_SUFFIX,
             r"<|M\1|>",
             text,
         )
@@ -116,7 +116,7 @@ class Compressor:
         for pattern in self._sorted_patterns:
             macro = self.dictionary.pattern_to_macro[pattern]
             # Use null-byte placeholder during cascade to prevent delimiter collisions
-            idx = macro[3:7]  # extract "0001" from "<|M0001|>"
+            idx = macro[3:6]  # extract "001" from "<|M001|>"
             placeholder = _PLACEHOLDER_PREFIX + idx + _PLACEHOLDER_SUFFIX
             result = result.replace(pattern, placeholder)
         result = self._finalize_placeholders(result)
@@ -149,7 +149,7 @@ class Compressor:
             chunk = source[start:end]
             for pattern in self._sorted_patterns:
                 macro = self.dictionary.pattern_to_macro[pattern]
-                idx = macro[3:7]
+                idx = macro[3:6]
                 placeholder = _PLACEHOLDER_PREFIX + idx + _PLACEHOLDER_SUFFIX
                 chunk = chunk.replace(pattern, placeholder)
             chunk = self._finalize_placeholders(chunk)

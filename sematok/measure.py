@@ -19,8 +19,8 @@ from sematok.compressor import Compressor
 from sematok.dictionary import CompressionDictionary
 from sematok.lexer import get_safe_ranges
 
-MACRO_RE = re.compile(r"<\|M\d{4}\|>")
-TEMPLATE_RE = re.compile(r"<\|T(\d{4}):([^|]*)\|>")
+MACRO_RE = re.compile(r"<\|M\d{3}\|>")
+TEMPLATE_RE = re.compile(r"<\|T(\d{3}):([^|]*)\|>")
 
 
 def measure_compression(

@@ -106,13 +106,13 @@ SEED_PATTERNS = [
 
 
 def _make_macro_token(index: int) -> str:
-    """Generate a macro token string like <|M0001|>, <|M0002|>, etc."""
-    return f"<|M{index:04d}|>"
+    """Generate a macro token string like <|M001|>, <|M002|>, etc."""
+    return f"<|M{index:03d}|>"
 
 
 def _make_template_token(index: int) -> str:
-    """Generate a template token string like <|T0001|>, <|T0002|>, etc."""
-    return f"<|T{index:04d}|>"
+    """Generate a template token string like <|T001|>, <|T002|>, etc."""
+    return f"<|T{index:03d}|>"
 
 
 class CompressionDictionary:
@@ -237,7 +237,7 @@ class CompressionDictionary:
             d.macro_to_template[entry["macro"]] = entry["template"]
             d.template_slots[entry["template"]] = entry["slots"]
             d.template_categories[entry["template"]] = entry.get("category", "template")
-            idx = int(entry["macro"][3:7])
+            idx = int(entry["macro"][3:6])
             d._template_index = max(d._template_index, idx)
         return d
 
