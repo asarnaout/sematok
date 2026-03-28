@@ -36,7 +36,9 @@ CANDIDATE_PATTERNS = [
     re.compile(r"using\s+[\w.]+;"),
 
     # Attribute patterns -- require 3+ char name to reject [0], [i], [1] etc.
-    re.compile(r"\[\w{3,}(?:\([^)\n]*\))?\]"),
+    # Negative lookbehind: reject if preceded by a word char or ')' to avoid
+    # matching array indexers like buffer[length] or func()[result].
+    re.compile(r"(?<![)\w])\[\w{3,}(?:\([^)\n]*\))?\]"),
 
     # Property accessors
     re.compile(r"\{\s*get;\s*(?:(?:private|protected|internal)\s+)?set;\s*\}"),
