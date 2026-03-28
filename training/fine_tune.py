@@ -30,7 +30,13 @@ except ImportError:
     )
 
 try:
-    from datasets import load_dataset
+    from datasets import Dataset
+    # Python 3.14 breaks dill's pickle internals (Pickler._batch_setitems
+    # signature changed). Patch datasets fingerprinting to avoid the crash.
+    # Must patch in arrow_dataset where it's actually called, not just in
+    # fingerprint module (the import already cached the reference).
+    import datasets.arrow_dataset as _ds_ad
+    _ds_ad.generate_fingerprint = lambda dataset: "0" * 64
 except ImportError:
     raise ImportError(
         "The datasets library is required. Install with:\n"
@@ -117,23 +123,35 @@ def apply_lora(model, lora_r: int, lora_dropout: float):
     return model
 
 
+def _load_jsonl(path: str):
+    """Load a JSONL file into a Dataset, bypassing datasets caching.
+
+    Python 3.14 breaks dill's pickle internals which datasets uses for
+    fingerprinting. Loading via Dataset.from_list avoids that code path.
+    """
+    import json as _json
+    records = []
+    with open(path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                records.append(_json.loads(line))
+    return Dataset.from_list(records)
+
+
 def load_datasets(train_path: str, eval_path: str | None):
     """Load JSONL datasets for training and evaluation."""
     if not Path(train_path).exists():
         raise FileNotFoundError(f"Training data not found: {train_path}")
 
     print(f"\nLoading training data: {train_path}")
-    train_dataset = load_dataset(
-        "json", data_files=train_path, split="train"
-    )
+    train_dataset = _load_jsonl(train_path)
     print(f"  Train samples: {len(train_dataset):,}")
 
     eval_dataset = None
     if eval_path and Path(eval_path).exists():
         print(f"Loading eval data: {eval_path}")
-        eval_dataset = load_dataset(
-            "json", data_files=eval_path, split="train"
-        )
+        eval_dataset = _load_jsonl(eval_path)
         print(f"  Eval samples: {len(eval_dataset):,}")
 
     return train_dataset, eval_dataset
@@ -189,17 +207,30 @@ def create_trainer(model, tokenizer, train_dataset, eval_dataset, args):
 
 
 def save_model(model, tokenizer, output_dir: str):
-    """Save merged 16-bit model and LoRA adapters."""
-    merged_dir = output_dir
+    """Save merged 16-bit model and LoRA adapters.
+
+    Saves LoRA adapters first (lightweight, always works), then attempts
+    the full merged save. If the merge fails (known issue with tied
+    embeddings in PEFT), the LoRA adapters are still available.
+    """
     lora_dir = output_dir + "-lora"
+    merged_dir = output_dir + "-merged"
 
-    print(f"\nSaving merged 16-bit model to {merged_dir}...")
-    model.save_pretrained_merged(merged_dir, tokenizer, save_method="merged_16bit")
-
-    print(f"Saving LoRA adapters to {lora_dir}...")
+    # Save LoRA adapters first -- this is small and reliable
+    print(f"\nSaving LoRA adapters to {lora_dir}...")
     model.save_pretrained_merged(lora_dir, tokenizer, save_method="lora")
+    print("  LoRA adapters saved.")
 
-    print("  Done.")
+    # Attempt full merged save -- may fail with tied embeddings
+    print(f"Saving merged 16-bit model to {merged_dir}...")
+    try:
+        model.save_pretrained_merged(merged_dir, tokenizer, save_method="merged_16bit")
+        print("  Merged model saved.")
+    except Exception as e:
+        print(f"\n  WARNING: Merged save failed: {e}")
+        print(f"  LoRA adapters are safe at {lora_dir}")
+        print(f"  Checkpoints are in {output_dir}/")
+        print(f"  You can merge manually later -- ask Claude for help.")
 
 
 def main():
