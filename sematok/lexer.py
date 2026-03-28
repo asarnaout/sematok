@@ -30,14 +30,20 @@ def _create_parser() -> Parser:
 _parser = _create_parser()
 
 
-def _collect_unsafe_ranges(node: Node) -> list[tuple[int, int]]:
+def _collect_unsafe_ranges(
+    node: Node, source_bytes: bytes | None = None, allow_xmldoc: bool = False,
+) -> list[tuple[int, int]]:
     """Recursively collect byte ranges of unsafe nodes."""
     ranges = []
     if node.type in UNSAFE_NODE_TYPES:
+        if allow_xmldoc and node.type == "comment" and source_bytes is not None:
+            text = source_bytes[node.start_byte:node.end_byte]
+            if text.startswith(b"///"):
+                return ranges  # XML doc comment -- treat as safe
         ranges.append((node.start_byte, node.end_byte))
         return ranges  # Don't recurse into unsafe nodes
     for child in node.children:
-        ranges.extend(_collect_unsafe_ranges(child))
+        ranges.extend(_collect_unsafe_ranges(child, source_bytes, allow_xmldoc))
     return ranges
 
 
@@ -70,7 +76,7 @@ def _invert_ranges(
     return safe
 
 
-def get_safe_ranges(source: str) -> list[tuple[int, int]]:
+def get_safe_ranges(source: str, allow_xmldoc: bool = False) -> list[tuple[int, int]]:
     """
     Parse C# source code and return byte ranges where compression is safe.
 
@@ -79,6 +85,8 @@ def get_safe_ranges(source: str) -> list[tuple[int, int]]:
 
     Args:
         source: C# source code as a string.
+        allow_xmldoc: If True, ``///`` XML doc comments are treated as safe
+            (compressible). Regular ``//`` and ``/* */`` comments remain unsafe.
 
     Returns:
         List of (start, end) byte ranges where compression can be applied.
@@ -86,11 +94,11 @@ def get_safe_ranges(source: str) -> list[tuple[int, int]]:
     """
     source_bytes = source.encode("utf-8")
     tree = _parser.parse(source_bytes)
-    unsafe = _collect_unsafe_ranges(tree.root_node)
+    unsafe = _collect_unsafe_ranges(tree.root_node, source_bytes, allow_xmldoc)
     return _invert_ranges(unsafe, len(source_bytes))
 
 
-def get_unsafe_ranges(source: str) -> list[tuple[int, int]]:
+def get_unsafe_ranges(source: str, allow_xmldoc: bool = False) -> list[tuple[int, int]]:
     """
     Parse C# source code and return byte ranges where compression is NOT safe.
 
@@ -98,7 +106,7 @@ def get_unsafe_ranges(source: str) -> list[tuple[int, int]]:
     """
     source_bytes = source.encode("utf-8")
     tree = _parser.parse(source_bytes)
-    return _collect_unsafe_ranges(tree.root_node)
+    return _collect_unsafe_ranges(tree.root_node, source_bytes, allow_xmldoc)
 
 
 def classify_source(source: str) -> dict:

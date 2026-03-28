@@ -197,7 +197,7 @@ def _is_valid_pattern(pattern: str) -> bool:
 def extract_candidates_from_file(source: str) -> list[str]:
     """Extract candidate boilerplate patterns from a C# source file."""
     try:
-        safe_ranges = get_safe_ranges(source)
+        safe_ranges = get_safe_ranges(source, allow_xmldoc=True)
     except Exception:
         safe_ranges = [(0, len(source.encode("utf-8")))]
 

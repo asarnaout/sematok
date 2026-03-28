@@ -7,6 +7,7 @@ from pathlib import Path
 from sematok.dictionary import CompressionDictionary, SEED_PATTERNS
 from sematok.compressor import Compressor
 from sematok.decompressor import Decompressor
+from sematok.lexer import get_safe_ranges, get_unsafe_ranges
 
 
 # -- Dictionary tests --
@@ -181,5 +182,56 @@ def test_safe_zones_compression():
 
     # The "using System;" inside the string should NOT be compressed
     # The one outside should be compressed
+    decompressed = decompressor.decompress(compressed)
+    assert decompressed == source
+
+
+# -- XML doc safe zone tests --
+
+def test_xmldoc_default_unsafe():
+    """By default, /// XML doc comments are unsafe (not compressible)."""
+    source = '/// <summary>\npublic class Foo { }'
+    safe = get_safe_ranges(source)
+    source_bytes = source.encode("utf-8")
+    safe_text = b"".join(source_bytes[s:e] for s, e in safe)
+    assert b"/// <summary>" not in safe_text
+
+
+def test_xmldoc_becomes_safe():
+    """With allow_xmldoc=True, /// comments become safe zones."""
+    source = '/// <summary>\npublic class Foo { }'
+    safe = get_safe_ranges(source, allow_xmldoc=True)
+    source_bytes = source.encode("utf-8")
+    safe_text = b"".join(source_bytes[s:e] for s, e in safe)
+    assert b"/// <summary>" in safe_text
+
+
+def test_regular_comment_stays_unsafe():
+    """Regular // comments remain unsafe even with allow_xmldoc=True."""
+    source = '// Regular comment\npublic class Foo { }'
+    unsafe = get_unsafe_ranges(source, allow_xmldoc=True)
+    source_bytes = source.encode("utf-8")
+    unsafe_text = b"".join(source_bytes[s:e] for s, e in unsafe)
+    assert b"// Regular comment" in unsafe_text
+
+
+def test_block_comment_stays_unsafe():
+    """Block comments remain unsafe even with allow_xmldoc=True."""
+    source = '/* block */\npublic class Foo { }'
+    unsafe = get_unsafe_ranges(source, allow_xmldoc=True)
+    source_bytes = source.encode("utf-8")
+    unsafe_text = b"".join(source_bytes[s:e] for s, e in unsafe)
+    assert b"/* block */" in unsafe_text
+
+
+def test_xmldoc_roundtrip_with_compression():
+    """Compressing XML doc patterns in safe zones is lossless."""
+    d = CompressionDictionary.from_seed()
+    compressor = Compressor(d)
+    decompressor = Decompressor(d)
+
+    source = '/// <summary>\n/// </summary>\npublic class Foo { get; set; }'
+    safe = get_safe_ranges(source, allow_xmldoc=True)
+    compressed = compressor.compress(source, safe_ranges=safe)
     decompressed = decompressor.decompress(compressed)
     assert decompressed == source
