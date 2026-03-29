@@ -14,7 +14,9 @@ throw new ArgumentNullException(nameof(x)) --> <|T005:x|>
 
 ## The Problem
 
-BPE tokenizers (used by all major LLMs) compress at the subword level. They can never look at a 45-character boilerplate string and decide "this should be 1 token." C# has more boilerplate than most languages -- access modifiers, property accessors, using directives, XML doc comments, exception patterns -- all consuming tokens that carry zero reasoning value.
+BPE tokenizers (used by all major LLMs) are trained on a massive mix of languages and text, so they optimize for the average and can't specialize deeply in any one language's patterns. They compress at the subword level but can never look at a 45-character boilerplate string and decide "this should be 1 token."
+
+C# has more boilerplate than most languages -- access modifiers, property accessors, using directives, XML doc comments, exception patterns -- all consuming tokens that carry zero reasoning value.
 
 ## The Approach
 
@@ -26,24 +28,6 @@ BPE tokenizers (used by all major LLMs) compress at the subword level. They can 
 6. **Evaluate** both macro comprehension and capability retention
 
 The macro layer works as pre/post-processing -- the model's original tokenizer stays untouched in production. Deployment requires fine-tuning (cheap), not full retraining.
-
-## What Makes This Different
-
-**The research gap:** Can you take an existing pre-trained model, add domain-specific semantic tokens via LoRA fine-tuning, and have it learn them without catastrophic forgetting? As of March 2026, nobody has publicly shown this.
-
-| | Sematok | Token Sugar (ASE'25) | Meta-Tokens (2025) |
-|---|---|---|---|
-| Training | Fine-tune existing model | Train from scratch | Fine-tune with LoRA |
-| Language | C# | Python | Language-agnostic |
-| Dictionary | Fixed, universal (999 patterns) | Fixed (799 patterns) | Per-prompt (ad-hoc) |
-| Compression | Input + output | Training data + output | Input only |
-| Safe zones | Tree-sitter (strings, comments) | None | N/A |
-| Templates | Yes (`<\|T...:args\|>`) | No | No |
-| Capability retention test | Yes | No | Partial |
-| Corpus | 96K files from 24 production repos | LeetCode + HumanEval | Wikipedia + code |
-| Pattern scoring | Corpus impact (actual token savings) | Frequency threshold | N/A |
-
-**A note on corpus choice:** Token Sugar reports 12.9-15.1% compression on competitive programming code (LeetCode, HumanEval), where the same algorithmic templates repeat across thousands of solutions. Sematok measures on production C# code from 24 open-source repos (dotnet/runtime, aspnetcore, Roslyn, osu, etc.), where code is significantly more diverse. The compression gap reflects domain difficulty, not methodology quality. Production codebases are the deployment target for this kind of optimization, so we believe testing on enterprise code provides a more realistic signal.
 
 ## Current Results
 
@@ -183,13 +167,16 @@ The engine is language-agnostic. All C#-specific knowledge lives in `sematok/lan
 
 ## Base Model
 
-**Qwen2.5-Coder-1.5B-Instruct** -- code-specialized, 152K vocab, proven on RTX 4060 8GB ([arxiv 2509.12229](https://arxiv.org/abs/2509.12229)), used by Meta-Tokens ([arxiv 2506.00307](https://arxiv.org/abs/2506.00307)). No special token conflicts with our `<|M###|>` / `<|T###:...|>` format.
+**Qwen2.5-Coder-1.5B-Instruct** -- code-specialized, 152K vocab, proven on RTX 4060 8GB. No special token conflicts with our `<|M###|>` / `<|T###:...|>` format.
 
 ## Prior Art
 
-- **Token Sugar** (ASE'25, [arxiv 2512.08266](https://arxiv.org/abs/2512.08266)) -- AST-based compression for Python, 799 patterns, trained from scratch on ~1B models
-- **Meta-Tokens** ([arxiv 2506.00307](https://arxiv.org/abs/2506.00307)) -- Per-prompt lossless compression, greedy longest-first, LoRA fine-tuned
-- **Token Distillation** ([arxiv 2505.20133](https://arxiv.org/abs/2505.20133)) -- Embedding initialization for new tokens via hidden state distillation
+This work builds on ideas from several research efforts:
+
+- **Token Sugar** (ASE'25, [arxiv 2512.08266](https://arxiv.org/abs/2512.08266)) -- AST-based frequent subtree mining for Python, 799 patterns, trained from scratch on ~1B models. Demonstrated that reversible code compression can work for LLMs.
+- **Meta-Tokens** ([arxiv 2506.00307](https://arxiv.org/abs/2506.00307)) -- Per-prompt lossless token sequence compression, greedy longest-first, LoRA fine-tuned. Validated the greedy compression strategy and showed LoRA can teach compressed representations.
+- **Token Distillation** ([arxiv 2505.20133](https://arxiv.org/abs/2505.20133)) -- Embedding initialization for new tokens via hidden state distillation. Informed our mean-of-expansion embedding initialization approach.
+- **SimPy** (ISSTA'24, [arxiv 2404.16333](https://arxiv.org/abs/2404.16333)) -- AI-oriented Python grammar that rewrites syntax for token efficiency. Showed 8-13% reduction on code-specialized tokenizers.
 
 ## License
 
