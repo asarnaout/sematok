@@ -102,7 +102,7 @@ python -m training.expand_tokenizer --output models/qwen-sematok-base
 
 Adds 1000 tokens to Qwen2.5-Coder-1.5B-Instruct and initializes their embeddings via mean-of-expansion (averages the embeddings of the tokens each macro expands to).
 
-### Step 6: Fine-Tune (WIP)
+### Step 6: Fine-Tune
 
 ```bash
 python -m training.fine_tune \
@@ -112,13 +112,17 @@ python -m training.fine_tune \
     --output models/qwen-sematok-finetuned
 ```
 
-LoRA fine-tuning with Unsloth. Continued pre-training (CLM) -- not instruction tuning.
+LoRA fine-tuning with Unsloth. Continued pre-training (CLM) -- not instruction tuning. QLoRA 4-bit, rank 16, 1 epoch (~5,592 steps).
 
-### Step 7: Evaluate (WIP)
+### Step 7: Evaluate
 
-Two-axis evaluation:
-1. **Macro comprehension:** Does the model understand compressed C# code?
-2. **Capability retention:** Does it still perform well on non-C# tasks?
+```bash
+python -m training.evaluate --all \
+    --base-model models/qwen-sematok-base \
+    --finetuned-model models/qwen-sematok-finetuned-merged
+```
+
+Four-configuration perplexity comparison measuring macro comprehension and capability retention. Use `--max-files 500` for a quick validation run (~6 min).
 
 ### Running Tests
 
@@ -160,6 +164,8 @@ data/
     prepare.py              # JSONL generation for fine-tuning
 training/
     expand_tokenizer.py     # Vocabulary expansion + embedding init
+    fine_tune.py            # LoRA fine-tuning with Unsloth
+    evaluate.py             # Four-config perplexity evaluation
 tests/                      # 96 tests
 ```
 
