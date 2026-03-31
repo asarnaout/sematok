@@ -33,7 +33,18 @@ The macro layer works as pre/post-processing -- the model's original tokenizer s
 
 **7.20% token compression** measured with the Qwen2.5-Coder tokenizer (152K vocab) on enterprise C# code.
 
-The compression ratio is a proxy metric. The real test is post-fine-tuning: does the model learn the macros and retain its other capabilities.
+After fine-tuning, a four-configuration perplexity evaluation on 6,657 held-out files confirms the model learned the macros:
+
+| Config | Model | Input | Perplexity | Loss |
+|--------|-------|-------|-----------|------|
+| A | Base | Uncompressed | 2.42 | 0.884 |
+| B | Finetuned | Compressed | 3.51 | 1.257 |
+| C | Finetuned | Uncompressed | 2.67 | 0.984 |
+| D | Base | Compressed | 5.40 | 1.687 |
+
+- **Macro comprehension (B vs D):** 1.5x perplexity improvement. Fine-tuning taught the model to read compressed macros.
+- **C# retention (C vs A):** +10.5% perplexity delta. Mild forgetting -- the model's general C# ability is largely preserved.
+- **Compression gap (B vs A):** +45.2% perplexity delta. Expected -- each compressed token carries more information than a regular token, so per-token perplexity is not directly comparable.
 
 ## Reproducing the Results
 
