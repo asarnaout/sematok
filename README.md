@@ -20,10 +20,10 @@ C# has more boilerplate than most languages -- access modifiers, property access
 
 ## The Approach
 
-1. **Mine** recurring boilerplate patterns from a large C# corpus (96K files, 24 MIT-licensed repos)
-2. **Build** a dictionary of 999 macro tokens ranked by actual token savings
+1. **Mine** recurring boilerplate patterns from a large C# corpus (122K files, 44 permissively-licensed repos)
+2. **Build** a dictionary of macro tokens scored on the full training corpus, filtered by a minimum file-frequency threshold (868 entries, each appearing in 500+ training files)
 3. **Compress** training data by replacing patterns with macros (75% compressed, 25% original)
-4. **Expand** the model's tokenizer with the 1000 new tokens (917 exact + 82 template prefixes + 1 delimiter)
+4. **Expand** the model's tokenizer with the new tokens (829 exact macros + 39 template prefixes + 1 delimiter)
 5. **Fine-tune** the model via LoRA so it learns the macros without forgetting its other capabilities
 6. **Evaluate** both macro comprehension and capability retention
 
@@ -31,9 +31,27 @@ The macro layer works as pre/post-processing -- the model's original tokenizer s
 
 ## Current Results
 
-**7.20% token compression** measured with the Qwen2.5-Coder tokenizer (152K vocab) on enterprise C# code.
+**7.44% token compression** measured with the Qwen2.5-Coder tokenizer (152K vocab) on enterprise C# code.
 
-After fine-tuning, a four-configuration perplexity evaluation on 6,657 held-out files confirms the model learned the macros:
+### Dictionary Size Selection
+
+The dictionary size was chosen empirically by mining a large candidate pool (11,186 patterns) and scoring every candidate against all 116,069 training files. The scoring tracks both total token savings and the number of files each pattern appears in:
+
+| Min file threshold | Entries surviving | % of corpus impact |
+|--------------------|-------------------|--------------------|
+| 5,000+ files       | 71                | 32.3%              |
+| 1,000+ files       | 600               | 87.7%              |
+| **500+ files**     | **868**           | **97.3%**          |
+| 100+ files         | 1,094             | 99.8%              |
+
+The 500-file threshold was chosen because:
+- 868 entries capture 97.3% of total compression -- adding more yields diminishing returns
+- Every macro appears in at least 500 of 116K training files, ensuring the model sees each one enough times to learn it
+- The previous 999-entry dictionary (scored on a 2,000-file sample) had 40% of macros never appear in training -- this approach eliminates that problem entirely
+
+### Previous Experiment Results (Flawed Dictionary)
+
+The results below used the original 999-entry dictionary scored on only 2,000 files. They are kept for reference but should not be cited -- the experiment is being re-run with the corrected dictionary.
 
 | Config | Model | Input | Perplexity | Loss |
 |--------|-------|-------|-----------|------|
@@ -42,9 +60,9 @@ After fine-tuning, a four-configuration perplexity evaluation on 6,657 held-out 
 | C | Finetuned | Uncompressed | 2.67 | 0.984 |
 | D | Base | Compressed | 5.40 | 1.687 |
 
-- **Macro comprehension (B vs D):** 1.5x perplexity improvement. Fine-tuning taught the model to read compressed macros.
-- **C# retention (C vs A):** +10.5% perplexity delta. Mild forgetting -- the model's general C# ability is largely preserved.
-- **Compression gap (B vs A):** +45.2% perplexity delta. Expected -- each compressed token carries more information than a regular token, so per-token perplexity is not directly comparable.
+- **Macro comprehension (B vs D):** 1.5x perplexity improvement.
+- **C# retention (C vs A):** +10.5% perplexity delta.
+- **Compression gap (B vs A):** +45.2% perplexity delta.
 
 ## Reproducing the Results
 
@@ -69,13 +87,13 @@ pip install unsloth peft bitsandbytes accelerate
 
 ### Step 1: Download Corpus
 
-Clone 24 MIT-licensed C# repos and extract source files:
+Clone 44 permissively-licensed C# repos (MIT, Apache-2.0, BSD-3-Clause) and extract source files:
 
 ```bash
 python -m data.download --output data/raw_cs
 ```
 
-This produces ~96K `.cs` files (517 MB) with a `metadata.jsonl` mapping each file to its source repo.
+This produces ~122K `.cs` files (592 MB) with a `metadata.jsonl` mapping each file to its source repo.
 
 ### Step 2: Mine Dictionary (Optional)
 
@@ -85,11 +103,15 @@ The dictionary (`sematok/dictionary.json`) is already committed. To re-mine from
 python -m sematok.mining \
     --corpus data/raw_cs \
     --output sematok/dictionary.json \
-    --exclude-repos ppy--osu JamesNK--Newtonsoft.Json nunit--nunit \
-    --top 999
+    --exclude-repos microsoft--garnet kgrzybek--modular-monolith-with-ddd \
+        nunit--nunit JamesNK--Newtonsoft.Json AngleSharp--AngleSharp \
+        ThreeMammals--Ocelot fullstackhero--dotnet-starter-kit \
+    --top 999 \
+    --score-sample 0 \
+    --min-files 500
 ```
 
-This mines ~10K candidates, scores each by actual Qwen token savings on a 2000-file sample, and keeps the top 999. The three excluded repos are held out for evaluation.
+This mines ~11K candidates, scores each by actual Qwen token savings on **all** training files (116K), and keeps entries that appear in at least 500 files (868 entries). The seven excluded repos are held out for evaluation.
 
 ### Step 3: Measure Compression
 
@@ -103,7 +125,7 @@ python -m sematok.measure --corpus data/raw_cs --dictionary sematok/dictionary.j
 python -m data.prepare --corpus data/raw_cs --output data/finetune
 ```
 
-Produces `train.jsonl` (~491 MB, 89K files) and `eval.jsonl` (~31 MB, 6.6K files). Training data uses a 75/25 compressed/original mix. Eval data is 100% compressed. Split is repo-balanced: train on 21 repos, evaluate on 3 held-out repos.
+Produces `train.jsonl` and `eval.jsonl`. Training data uses a 75/25 compressed/original mix. Eval data is 100% compressed. Split is repo-balanced: train on 37 repos (~116K files), evaluate on 7 held-out repos (~6.3K files).
 
 ### Step 5: Expand Tokenizer
 
@@ -179,7 +201,7 @@ sematok/                    # Compression engine (language-agnostic)
     template_mining.py      # AST-guided template discovery
     ast_mining.py           # Full AST subtree mining
     measure.py              # Compression ratio measurement
-    dictionary.json         # The 999-entry dictionary (tracked in git)
+    dictionary.json         # The 868-entry dictionary (tracked in git)
 data/
     download.py             # Corpus download from GitHub
     prepare.py              # JSONL generation for fine-tuning

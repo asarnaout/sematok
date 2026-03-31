@@ -217,12 +217,17 @@ def _score_on_corpus(
     sample_size: int = 2000,
     seed: int = 42,
     exclude_repos: list[str] | None = None,
-) -> dict[str, int]:
+) -> tuple[dict[str, int], dict[str, int]]:
     """
     Score every dictionary entry by actual corpus impact using Qwen's tokenizer.
 
-    Compresses a sample of files and counts how many Qwen BPE tokens each
-    macro saves. Returns {macro_or_template: total_tokens_saved}.
+    Compresses files and counts how many Qwen BPE tokens each macro saves.
+    Also tracks how many files each macro appears in.
+
+    Returns:
+        (scores, file_counts) where:
+        - scores: {macro: total_tokens_saved}
+        - file_counts: {macro: number_of_files_it_appeared_in}
     """
     from sematok.compressor import Compressor
 
@@ -246,6 +251,7 @@ def _score_on_corpus(
     template_re = re.compile(r"<\|T(\d{3}):([^|]*)\|>")
 
     scores: Counter = Counter()
+    file_counts: Counter = Counter()
 
     print(f"\nScoring {len(sample)} files for corpus impact...")
     for f in tqdm(sample, desc="Scoring"):
@@ -257,12 +263,16 @@ def _score_on_corpus(
 
         compressed = compressor.compress(source, safe_ranges=safe_ranges)
 
+        # Track which macros appeared in this file (deduplicate per file)
+        seen_in_file: set[str] = set()
+
         for macro in macro_re.findall(compressed):
             pattern = d.macro_to_pattern.get(macro, "")
             if pattern:
                 saving = len(enc.encode(pattern, add_special_tokens=False)) - 1
                 if saving > 0:
                     scores[macro] += saving
+                    seen_in_file.add(macro)
 
         for match in template_re.finditer(compressed):
             macro_base = f"<|T{match.group(1)}|>"
@@ -277,30 +287,44 @@ def _score_on_corpus(
                 saving = expanded_tokens - macro_tokens
                 if saving > 0:
                     scores[macro_base] += saving
+                    seen_in_file.add(macro_base)
 
-    return dict(scores)
+        for macro in seen_in_file:
+            file_counts[macro] += 1
+
+    return dict(scores), dict(file_counts)
 
 
 def _rebuild_top_n(
     d: CompressionDictionary,
     scores: dict[str, int],
+    file_counts: dict[str, int],
     top_n: int,
+    min_file_count: int = 0,
 ) -> CompressionDictionary:
     """
     Rebuild a dictionary with only the top N entries by corpus impact score.
 
-    Entries that never fired (score=0) are dropped. Remaining entries are
-    ranked by total Qwen tokens saved and assigned fresh sequential macro IDs.
+    Entries that never fired (score=0) are dropped. If min_file_count > 0,
+    entries appearing in fewer than that many files are also dropped.
+    Remaining entries are ranked by total Qwen tokens saved and assigned
+    fresh sequential macro IDs.
     """
     ranked = sorted(scores.items(), key=lambda x: -x[1])
 
     new_d = CompressionDictionary()
     kept_patterns = 0
     kept_templates = 0
+    skipped_low_freq = 0
 
     for macro, score in ranked:
         if kept_patterns + kept_templates >= top_n:
             break
+
+        fc = file_counts.get(macro, 0)
+        if min_file_count > 0 and fc < min_file_count:
+            skipped_low_freq += 1
+            continue
 
         if macro in d.macro_to_pattern:
             pattern = d.macro_to_pattern[macro]
@@ -316,10 +340,51 @@ def _rebuild_top_n(
 
     total = kept_patterns + kept_templates
     print(f"\nTrimmed to top {total}: {kept_patterns} exact + {kept_templates} templates")
+    if min_file_count > 0:
+        print(f"Skipped {skipped_low_freq} entries below min file count ({min_file_count})")
     if ranked:
         top_score = ranked[0][1]
         cutoff_score = ranked[min(top_n - 1, len(ranked) - 1)][1] if len(ranked) >= top_n else 0
         print(f"Score range: {top_score} (best) ... {cutoff_score} (cutoff)")
+
+    # --- Frequency distribution report ---
+    print(f"\nFrequency distribution (all {len(ranked)} scored entries):")
+    print(f"{'Rank':<6} {'Score':>8} {'Files':>8} {'Avg/File':>9} {'Type':<5} Pattern")
+    print("-" * 100)
+    for i, (macro, score) in enumerate(ranked):
+        fc = file_counts.get(macro, 0)
+        avg = score / fc if fc > 0 else 0
+        if macro in d.macro_to_pattern:
+            ptype = "exact"
+            label = repr(d.macro_to_pattern[macro])
+        elif macro in d.macro_to_template:
+            ptype = "tmpl"
+            label = repr(d.macro_to_template[macro])
+        else:
+            ptype = "?"
+            label = macro
+        # Truncate long patterns for display
+        if len(label) > 50:
+            label = label[:47] + "..."
+        print(f"{i+1:<6} {score:>8} {fc:>8} {avg:>9.1f} {ptype:<5} {label}")
+
+    # Summary buckets
+    all_fc = [file_counts.get(m, 0) for m, _ in ranked]
+    buckets = [
+        ("0 files (never seen)", lambda x: x == 0),
+        ("1-9 files", lambda x: 1 <= x <= 9),
+        ("10-49 files", lambda x: 10 <= x <= 49),
+        ("50-99 files", lambda x: 50 <= x <= 99),
+        ("100-499 files", lambda x: 100 <= x <= 499),
+        ("500-999 files", lambda x: 500 <= x <= 999),
+        ("1000-4999 files", lambda x: 1000 <= x <= 4999),
+        ("5000+ files", lambda x: x >= 5000),
+    ]
+    print(f"\nFile count distribution:")
+    for label, pred in buckets:
+        count = sum(1 for fc in all_fc if pred(fc))
+        if count > 0:
+            print(f"  {label:<25} {count:>5} entries")
 
     return new_d
 
@@ -337,6 +402,7 @@ def build_mined_dictionary(
     use_ast_templates: bool = True,
     max_ast_templates: int = 1000,
     score_sample_size: int = 2000,
+    min_file_count: int = 0,
 ) -> tuple[CompressionDictionary, list[tuple[str, int, int, float, int]]]:
     """
     Build a compression dictionary by mining broadly, then scoring and trimming.
@@ -431,10 +497,11 @@ def build_mined_dictionary(
     total_before = d.size + d.template_count
     print(f"\nTotal candidates before scoring: {total_before} ({d.size} exact + {d.template_count} templates)")
 
-    # --- Phase 2: Score on corpus and trim to top_n ---
-    if total_before > top_n:
-        scores = _score_on_corpus(d, corpus_dir, sample_size=score_sample_size, exclude_repos=exclude_repos)
-        d = _rebuild_top_n(d, scores, top_n)
+    # --- Phase 2: Score on corpus and trim ---
+    needs_trim = total_before > top_n or min_file_count > 0
+    if needs_trim:
+        scores, file_counts = _score_on_corpus(d, corpus_dir, sample_size=score_sample_size, exclude_repos=exclude_repos)
+        d = _rebuild_top_n(d, scores, file_counts, top_n, min_file_count=min_file_count)
     else:
         print(f"Only {total_before} entries — no trimming needed (target: {top_n})")
 
@@ -460,6 +527,7 @@ def main():
     parser.add_argument("--no-ast-templates", action="store_true", help="Skip AST subtree mining")
     parser.add_argument("--max-ast-templates", type=int, default=1000, help="Max AST-mined templates")
     parser.add_argument("--score-sample", type=int, default=0, help="Files to sample for scoring (0 = all training files)")
+    parser.add_argument("--min-files", type=int, default=0, help="Min training files a pattern must appear in (0 = no threshold)")
     parser.add_argument("--verbose", action="store_true", help="Print all accepted patterns")
     args = parser.parse_args()
 
@@ -476,6 +544,7 @@ def main():
         use_ast_templates=not args.no_ast_templates,
         max_ast_templates=args.max_ast_templates,
         score_sample_size=args.score_sample,
+        min_file_count=args.min_files,
     )
 
     d.save(args.output)
