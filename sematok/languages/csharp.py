@@ -335,6 +335,7 @@ STRUCTURAL_NAMES = {
 # ---------------------------------------------------------------------------
 
 REPOS = [
+    # --- Original 24 repos (dotnet / microsoft ecosystem) ---
     ("dotnet", "runtime"),
     ("dotnet", "roslyn"),
     ("dotnet", "aspnetcore"),
@@ -359,10 +360,38 @@ REPOS = [
     ("nunit", "nunit"),
     ("bchavez", "Bogus"),
     ("spectreconsole", "spectre.console"),
+    # --- New repos: web app patterns ---
+    ("jasontaylordev", "CleanArchitecture"),
+    ("fullstackhero", "dotnet-starter-kit"),
+    ("EduardoPires", "EquinoxProject"),
+    ("OrchardCMS", "OrchardCore"),          # BSD-3-Clause
+    # --- New repos: messaging / event-driven / CQRS ---
+    ("BrighterCommand", "Brighter"),
+    ("JasperFx", "wolverine"),
+    ("JasperFx", "marten"),
+    ("dotnetcore", "CAP"),
+    ("MassTransit", "MassTransit"),         # Apache-2.0
+    # --- New repos: xUnit / testing ---
+    ("xunit", "xunit"),                     # Apache-2.0
+    ("ThreeMammals", "Ocelot"),
+    ("VerifyTests", "Verify"),
+    ("domaindrivendev", "Swashbuckle.AspNetCore"),
+    # --- New repos: community / diverse conventions ---
+    ("kgrzybek", "modular-monolith-with-ddd"),
+    ("AngleSharp", "AngleSharp"),
+    ("MapsterMapper", "Mapster"),
+    ("FluentValidation", "FluentValidation"),  # Apache-2.0
+    ("App-vNext", "Polly"),                 # BSD-3-Clause
+    ("serilog", "serilog"),                 # Apache-2.0
+    ("DapperLib", "Dapper"),                # Apache-2.0
 ]
 
 EVAL_REPOS = [
-    "ppy--osu",
-    "JamesNK--Newtonsoft.Json",
-    "nunit--nunit",
+    "microsoft--garnet",                       # Cache/storage (Microsoft conventions)
+    "kgrzybek--modular-monolith-with-ddd",     # DDD architecture (community, Polish)
+    "nunit--nunit",                            # Testing framework (community)
+    "JamesNK--Newtonsoft.Json",                # Serialization (community)
+    "AngleSharp--AngleSharp",                  # HTML parser (community, German)
+    "ThreeMammals--Ocelot",                    # API gateway, middleware (community, xUnit)
+    "fullstackhero--dotnet-starter-kit",       # Web app, API + Blazor (community)
 ]

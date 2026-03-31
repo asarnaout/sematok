@@ -95,7 +95,7 @@ def extract_source_files(
                     "original_path": str(cs_file.relative_to(repos_dir)),
                     "original_size": len(content),
                     "source": repo_name,
-                    "license": "MIT",
+                    "license": "permissive",  # MIT, Apache-2.0, or BSD-3-Clause
                 }
                 meta_f.write(json.dumps(meta) + "\n")
 
@@ -146,7 +146,7 @@ def main():
     output_dir = Path(args.output)
     total_size = sum(f.stat().st_size for f in output_dir.glob("*.cs"))
     print(f"\nDone. {count} C# files ({total_size / 1024 / 1024:.1f} MB) saved to {output_dir}")
-    print("License: MIT (all sources)")
+    print("License: permissive (MIT, Apache-2.0, or BSD-3-Clause)")
 
 
 if __name__ == "__main__":
