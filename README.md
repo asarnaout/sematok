@@ -108,10 +108,25 @@ python -m sematok.mining \
         ThreeMammals--Ocelot fullstackhero--dotnet-starter-kit \
     --top 999 \
     --score-sample 0 \
-    --min-files 500
+    --min-files 500 \
+    --min-repos 2
 ```
 
-This mines ~11K candidates, scores each by actual Qwen token savings on **all** training files (116K), and keeps entries that appear in at least 500 files (868 entries). The seven excluded repos are held out for evaluation.
+This mines ~11K candidates, scores each by actual Qwen token savings on **all** training files (116K), and keeps entries that appear in at least 500 files and at least 2 distinct repos (868 entries). The seven excluded repos are held out for evaluation.
+
+#### Repo Diversity Filter (`--min-repos`)
+
+`--min-repos N` ensures every pattern in the final dictionary appears in at least N distinct source repos. This is enforced in both the initial mining phase (candidates from too few repos are rejected early) and the final corpus scoring/trimming phase (entries that score well but are repo-specific are still dropped).
+
+The default is `--min-repos 2`, which filters out patterns that are internal to a single project (e.g., `PlatformDetection` from dotnet/runtime, `Roslyn.Utilities` from Roslyn) while keeping patterns that are specific to a domain but used across multiple projects (e.g., ASP.NET middleware patterns appearing in 2-3 web framework repos).
+
+To find the right threshold for your corpus, run the repo distribution analysis:
+
+```bash
+python -m sematok.repo_distribution
+```
+
+This scans all training files and reports how many entries would survive at each `--min-repos` threshold.
 
 ### Step 3: Measure Compression
 
@@ -197,6 +212,7 @@ sematok/                    # Compression engine (language-agnostic)
     decompressor.py         # Lossless macro expansion
     lexer.py                # Tree-sitter safe zone detection
     mining.py               # Pattern mining with corpus impact scoring
+    repo_distribution.py    # Per-repo diversity analysis for --min-repos tuning
     ngram_mining.py         # N-gram substring frequency mining
     template_mining.py      # AST-guided template discovery
     ast_mining.py           # Full AST subtree mining

@@ -217,17 +217,18 @@ def _score_on_corpus(
     sample_size: int = 2000,
     seed: int = 42,
     exclude_repos: list[str] | None = None,
-) -> tuple[dict[str, int], dict[str, int]]:
+) -> tuple[dict[str, int], dict[str, int], dict[str, int]]:
     """
     Score every dictionary entry by actual corpus impact using Qwen's tokenizer.
 
     Compresses files and counts how many Qwen BPE tokens each macro saves.
-    Also tracks how many files each macro appears in.
+    Also tracks how many files and how many distinct repos each macro appears in.
 
     Returns:
-        (scores, file_counts) where:
+        (scores, file_counts, repo_counts) where:
         - scores: {macro: total_tokens_saved}
         - file_counts: {macro: number_of_files_it_appeared_in}
+        - repo_counts: {macro: number_of_distinct_repos_it_appeared_in}
     """
     from sematok.compressor import Compressor
 
@@ -252,9 +253,11 @@ def _score_on_corpus(
 
     scores: Counter = Counter()
     file_counts: Counter = Counter()
+    repo_sets: dict[str, set[str]] = defaultdict(set)
 
     print(f"\nScoring {len(sample)} files for corpus impact...")
     for f in tqdm(sample, desc="Scoring"):
+        repo = file_to_repo.get(f.name, "unknown")
         source = f.read_text(encoding="utf-8", errors="replace")
         try:
             safe_ranges = get_safe_ranges(source, allow_xmldoc=True)
@@ -291,8 +294,10 @@ def _score_on_corpus(
 
         for macro in seen_in_file:
             file_counts[macro] += 1
+            repo_sets[macro].add(repo)
 
-    return dict(scores), dict(file_counts)
+    repo_counts = {macro: len(repos) for macro, repos in repo_sets.items()}
+    return dict(scores), dict(file_counts), repo_counts
 
 
 def _rebuild_top_n(
@@ -301,12 +306,16 @@ def _rebuild_top_n(
     file_counts: dict[str, int],
     top_n: int,
     min_file_count: int = 0,
+    repo_counts: dict[str, int] | None = None,
+    min_repo_count: int = 0,
 ) -> CompressionDictionary:
     """
     Rebuild a dictionary with only the top N entries by corpus impact score.
 
     Entries that never fired (score=0) are dropped. If min_file_count > 0,
     entries appearing in fewer than that many files are also dropped.
+    If min_repo_count > 0, entries appearing in fewer than that many distinct
+    repos are also dropped (prevents repo-specific patterns from surviving).
     Remaining entries are ranked by total Qwen tokens saved and assigned
     fresh sequential macro IDs.
     """
@@ -316,6 +325,7 @@ def _rebuild_top_n(
     kept_patterns = 0
     kept_templates = 0
     skipped_low_freq = 0
+    skipped_low_repos = 0
 
     for macro, score in ranked:
         if kept_patterns + kept_templates >= top_n:
@@ -325,6 +335,12 @@ def _rebuild_top_n(
         if min_file_count > 0 and fc < min_file_count:
             skipped_low_freq += 1
             continue
+
+        if min_repo_count > 0 and repo_counts:
+            rc = repo_counts.get(macro, 0)
+            if rc < min_repo_count:
+                skipped_low_repos += 1
+                continue
 
         if macro in d.macro_to_pattern:
             pattern = d.macro_to_pattern[macro]
@@ -342,6 +358,8 @@ def _rebuild_top_n(
     print(f"\nTrimmed to top {total}: {kept_patterns} exact + {kept_templates} templates")
     if min_file_count > 0:
         print(f"Skipped {skipped_low_freq} entries below min file count ({min_file_count})")
+    if min_repo_count > 0:
+        print(f"Skipped {skipped_low_repos} entries below min repo count ({min_repo_count})")
     if ranked:
         top_score = ranked[0][1]
         cutoff_score = ranked[min(top_n - 1, len(ranked) - 1)][1] if len(ranked) >= top_n else 0
@@ -349,10 +367,11 @@ def _rebuild_top_n(
 
     # --- Frequency distribution report ---
     print(f"\nFrequency distribution (all {len(ranked)} scored entries):")
-    print(f"{'Rank':<6} {'Score':>8} {'Files':>8} {'Avg/File':>9} {'Type':<5} Pattern")
-    print("-" * 100)
+    print(f"{'Rank':<6} {'Score':>8} {'Files':>8} {'Repos':>6} {'Avg/File':>9} {'Type':<5} Pattern")
+    print("-" * 110)
     for i, (macro, score) in enumerate(ranked):
         fc = file_counts.get(macro, 0)
+        rc = repo_counts.get(macro, 0) if repo_counts else 0
         avg = score / fc if fc > 0 else 0
         if macro in d.macro_to_pattern:
             ptype = "exact"
@@ -366,7 +385,7 @@ def _rebuild_top_n(
         # Truncate long patterns for display
         if len(label) > 50:
             label = label[:47] + "..."
-        print(f"{i+1:<6} {score:>8} {fc:>8} {avg:>9.1f} {ptype:<5} {label}")
+        print(f"{i+1:<6} {score:>8} {fc:>8} {rc:>6} {avg:>9.1f} {ptype:<5} {label}")
 
     # Summary buckets
     all_fc = [file_counts.get(m, 0) for m, _ in ranked]
@@ -498,10 +517,11 @@ def build_mined_dictionary(
     print(f"\nTotal candidates before scoring: {total_before} ({d.size} exact + {d.template_count} templates)")
 
     # --- Phase 2: Score on corpus and trim ---
-    needs_trim = total_before > top_n or min_file_count > 0
+    needs_trim = total_before > top_n or min_file_count > 0 or min_repos > 0
     if needs_trim:
-        scores, file_counts = _score_on_corpus(d, corpus_dir, sample_size=score_sample_size, exclude_repos=exclude_repos)
-        d = _rebuild_top_n(d, scores, file_counts, top_n, min_file_count=min_file_count)
+        scores, file_counts, repo_counts = _score_on_corpus(d, corpus_dir, sample_size=score_sample_size, exclude_repos=exclude_repos)
+        d = _rebuild_top_n(d, scores, file_counts, top_n, min_file_count=min_file_count,
+                           repo_counts=repo_counts, min_repo_count=min_repos)
     else:
         print(f"Only {total_before} entries — no trimming needed (target: {top_n})")
 
