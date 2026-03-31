@@ -236,8 +236,11 @@ def _score_on_corpus(
     if exclude_set and file_to_repo:
         files = [f for f in files if file_to_repo.get(f.name, "unknown") not in exclude_set]
 
-    random.seed(seed)
-    sample = random.sample(files, min(sample_size, len(files)))
+    if sample_size > 0 and sample_size < len(files):
+        random.seed(seed)
+        sample = random.sample(files, sample_size)
+    else:
+        sample = files
 
     macro_re = re.compile(r"<\|M\d{3}\|>")
     template_re = re.compile(r"<\|T(\d{3}):([^|]*)\|>")
@@ -456,7 +459,7 @@ def main():
     parser.add_argument("--max-templates", type=int, default=500, help="Max template patterns")
     parser.add_argument("--no-ast-templates", action="store_true", help="Skip AST subtree mining")
     parser.add_argument("--max-ast-templates", type=int, default=1000, help="Max AST-mined templates")
-    parser.add_argument("--score-sample", type=int, default=2000, help="Number of files to sample for corpus impact scoring")
+    parser.add_argument("--score-sample", type=int, default=0, help="Files to sample for scoring (0 = all training files)")
     parser.add_argument("--verbose", action="store_true", help="Print all accepted patterns")
     args = parser.parse_args()
 

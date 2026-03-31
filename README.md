@@ -135,6 +135,16 @@ python -m training.evaluate --all \
 
 Four-configuration perplexity comparison measuring macro comprehension and capability retention. Use `--max-files 500` for a quick validation run (~6 min).
 
+### Step 7b: Functional Correctness
+
+```bash
+python -m training.evaluate_correctness \
+    --base-model models/qwen-sematok-base \
+    --finetuned-model models/qwen-sematok-finetuned-merged
+```
+
+Splits eval files into prefix and suffix, generates continuations, and measures similarity to ground truth. Compares base model on uncompressed C# vs finetuned model on compressed C#. Use `--max-files 50 --gen-tokens 64` for a quick run.
+
 ### Running Tests
 
 ```bash
@@ -177,6 +187,7 @@ training/
     expand_tokenizer.py     # Vocabulary expansion + embedding init
     fine_tune.py            # LoRA fine-tuning with Unsloth
     evaluate.py             # Four-config perplexity evaluation
+    evaluate_correctness.py # Functional correctness (generation test)
 tests/                      # 96 tests
 ```
 
