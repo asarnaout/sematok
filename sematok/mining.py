@@ -307,6 +307,7 @@ def _rebuild_top_n(
     min_file_count: int = 0,
     repo_counts: dict[str, int] | None = None,
     min_repo_count: int = 0,
+    max_entries: int = 0,
 ) -> CompressionDictionary:
     """
     Rebuild a dictionary keeping only entries that pass quality filters.
@@ -315,6 +316,7 @@ def _rebuild_top_n(
     entries appearing in fewer than that many files are also dropped.
     If min_repo_count > 0, entries appearing in fewer than that many distinct
     repos are also dropped (prevents repo-specific patterns from surviving).
+    If max_entries > 0, at most that many entries are kept (by score rank).
     Remaining entries are ranked by total Qwen tokens saved and assigned
     fresh sequential macro IDs. The 3-digit macro ID format caps exact macros
     and templates at 999 each.
@@ -326,6 +328,8 @@ def _rebuild_top_n(
     kept_templates = 0
     skipped_low_freq = 0
     skipped_low_repos = 0
+    skipped_max_entries = 0
+    skipped_format_limit = 0
 
     from sematok.dictionary import MAX_MACROS, MAX_TEMPLATES
     for macro, score in ranked:
@@ -341,8 +345,13 @@ def _rebuild_top_n(
                 skipped_low_repos += 1
                 continue
 
+        if max_entries > 0 and (kept_patterns + kept_templates) >= max_entries:
+            skipped_max_entries += 1
+            continue
+
         if macro in d.macro_to_pattern:
             if kept_patterns >= MAX_MACROS:
+                skipped_format_limit += 1
                 continue
             pattern = d.macro_to_pattern[macro]
             category = d.pattern_categories.get(pattern, "mined")
@@ -350,6 +359,7 @@ def _rebuild_top_n(
             kept_patterns += 1
         elif macro in d.macro_to_template:
             if kept_templates >= MAX_TEMPLATES:
+                skipped_format_limit += 1
                 continue
             template = d.macro_to_template[macro]
             slots = d.template_slots[template]
@@ -363,6 +373,12 @@ def _rebuild_top_n(
         print(f"Skipped {skipped_low_freq} entries below min file count ({min_file_count})")
     if min_repo_count > 0:
         print(f"Skipped {skipped_low_repos} entries below min repo count ({min_repo_count})")
+    if skipped_max_entries > 0:
+        print(f"WARNING: {skipped_max_entries} eligible entries dropped by --max-entries {max_entries}. "
+              f"Increase --max-entries or raise --min-files to keep only the most impactful patterns.")
+    if skipped_format_limit > 0:
+        print(f"WARNING: {skipped_format_limit} eligible entries dropped by 3-digit macro ID limit "
+              f"(max {MAX_MACROS} exact + {MAX_TEMPLATES} templates). Raise --min-files to reduce count.")
     if ranked:
         top_score = ranked[0][1]
         print(f"Score range: {top_score} (best) ... {ranked[-1][1]} (worst)")
@@ -438,6 +454,7 @@ def build_mined_dictionary(
     max_ast_templates: int = 1000,
     score_sample_size: int = 2000,
     min_file_count: int = 0,
+    max_entries: int = 0,
 ) -> tuple[CompressionDictionary, list[tuple[str, int, int, float, int]]]:
     """
     Build a compression dictionary by mining broadly, then scoring and trimming.
@@ -446,11 +463,12 @@ def build_mined_dictionary(
     1. Mine all candidates (seeds + regex + n-gram + templates + AST templates)
        with generous internal limits
     2. Score every entry by actual Qwen corpus impact on a file sample
-    3. Keep entries that pass --min-files and --min-repos filters
+    3. Keep entries that pass --min-files, --min-repos, and --max-entries filters
 
-    Dictionary size is determined by the quality filters, not an arbitrary cap.
-    The 3-digit macro ID format (M001-M999, T001-T999) enforces a hard ceiling
-    of 999 exact macros and 999 templates.
+    Dictionary size is determined by the quality filters. An optional
+    --max-entries cap limits the total count. The 3-digit macro ID format
+    (M001-M999, T001-T999) enforces a hard ceiling of 999 exact macros
+    and 999 templates regardless.
 
     Returns:
         (dictionary, mined_patterns) -- the final trimmed dictionary and the
@@ -537,11 +555,12 @@ def build_mined_dictionary(
     print(f"\nTotal candidates before scoring: {total_before} ({d.size} exact + {d.template_count} templates)")
 
     # --- Phase 2: Score on corpus and trim ---
-    needs_trim = min_file_count > 0 or min_repos > 0
+    needs_trim = min_file_count > 0 or min_repos > 0 or max_entries > 0
     if needs_trim:
         scores, file_counts, repo_counts = _score_on_corpus(d, corpus_dir, sample_size=score_sample_size, exclude_repos=exclude_repos)
         d = _rebuild_top_n(d, scores, file_counts, min_file_count=min_file_count,
-                           repo_counts=repo_counts, min_repo_count=min_repos)
+                           repo_counts=repo_counts, min_repo_count=min_repos,
+                           max_entries=max_entries)
     else:
         print(f"{total_before} entries, no quality filters specified — skipping scoring phase")
 
@@ -567,6 +586,7 @@ def main():
     parser.add_argument("--max-ast-templates", type=int, default=1000, help="Max AST-mined templates")
     parser.add_argument("--score-sample", type=int, default=0, help="Files to sample for scoring (0 = all training files)")
     parser.add_argument("--min-files", type=int, default=0, help="Min training files a pattern must appear in (0 = no threshold)")
+    parser.add_argument("--max-entries", type=int, default=0, help="Max entries in final dictionary (0 = no limit, capped at 999 by macro ID format)")
     parser.add_argument("--verbose", action="store_true", help="Print all accepted patterns")
     args = parser.parse_args()
 
@@ -583,6 +603,7 @@ def main():
         max_ast_templates=args.max_ast_templates,
         score_sample_size=args.score_sample,
         min_file_count=args.min_files,
+        max_entries=args.max_entries,
     )
 
     d.save(args.output)

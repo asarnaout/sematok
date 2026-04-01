@@ -76,7 +76,9 @@ python -m sematok.mining \
     --min-repos 2
 ```
 
-This mines ~11K candidates, scores each by actual Qwen token savings on **all** training files (116K), and keeps entries that appear in at least 500 files and at least 2 distinct repos. Dictionary size is determined entirely by `--min-files` and `--min-repos` — there is no arbitrary cap. The 3-digit macro ID format (`<|M001|>` through `<|M999|>`) enforces a hard ceiling of 999 exact macros and 999 templates. The seven excluded repos are held out for evaluation.
+This mines ~11K candidates, scores each by actual Qwen token savings on **all** training files (116K), and keeps entries that appear in at least 500 files and at least 2 distinct repos. The seven excluded repos are held out for evaluation.
+
+Dictionary size is determined by `--min-files` and `--min-repos`. To set a hard upper limit, use `--max-entries N` (e.g., `--max-entries 800`). The 3-digit macro ID format (`<|M001|>` through `<|M999|>`) enforces an absolute ceiling of 999 exact macros and 999 templates. If any limit is hit, mining prints a warning showing how many eligible entries were dropped.
 
 #### Choosing `--min-files`
 
