@@ -131,15 +131,19 @@ python -m sematok.measure --corpus data/raw_cs --dictionary sematok/dictionary.j
 python -m data.prepare --corpus data/raw_cs --output data/finetune
 ```
 
-Produces `train.jsonl` and `eval.jsonl`. Training data uses a 75/25 compressed/original mix. Eval data is 100% compressed. Split is repo-balanced: train on 37 repos (~116K files), evaluate on 7 held-out repos (~6.3K files).
+Produces `train.jsonl` and `eval.jsonl`. Training data uses a 75/25 compressed/original mix (configurable via `--compress-ratio`, default `0.75`). Eval data is 100% compressed. Split is repo-balanced: train on 37 repos (~116K files), evaluate on 7 held-out repos (~6.3K files).
 
 ### Step 5: Expand Tokenizer
 
 ```bash
-python -m training.expand_tokenizer --output models/qwen-sematok-base
+python -m training.expand_tokenizer \
+    --output models/qwen-sematok-base \
+    --corpus data/raw_cs
 ```
 
-Adds 1000 tokens to Qwen2.5-Coder-1.5B-Instruct and initializes their embeddings via mean-of-expansion (averages the embeddings of the tokens each macro expands to).
+Adds macro tokens to Qwen2.5-Coder-1.5B-Instruct (count depends on dictionary size) and initializes their embeddings via Token Distillation ([arXiv:2505.20133](https://arxiv.org/abs/2505.20133)). For each exact macro, the distillation optimizes the new embedding so the model's early-layer hidden states match what they would be with the original sub-tokens. Template prefixes and the closing delimiter fall back to mean-of-expansion.
+
+Use `--no-distill` to skip distillation and use mean-of-expansion for all tokens (faster, lower quality).
 
 ### Step 6: Fine-Tune
 

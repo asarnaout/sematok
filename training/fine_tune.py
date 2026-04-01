@@ -20,6 +20,8 @@ import json
 import time
 from pathlib import Path
 
+from training.vocab_utils import validate_expanded_vocab
+
 try:
     from unsloth import FastLanguageModel
     from unsloth import UnslothTrainer, UnslothTrainingArguments
@@ -60,8 +62,6 @@ DEFAULT_SAVE_STEPS = 500
 DEFAULT_EVAL_STEPS = 500
 DEFAULT_SAVE_TOTAL_LIMIT = 2
 
-EXPECTED_VOCAB_SIZE = 152665
-
 TARGET_MODULES = [
     "q_proj", "k_proj", "v_proj", "o_proj",
     "gate_proj", "up_proj", "down_proj",
@@ -71,22 +71,7 @@ TARGET_MODULES = [
 
 def load_model(model_path: str, max_seq_length: int):
     """Load the expanded model in 4-bit quantization."""
-    # Validate the model directory
-    config_path = Path(model_path) / "config.json"
-    if not config_path.exists():
-        raise FileNotFoundError(
-            f"No config.json found in {model_path}. "
-            "Is this the right model directory?"
-        )
-
-    with open(config_path, encoding="utf-8") as f:
-        config = json.load(f)
-    vocab_size = config.get("vocab_size", 0)
-    if vocab_size != EXPECTED_VOCAB_SIZE:
-        raise ValueError(
-            f"Model has vocab_size={vocab_size}, expected {EXPECTED_VOCAB_SIZE}. "
-            "Run expand_tokenizer.py first (Step 5)."
-        )
+    validate_expanded_vocab(model_path)
 
     print(f"Loading model: {model_path}")
     model, tokenizer = FastLanguageModel.from_pretrained(

@@ -62,27 +62,14 @@ DEFAULT_COMPRESSED_EVAL = "data/finetune/eval.jsonl"
 DEFAULT_DICTIONARY = "sematok/dictionary.json"
 DEFAULT_OUTPUT = "out/eval_results.json"
 
-EXPECTED_VOCAB_SIZE = 152665
-
-
 # ---------------------------------------------------------------------------
 # Model loading / unloading
 # ---------------------------------------------------------------------------
 
 def load_model(model_path: str, max_seq_length: int, load_in_4bit: bool = True):
     """Load model + tokenizer via Unsloth."""
-    config_path = Path(model_path) / "config.json"
-    if not config_path.exists():
-        raise FileNotFoundError(f"No config.json in {model_path}")
-
-    with open(config_path, encoding="utf-8") as f:
-        config = json.load(f)
-    vocab_size = config.get("vocab_size", 0)
-    if vocab_size != EXPECTED_VOCAB_SIZE:
-        raise ValueError(
-            f"vocab_size={vocab_size}, expected {EXPECTED_VOCAB_SIZE}. "
-            "Run expand_tokenizer.py first."
-        )
+    from training.vocab_utils import validate_expanded_vocab
+    validate_expanded_vocab(model_path)
 
     print(f"\nLoading model: {model_path}")
     model, tokenizer = FastLanguageModel.from_pretrained(
