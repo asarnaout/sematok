@@ -18,7 +18,7 @@ Usage:
 
 import argparse
 import json
-import random
+
 import re
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -214,8 +214,6 @@ def merge_mining_results(
 def _score_on_corpus(
     d: CompressionDictionary,
     corpus_dir: Path,
-    sample_size: int = 2000,
-    seed: int = 42,
     exclude_repos: list[str] | None = None,
 ) -> tuple[dict[str, int], dict[str, int], dict[str, int]]:
     """
@@ -242,12 +240,6 @@ def _score_on_corpus(
     if exclude_set and file_to_repo:
         files = [f for f in files if file_to_repo.get(f.name, "unknown") not in exclude_set]
 
-    if sample_size > 0 and sample_size < len(files):
-        random.seed(seed)
-        sample = random.sample(files, sample_size)
-    else:
-        sample = files
-
     macro_re = re.compile(r"<\|M\d{3}\|>")
     template_re = re.compile(r"<\|T(\d{3}):([^|]*)\|>")
 
@@ -255,8 +247,8 @@ def _score_on_corpus(
     file_counts: Counter = Counter()
     repo_sets: dict[str, set[str]] = defaultdict(set)
 
-    print(f"\nScoring {len(sample)} files for corpus impact...")
-    for f in tqdm(sample, desc="Scoring"):
+    print(f"\nScoring {len(files)} files for corpus impact...")
+    for f in tqdm(files, desc="Scoring"):
         repo = file_to_repo.get(f.name, "unknown")
         source = f.read_text(encoding="utf-8", errors="replace")
         try:
@@ -452,7 +444,6 @@ def build_mined_dictionary(
     max_templates: int = 500,
     use_ast_templates: bool = True,
     max_ast_templates: int = 1000,
-    score_sample_size: int = 2000,
     min_file_count: int = 0,
     max_entries: int = 999,
 ) -> tuple[CompressionDictionary, list[tuple[str, int, int, float, int]]]:
@@ -557,7 +548,7 @@ def build_mined_dictionary(
     # --- Phase 2: Score on corpus and trim ---
     needs_trim = min_file_count > 0 or min_repos > 0 or max_entries > 0
     if needs_trim:
-        scores, file_counts, repo_counts = _score_on_corpus(d, corpus_dir, sample_size=score_sample_size, exclude_repos=exclude_repos)
+        scores, file_counts, repo_counts = _score_on_corpus(d, corpus_dir, exclude_repos=exclude_repos)
         d = _rebuild_top_n(d, scores, file_counts, min_file_count=min_file_count,
                            repo_counts=repo_counts, min_repo_count=min_repos,
                            max_entries=max_entries)
@@ -584,7 +575,6 @@ def main():
     parser.add_argument("--max-templates", type=int, default=500, help="Max template patterns")
     parser.add_argument("--no-ast-templates", action="store_true", help="Skip AST subtree mining")
     parser.add_argument("--max-ast-templates", type=int, default=1000, help="Max AST-mined templates")
-    parser.add_argument("--score-sample", type=int, default=0, help="Files to sample for scoring (0 = all training files)")
     parser.add_argument("--min-files", type=int, default=0, help="Min training files a pattern must appear in (0 = no threshold)")
     parser.add_argument("--max-entries", type=int, default=999, help="Max entries in final dictionary (default: 999, the 3-digit macro ID limit)")
     parser.add_argument("--verbose", action="store_true", help="Print all accepted patterns")
@@ -601,7 +591,6 @@ def main():
         max_templates=args.max_templates,
         use_ast_templates=not args.no_ast_templates,
         max_ast_templates=args.max_ast_templates,
-        score_sample_size=args.score_sample,
         min_file_count=args.min_files,
         max_entries=args.max_entries,
     )
