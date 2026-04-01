@@ -215,6 +215,46 @@ python -m training.evaluate_correctness \
 
 Four-configuration perplexity comparison plus functional correctness (generation similarity). Use `--max-files 500` for a quick validation run.
 
+## Multi-Language Training
+
+To train a single model that handles multiple languages:
+
+1. Mine each language independently:
+   ```bash
+   python -m sematok.mining --language csharp --corpus data/raw_cs \
+       --output sematok/languages/csharp/dictionary.json --min-files 500
+   python -m sematok.mining --language python --corpus data/raw_py \
+       --output sematok/languages/python/dictionary.json --min-files 500
+   ```
+
+2. Merge dictionaries (assigns non-overlapping macro IDs):
+   ```bash
+   python -m sematok.merge \
+       sematok/languages/csharp/dictionary.json \
+       sematok/languages/python/dictionary.json \
+       --output merged_dictionary.json
+   ```
+
+3. Prepare training data per language, then concatenate:
+   ```bash
+   python -m data.prepare --language csharp --corpus data/raw_cs --output data/ft_cs
+   python -m data.prepare --language python --corpus data/raw_py --output data/ft_py
+   cat data/ft_cs/train.jsonl data/ft_py/train.jsonl > data/ft_mixed/train.jsonl
+   ```
+
+4. Expand tokenizer and train using the merged dictionary:
+   ```bash
+   python -m training.expand_tokenizer \
+       --dictionary merged_dictionary.json \
+       --output models/sematok-multi-base
+   python -m training.fine_tune \
+       --model models/sematok-multi-base \
+       --train data/ft_mixed/train.jsonl \
+       --output models/sematok-multi-finetuned
+   ```
+
+Each language's macros use distinct ID ranges, so there are no collisions. The `--max-entries` default of 999 per language keeps individual dictionaries reasonable.
+
 ## API Reference
 
 ```python
@@ -251,6 +291,7 @@ sematok/                    # Compression engine (language-agnostic)
     ngram_mining.py         # N-gram substring frequency mining
     repo_distribution.py    # Per-repo diversity analysis
     measure.py              # Compression ratio measurement
+    merge.py                # Merge per-language dictionaries
 data/
     download.py             # Corpus download from GitHub
     prepare.py              # JSONL generation for fine-tuning

@@ -144,8 +144,8 @@ def main():
 
     # Step 3: Summary
     output_dir = Path(args.output)
-    total_size = sum(f.stat().st_size for f in output_dir.glob("*.cs"))
-    print(f"\nDone. {count} C# files ({total_size / 1024 / 1024:.1f} MB) saved to {output_dir}")
+    total_size = sum(f.stat().st_size for f in output_dir.glob(f"*{lang.file_extension}"))
+    print(f"\nDone. {count} {lang.name} files ({total_size / 1024 / 1024:.1f} MB) saved to {output_dir}")
     print("License: permissive (MIT, Apache-2.0, or BSD-3-Clause)")
 
 

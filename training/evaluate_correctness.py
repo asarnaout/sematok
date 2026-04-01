@@ -1,5 +1,5 @@
 """
-Evaluate functional correctness: can the model generate correct C# from
+Evaluate functional correctness: can the model generate correct code from
 compressed prompts?
 
 Splits eval files into prefix (prompt) and suffix (ground truth), generates
@@ -470,7 +470,7 @@ def run_correctness_eval(args):
     model, tokenizer = load_model_for_generation(
         args.base_model, args.max_seq_length, args.load_in_4bit,
     )
-    print("\nConfig A: Base model + uncompressed C#")
+    print("\nConfig A: Base model + uncompressed code")
     results["A"] = evaluate_config(
         model, tokenizer, uncompressed_texts,
         label="A (base+uncompressed)", decompressor=None, **gen_kwargs,
@@ -484,7 +484,7 @@ def run_correctness_eval(args):
     model, tokenizer = load_model_for_generation(
         args.finetuned_model, args.max_seq_length, args.load_in_4bit,
     )
-    print("\nConfig B: Finetuned model + compressed C#")
+    print("\nConfig B: Finetuned model + compressed code")
     results["B"] = evaluate_config(
         model, tokenizer, compressed_texts,
         label="B (finetuned+compressed)", decompressor=decompressor, **gen_kwargs,
@@ -527,8 +527,12 @@ def main():
         help="Compressed eval JSONL (default: data/finetune/eval.jsonl)",
     )
     parser.add_argument(
-        "--dictionary", default="sematok/languages/csharp/dictionary.json",
-        help="Compression dictionary (default: sematok/languages/csharp/dictionary.json)",
+        "--dictionary", default=None,
+        help="Compression dictionary (default: auto-detect from language)",
+    )
+    parser.add_argument(
+        "--language", type=str, default="csharp",
+        help="Language config (used to locate default dictionary)",
     )
     parser.add_argument(
         "--output", default="out/correctness_results.json",
@@ -544,6 +548,15 @@ def main():
     parser.add_argument("--seed", type=int, default=42, help="Random seed (default: 42)")
 
     args = parser.parse_args()
+
+    # Resolve dictionary path
+    if args.dictionary is None:
+        from sematok.languages import get_dictionary_path
+        resolved = get_dictionary_path(args.language)
+        if resolved is None:
+            parser.error(f"No dictionary found for language '{args.language}'. "
+                         "Provide --dictionary explicitly.")
+        args.dictionary = str(resolved)
 
     start = time.time()
     run_correctness_eval(args)

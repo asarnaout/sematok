@@ -2,10 +2,10 @@
 Evaluate sematok fine-tuning: macro comprehension and capability retention.
 
 Computes perplexity across four configurations:
-  A = Base model on uncompressed C#        (baseline)
-  B = Fine-tuned model on compressed C#    (our goal)
-  C = Fine-tuned model on uncompressed C#  (retention check)
-  D = Base model on compressed C#          (sanity: should be terrible)
+  A = Base model on uncompressed code       (baseline)
+  B = Fine-tuned model on compressed code  (our goal)
+  C = Fine-tuned model on uncompressed code (retention check)
+  D = Base model on compressed code        (sanity: should be terrible)
 
 Usage:
     # All four configs:
@@ -59,7 +59,7 @@ from tqdm import tqdm
 # Defaults
 DEFAULT_MAX_SEQ_LENGTH = 2048
 DEFAULT_COMPRESSED_EVAL = "data/finetune/eval.jsonl"
-DEFAULT_DICTIONARY = "sematok/languages/csharp/dictionary.json"
+DEFAULT_DICTIONARY = None  # auto-detect from --language
 DEFAULT_OUTPUT = "out/eval_results.json"
 
 # ---------------------------------------------------------------------------
@@ -279,12 +279,12 @@ def build_analysis(results: dict) -> dict:
             "improvement_factor": round(factor, 2),
         }
 
-    # C# retention: C vs A
+    # Code retention: C vs A
     if c.get("perplexity") and a.get("perplexity"):
         c_ppl = c["perplexity"]
         a_ppl = a["perplexity"]
         delta = ((c_ppl - a_ppl) / a_ppl * 100) if a_ppl > 0 else 0
-        analysis["csharp_retention"] = {
+        analysis["code_retention"] = {
             "C_ppl": c_ppl,
             "A_ppl": a_ppl,
             "delta_pct": round(delta, 2),
@@ -335,10 +335,10 @@ def print_results_table(results: dict, analysis: dict):
             print(f"  Macro comprehension (B vs D):  PPL {mc['B_ppl']:.2f} vs {mc['D_ppl']:.2f}"
                   f"  ({mc['improvement_factor']:.1f}x improvement)")
 
-        if "csharp_retention" in analysis:
-            cr = analysis["csharp_retention"]
+        if "code_retention" in analysis:
+            cr = analysis["code_retention"]
             sign = "+" if cr["delta_pct"] >= 0 else ""
-            print(f"  C# retention (C vs A):         PPL {cr['C_ppl']:.2f} vs {cr['A_ppl']:.2f}"
+            print(f"  Code retention (C vs A):        PPL {cr['C_ppl']:.2f} vs {cr['A_ppl']:.2f}"
                   f"  ({sign}{cr['delta_pct']:.1f}% delta)")
 
         if "effective_compression" in analysis:
@@ -397,8 +397,10 @@ def main():
                         default=DEFAULT_COMPRESSED_EVAL,
                         help=f"Compressed eval JSONL (default: {DEFAULT_COMPRESSED_EVAL})")
     parser.add_argument("--dictionary", type=str,
-                        default=DEFAULT_DICTIONARY,
-                        help=f"Dictionary path for decompression (default: {DEFAULT_DICTIONARY})")
+                        default=None,
+                        help="Dictionary path for decompression (default: auto-detect from language)")
+    parser.add_argument("--language", type=str, default="csharp",
+                        help="Language config (used to locate default dictionary)")
     parser.add_argument("--output", type=str, default=DEFAULT_OUTPUT,
                         help=f"JSON results output (default: {DEFAULT_OUTPUT})")
     parser.add_argument("--max-seq-length", type=int,
@@ -412,6 +414,15 @@ def main():
                         help="Load model in full precision")
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
+
+    # Resolve dictionary path
+    if args.dictionary is None:
+        from sematok.languages import get_dictionary_path
+        resolved = get_dictionary_path(args.language)
+        if resolved is None:
+            parser.error(f"No dictionary found for language '{args.language}'. "
+                         "Provide --dictionary explicitly.")
+        args.dictionary = str(resolved)
 
     start = time.time()
 
@@ -487,7 +498,7 @@ def _run_all_configs(args):
         args.base_model, args.max_seq_length, args.load_in_4bit
     )
 
-    print("\nConfig A: Base model + uncompressed C#")
+    print("\nConfig A: Base model + uncompressed code")
     results["A"] = compute_perplexity(
         model, tokenizer, uncompressed_texts, args.max_seq_length,
         label="A (base+uncompressed)",
@@ -496,7 +507,7 @@ def _run_all_configs(args):
     results["A"]["eval_data"] = uncompressed_path
     print(f"  -> PPL: {results['A']['perplexity']:.2f}, Loss: {results['A']['avg_loss']:.4f}")
 
-    print("\nConfig D: Base model + compressed C#")
+    print("\nConfig D: Base model + compressed code")
     results["D"] = compute_perplexity(
         model, tokenizer, compressed_texts, args.max_seq_length,
         label="D (base+compressed)",
@@ -512,7 +523,7 @@ def _run_all_configs(args):
         args.finetuned_model, args.max_seq_length, args.load_in_4bit
     )
 
-    print("\nConfig B: Fine-tuned model + compressed C#")
+    print("\nConfig B: Fine-tuned model + compressed code")
     results["B"] = compute_perplexity(
         model, tokenizer, compressed_texts, args.max_seq_length,
         label="B (finetuned+compressed)",
@@ -521,7 +532,7 @@ def _run_all_configs(args):
     results["B"]["eval_data"] = compressed_path
     print(f"  -> PPL: {results['B']['perplexity']:.2f}, Loss: {results['B']['avg_loss']:.4f}")
 
-    print("\nConfig C: Fine-tuned model + uncompressed C#")
+    print("\nConfig C: Fine-tuned model + uncompressed code")
     results["C"] = compute_perplexity(
         model, tokenizer, uncompressed_texts, args.max_seq_length,
         label="C (finetuned+uncompressed)",

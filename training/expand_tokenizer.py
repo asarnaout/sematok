@@ -139,6 +139,7 @@ def build_context_index(
     num_contexts: int = 25,
     context_chars: int = 300,
     seed: int = 42,
+    file_extension: str = ".cs",
 ) -> dict[str, list[str]]:
     """Scan corpus files once, collect text windows around each pattern.
 
@@ -150,12 +151,12 @@ def build_context_index(
     index: dict[str, list[str]] = {p: [] for p in patterns}
     remaining = set(patterns)
 
-    cs_files = sorted(corpus_dir.glob("*.cs"))
+    src_files = sorted(corpus_dir.glob(f"*{file_extension}"))
     rng = random.Random(seed)
-    rng.shuffle(cs_files)
+    rng.shuffle(src_files)
 
-    print(f"  Scanning corpus ({len(cs_files)} files) for {len(patterns)} patterns...")
-    for filepath in tqdm(cs_files, desc="  Building context index", leave=False):
+    print(f"  Scanning corpus ({len(src_files)} files) for {len(patterns)} patterns...")
+    for filepath in tqdm(src_files, desc="  Building context index", leave=False):
         if not remaining:
             break
 
@@ -360,6 +361,7 @@ def init_embeddings_distilled(
     target_layer: int = 4,
     num_contexts: int = 25,
     context_window: int = 50,
+    file_extension: str = ".cs",
 ):
     """Token Distillation for exact macros, mean-of-expansion fallback for rest.
 
@@ -386,6 +388,7 @@ def init_embeddings_distilled(
         corpus_dir, patterns,
         num_contexts=num_contexts,
         context_chars=context_chars,
+        file_extension=file_extension,
     )
 
     # Freeze model body for distillation
@@ -506,25 +509,29 @@ def verify(tokenizer: AutoTokenizer, model: AutoModelForCausalLM, new_tokens: li
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Expand Qwen tokenizer with sematok macro tokens"
+        description="Expand model tokenizer with sematok macro tokens"
     )
     parser.add_argument(
         "--output", type=str, required=True,
         help="Output directory for expanded model + tokenizer",
     )
     parser.add_argument(
-        "--dictionary", type=str, default="sematok/languages/csharp/dictionary.json",
-        help="Path to dictionary JSON (default: sematok/languages/csharp/dictionary.json)",
+        "--dictionary", type=str, default=None,
+        help="Path to dictionary JSON (default: auto-detect from language)",
     )
     parser.add_argument(
         "--model", type=str, default=DEFAULT_BASE_MODEL,
         help=f"Base model ID (default: {DEFAULT_BASE_MODEL})",
     )
+    parser.add_argument(
+        "--language", type=str, default="csharp",
+        help="Language config to use (default: csharp)",
+    )
 
     # Token distillation arguments
     parser.add_argument(
         "--corpus", type=str, default=None,
-        help="Path to raw C# corpus (required for --distill)",
+        help="Path to raw corpus (required for --distill)",
     )
     distill_group = parser.add_mutually_exclusive_group()
     distill_group.add_argument(
@@ -558,8 +565,17 @@ def main():
 
     args = parser.parse_args()
 
+    # Resolve dictionary path
+    if args.dictionary is None:
+        from sematok.languages import get_dictionary_path
+        resolved = get_dictionary_path(args.language)
+        if resolved is None:
+            parser.error(f"No dictionary found for language '{args.language}'. "
+                         "Provide --dictionary explicitly.")
+        args.dictionary = str(resolved)
+
     if args.distill and not args.corpus:
-        parser.error("--distill requires --corpus (path to raw C# corpus). "
+        parser.error("--distill requires --corpus (path to raw corpus). "
                       "Use --no-distill for mean-of-expansion only.")
 
     output_dir = Path(args.output)
@@ -598,6 +614,8 @@ def main():
     # Initialize embeddings
     if args.distill:
         corpus_dir = Path(args.corpus)
+        from sematok.languages import get_language
+        lang = get_language(args.language)
         print("\nInitializing embeddings (token distillation)...")
         init_embeddings_distilled(
             model, tokenizer, new_tokens, dictionary,
@@ -607,6 +625,7 @@ def main():
             target_layer=args.distill_layer,
             num_contexts=args.distill_contexts,
             context_window=args.context_window,
+            file_extension=lang.file_extension,
         )
     else:
         print("\nInitializing embeddings (mean-of-expansion)...")

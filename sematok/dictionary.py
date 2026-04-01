@@ -156,6 +156,26 @@ class CompressionDictionary:
             d._template_index = max(d._template_index, idx)
         return d
 
+    @classmethod
+    def merge(cls, *dicts: "CompressionDictionary") -> "CompressionDictionary":
+        """Merge multiple dictionaries into one with fresh sequential IDs.
+
+        Patterns are added in order. If the same pattern or template exists in
+        multiple dictionaries, only the first occurrence is kept.
+        """
+        merged = cls()
+        for d in dicts:
+            for pattern in d.patterns_by_length:
+                if pattern not in merged.pattern_to_macro:
+                    category = d.pattern_categories.get(pattern, "mined")
+                    merged.add_pattern(pattern, category=category)
+            for template in d.templates_by_length:
+                if template not in merged.template_to_macro:
+                    slots = d.template_slots[template]
+                    category = d.template_categories.get(template, "template")
+                    merged.add_template(template, slots, category=category)
+        return merged
+
     def stats(self) -> dict:
         """Summary statistics about the dictionary."""
         categories = {}
