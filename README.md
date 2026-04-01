@@ -21,55 +21,13 @@ C# has more boilerplate than most languages -- access modifiers, property access
 ## The Approach
 
 1. **Mine** recurring boilerplate patterns from a large C# corpus (122K files, 44 permissively-licensed repos)
-2. **Build** a dictionary of macro tokens scored on the full training corpus, filtered by a minimum file-frequency threshold (868 entries, each appearing in 500+ training files)
+2. **Build** a dictionary of macro tokens scored on the full training corpus, filtered by minimum file-frequency and repo-diversity thresholds
 3. **Compress** training data by replacing patterns with macros (75% compressed, 25% original)
-4. **Expand** the model's tokenizer with the new tokens (829 exact macros + 39 template prefixes + 1 delimiter)
+4. **Expand** the model's tokenizer with the new tokens
 5. **Fine-tune** the model via LoRA so it learns the macros without forgetting its other capabilities
 6. **Evaluate** both macro comprehension and capability retention
 
 The macro layer works as pre/post-processing -- the model's original tokenizer stays untouched in production. Deployment requires fine-tuning (cheap), not full retraining.
-
-## Current Results
-
-**7.44% token compression** measured with the Qwen2.5-Coder tokenizer (152K vocab) on enterprise C# code.
-
-### Dictionary Size Selection
-
-The dictionary size is controlled by `--min-files`, which sets the minimum number of training files a pattern must appear in (after compression) to be kept. The mining pipeline prints a threshold analysis table showing entries and compression impact at various thresholds, so you can choose the right value for your corpus in a single run:
-
-```bash
-# Run mining with --min-files 0 to see the full threshold analysis
-python -m sematok.mining --corpus data/raw_cs --min-files 0 --score-sample 0 ...
-```
-
-The output includes a table like:
-
-| Min file threshold | Entries surviving | % of corpus impact |
-|--------------------|-------------------|--------------------|
-| 5,000+ files       | 71                | 32.3%              |
-| 1,000+ files       | 600               | 87.7%              |
-| **500+ files**     | **868**           | **97.3%**          |
-| 100+ files         | 1,094             | 99.8%              |
-
-We chose `--min-files 500` because:
-- 868 entries capture 97.3% of total compression -- adding more yields diminishing returns
-- Every macro appears in at least 500 of 116K training files, ensuring the model sees each one enough times to learn it
-- The previous 999-entry dictionary (scored on a 2,000-file sample) had 40% of macros never appear in training -- this approach eliminates that problem entirely
-
-### Previous Experiment Results (Flawed Dictionary)
-
-The results below used the original 999-entry dictionary scored on only 2,000 files. They are kept for reference but should not be cited -- the experiment is being re-run with the corrected dictionary.
-
-| Config | Model | Input | Perplexity | Loss |
-|--------|-------|-------|-----------|------|
-| A | Base | Uncompressed | 2.42 | 0.884 |
-| B | Finetuned | Compressed | 3.51 | 1.257 |
-| C | Finetuned | Uncompressed | 2.67 | 0.984 |
-| D | Base | Compressed | 5.40 | 1.687 |
-
-- **Macro comprehension (B vs D):** 1.5x perplexity improvement.
-- **C# retention (C vs A):** +10.5% perplexity delta.
-- **Compression gap (B vs A):** +45.2% perplexity delta.
 
 ## Reproducing the Results
 
@@ -102,7 +60,7 @@ python -m data.download --output data/raw_cs
 
 This produces ~122K `.cs` files (592 MB) with a `metadata.jsonl` mapping each file to its source repo.
 
-### Step 2: Mine Dictionary (Optional)
+### Step 2: Mine Dictionary
 
 The dictionary (`sematok/dictionary.json`) is already committed. To re-mine from scratch:
 
@@ -119,13 +77,32 @@ python -m sematok.mining \
     --min-repos 2
 ```
 
-This mines ~11K candidates, scores each by actual Qwen token savings on **all** training files (116K), and keeps entries that appear in at least 500 files and at least 2 distinct repos (868 entries). The seven excluded repos are held out for evaluation.
+This mines ~11K candidates, scores each by actual Qwen token savings on **all** training files (116K), and keeps entries that appear in at least 500 files and at least 2 distinct repos. The seven excluded repos are held out for evaluation.
 
-#### Repo Diversity Filter (`--min-repos`)
+#### Choosing `--min-files`
 
-`--min-repos N` ensures every pattern in the final dictionary appears in at least N distinct source repos. This is enforced in both the initial mining phase (candidates from too few repos are rejected early) and the final corpus scoring/trimming phase (entries that score well but are repo-specific are still dropped).
+`--min-files N` sets the minimum number of training files a pattern must appear in (after compression) to make the final dictionary. This controls dictionary size and ensures every macro gets enough training exposure for the model to learn it.
 
-The default is `--min-repos 2`, which filters out patterns that are internal to a single project (e.g., `PlatformDetection` from dotnet/runtime, `Roslyn.Utilities` from Roslyn) while keeping patterns that are specific to a domain but used across multiple projects (e.g., ASP.NET middleware patterns appearing in 2-3 web framework repos).
+To choose the right value, run mining with `--min-files 0` and check the threshold analysis table printed at the end of the output:
+
+```
+--min-files threshold analysis (use this to choose --min-files):
+  Threshold    Entries    Total impact   % of impact
+  ------------ ---------- -------------- ------------
+  >= 0         11186           482,103       100.0%
+  >= 100       1094            481,136        99.8%
+  >= 500       868             469,159        97.3%
+  >= 1000      600             422,764        87.7%
+  >= 5000      71              155,824        32.3%
+```
+
+We chose `--min-files 500` because 868 entries capture 97.3% of total compression -- adding more yields diminishing returns, and every macro appears in enough training files for the model to learn it.
+
+#### Choosing `--min-repos`
+
+`--min-repos N` ensures every pattern in the final dictionary appears in at least N distinct source repos. This filters out patterns that are internal to a single project (e.g., `PlatformDetection` from dotnet/runtime, `Roslyn.Utilities` from Roslyn) while keeping patterns that are domain-specific but used across multiple projects (e.g., ASP.NET middleware patterns appearing in 2-3 web framework repos).
+
+This is enforced in both the initial mining phase (candidates from too few repos are rejected early) and the final corpus scoring/trimming phase (entries that score well but are repo-specific are still dropped).
 
 To find the right threshold for your corpus, run the repo distribution analysis:
 
@@ -224,7 +201,7 @@ sematok/                    # Compression engine (language-agnostic)
     template_mining.py      # AST-guided template discovery
     ast_mining.py           # Full AST subtree mining
     measure.py              # Compression ratio measurement
-    dictionary.json         # The 868-entry dictionary (tracked in git)
+    dictionary.json         # The dictionary (tracked in git)
 data/
     download.py             # Corpus download from GitHub
     prepare.py              # JSONL generation for fine-tuning
