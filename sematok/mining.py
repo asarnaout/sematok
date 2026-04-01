@@ -252,8 +252,8 @@ def _score_on_corpus(
     if exclude_set and file_to_repo:
         files = [f for f in files if file_to_repo.get(f.name, "unknown") not in exclude_set]
 
-    macro_re = re.compile(r"<\|M\d{3}\|>")
-    template_re = re.compile(r"<\|T(\d{3}):([^|]*)\|>")
+    macro_re = re.compile(r"<\|M\d+\|>")
+    template_re = re.compile(r"<\|T(\d+):([^|]*)\|>")
 
     scores: Counter = Counter()
     file_counts: Counter = Counter()
@@ -322,8 +322,8 @@ def _rebuild_top_n(
     repos are also dropped (prevents repo-specific patterns from surviving).
     If max_entries > 0, at most that many entries are kept (by score rank).
     Remaining entries are ranked by total tokens saved and assigned
-    fresh sequential macro IDs. The 3-digit macro ID format caps exact macros
-    and templates at 999 each.
+    fresh sequential macro IDs. The 5-digit macro ID format caps exact macros
+    and templates at 99,999 each.
     """
     ranked = sorted(scores.items(), key=lambda x: -x[1])
 
@@ -381,7 +381,7 @@ def _rebuild_top_n(
         print(f"WARNING: {skipped_max_entries} eligible entries dropped by --max-entries {max_entries}. "
               f"Increase --max-entries or raise --min-files to keep only the most impactful patterns.")
     if skipped_format_limit > 0:
-        print(f"WARNING: {skipped_format_limit} eligible entries dropped by 3-digit macro ID limit "
+        print(f"WARNING: {skipped_format_limit} eligible entries dropped by macro ID limit "
               f"(max {MAX_MACROS} exact + {MAX_TEMPLATES} templates). Raise --min-files to reduce count.")
     if ranked:
         top_score = ranked[0][1]
@@ -471,9 +471,9 @@ def build_mined_dictionary(
     3. Keep entries that pass --min-files, --min-repos, and --max-entries filters
 
     Dictionary size is determined by the quality filters. An optional
-    --max-entries cap limits the total count. The 3-digit macro ID format
-    (M001-M999, T001-T999) enforces a hard ceiling of 999 exact macros
-    and 999 templates regardless.
+    --max-entries cap limits the total count. The 5-digit macro ID format
+    (M00001-M99999, T00001-T99999) enforces a hard ceiling of 99,999 exact
+    macros and 99,999 templates regardless.
 
     Args:
         language: Language name or LanguageConfig instance.
@@ -605,7 +605,7 @@ def main():
     parser.add_argument("--no-ast-templates", action="store_true", help="Skip AST subtree mining")
     parser.add_argument("--max-ast-templates", type=int, default=1000, help="Max AST-mined templates")
     parser.add_argument("--min-files", type=int, default=0, help="Min training files a pattern must appear in (0 = no threshold)")
-    parser.add_argument("--max-entries", type=int, default=999, help="Max entries in final dictionary (default: 999, the 3-digit macro ID limit)")
+    parser.add_argument("--max-entries", type=int, default=999, help="Max entries in final dictionary (default: 999)")
     parser.add_argument("--verbose", action="store_true", help="Print all accepted patterns")
     args = parser.parse_args()
 

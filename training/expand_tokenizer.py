@@ -10,8 +10,8 @@ original sub-tokens. Mean-of-expansion is used as fallback for template
 prefixes, the closing delimiter, and any exact macro lacking corpus contexts.
 
 New tokens (count depends on dictionary):
-  - Exact macro tokens:        <|M001|> through <|MNNN|>
-  - Template prefix tokens:    <|T001:  through <|TNNN:
+  - Exact macro tokens:        <|M00001|> through <|MNNNNN|>
+  - Template prefix tokens:    <|T00001:  through <|TNNNNN:
   - 1 closing delimiter:       |>
 
 Supported model architectures: LLaMA-family (Qwen, LLaMA, Mistral, CodeLlama,

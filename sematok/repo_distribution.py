@@ -58,8 +58,8 @@ def main():
     files = [f for f in files if file_to_repo.get(f.name, "unknown") not in eval_repos]
     print(f"Training files: {len(files)}")
 
-    macro_re = re.compile(r"<\|M\d{3}\|>")
-    template_re = re.compile(r"<\|T(\d{3}):[^|]*\|>")
+    macro_re = re.compile(r"<\|M\d+\|>")
+    template_re = re.compile(r"<\|T(\d+):[^|]*\|>")
 
     # macro -> set of repos
     macro_repos: dict[str, set[str]] = defaultdict(set)

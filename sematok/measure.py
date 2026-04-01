@@ -20,8 +20,8 @@ from sematok.dictionary import CompressionDictionary
 from sematok.languages import LanguageConfig, get_language
 from sematok.lexer import get_safe_ranges, set_language
 
-MACRO_RE = re.compile(r"<\|M\d{3}\|>")
-TEMPLATE_RE = re.compile(r"<\|T(\d{3}):([^|]*)\|>")
+MACRO_RE = re.compile(r"<\|M\d+\|>")
+TEMPLATE_RE = re.compile(r"<\|T(\d+):([^|]*)\|>")
 
 DEFAULT_TOKENIZER = "Qwen/Qwen2.5-Coder-1.5B-Instruct"
 

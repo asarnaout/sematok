@@ -243,7 +243,7 @@ def test_ast_template_compression_roundtrip():
     source = "this._logger = logger;"
     comp = Compressor(d)
     compressed = comp.compress(source)
-    assert "<|T001:" in compressed
+    assert "<|T00001:" in compressed
 
     decomp = Decompressor(d)
     restored = decomp.decompress(compressed)
@@ -257,5 +257,5 @@ def test_ast_template_dedup_with_existing():
 
     # Adding the same template again should return existing macro
     macro = d.add_template("this.{0} = {1};", 2, category="ast_template")
-    assert macro == "<|T001|>"
+    assert macro == "<|T00001|>"
     assert d.template_count == 1  # not duplicated

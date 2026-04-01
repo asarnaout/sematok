@@ -151,7 +151,7 @@ python -m sematok.mining \
     --min-repos 2
 ```
 
-`--max-entries N` sets a hard upper limit on dictionary size (default: 999). The 3-digit macro ID format (`<|M001|>` through `<|M999|>`) enforces a ceiling of 999 exact macros and 999 templates.
+`--max-entries N` sets a hard upper limit on dictionary size (default: 999). The 5-digit macro ID format (`<|M00001|>` through `<|M99999|>`) supports up to 99,999 exact macros and 99,999 templates.
 
 ### Step 3: Measure Compression
 

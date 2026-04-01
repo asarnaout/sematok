@@ -245,9 +245,9 @@ def test_template_add_and_lookup():
     """Templates get assigned T macros and can be looked up."""
     d = CompressionDictionary()
     macro = d.add_template("this.{0} = {1};", slot_count=2)
-    assert macro == "<|T001|>"
-    assert d.template_to_macro["this.{0} = {1};"] == "<|T001|>"
-    assert d.macro_to_template["<|T001|>"] == "this.{0} = {1};"
+    assert macro == "<|T00001|>"
+    assert d.template_to_macro["this.{0} = {1};"] == "<|T00001|>"
+    assert d.macro_to_template["<|T00001|>"] == "this.{0} = {1};"
     assert d.template_slots["this.{0} = {1};"] == 2
     assert d.template_count == 1
 
@@ -271,8 +271,8 @@ def test_template_save_load_roundtrip(tmp_path):
 
     loaded = CompressionDictionary.load(path)
     assert loaded.template_count == 2
-    assert loaded.macro_to_template["<|T001|>"] == "this.{0} = {1};"
-    assert loaded.macro_to_template["<|T002|>"] == "return {0};"
+    assert loaded.macro_to_template["<|T00001|>"] == "this.{0} = {1};"
+    assert loaded.macro_to_template["<|T00002|>"] == "return {0};"
     assert loaded.template_slots["this.{0} = {1};"] == 2
 
 
@@ -292,7 +292,7 @@ def test_template_decompression():
     d.add_template("this.{0} = {1};", slot_count=2)
     decompressor = Decompressor(d)
 
-    compressed = "public Foo() { <|T001:_logger,logger|> }"
+    compressed = "public Foo() { <|T00001:_logger,logger|> }"
     result = decompressor.decompress(compressed)
     assert result == "public Foo() { this._logger = logger; }"
 
@@ -306,7 +306,7 @@ def test_template_compression_roundtrip():
 
     source = "public Foo(ILogger logger) { this._logger = logger; }"
     compressed = compressor.compress(source)
-    assert "<|T001:" in compressed
+    assert "<|T00001:" in compressed
     decompressed = decompressor.decompress(compressed)
     assert decompressed == source
 
@@ -321,9 +321,9 @@ def test_exact_before_template():
     source = "throw new NotImplementedException(); throw new ArgumentException();"
     compressed = compressor.compress(source)
     # NotImplementedException caught by exact macro
-    assert "<|M001|>" in compressed
+    assert "<|M00001|>" in compressed
     # ArgumentException caught by template
-    assert "<|T001:ArgumentException|>" in compressed
+    assert "<|T00001:ArgumentException|>" in compressed
 
 
 def test_template_with_safe_zones():
@@ -338,7 +338,7 @@ def test_template_with_safe_zones():
     # The template inside the string should NOT be compressed
     assert '"this._x = x;"' in compressed
     # The one in code SHOULD be compressed
-    assert "<|T001:_y,y|>" in compressed
+    assert "<|T00001:_y,y|>" in compressed
 
 
 def test_template_repeated_slot():
@@ -350,7 +350,7 @@ def test_template_repeated_slot():
 
     source = "x ?? throw new ArgumentNullException(nameof(x))"
     compressed = compressor.compress(source)
-    assert "<|T001:x|>" in compressed
+    assert "<|T00001:x|>" in compressed
     assert decompressor.decompress(compressed) == source
 
 

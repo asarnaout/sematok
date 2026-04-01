@@ -115,7 +115,7 @@ class Compressor:
     def _finalize_placeholders(text: str) -> str:
         """Convert null-byte placeholders to final <|M...|> macro tokens."""
         return re.sub(
-            _PLACEHOLDER_PREFIX + r"(\d{3})" + _PLACEHOLDER_SUFFIX,
+            _PLACEHOLDER_PREFIX + r"(\d+)" + _PLACEHOLDER_SUFFIX,
             r"<|M\1|>",
             text,
         )
@@ -126,7 +126,7 @@ class Compressor:
         for pattern in self._sorted_patterns:
             macro = self.dictionary.pattern_to_macro[pattern]
             # Use null-byte placeholder during cascade to prevent delimiter collisions
-            idx = macro[3:6]  # extract "001" from "<|M001|>"
+            idx = macro[3:-2]  # extract "00001" from "<|M00001|>"
             placeholder = _PLACEHOLDER_PREFIX + idx + _PLACEHOLDER_SUFFIX
             result = result.replace(pattern, placeholder)
         result = self._finalize_placeholders(result)
@@ -159,7 +159,7 @@ class Compressor:
             chunk = source[start:end]
             for pattern in self._sorted_patterns:
                 macro = self.dictionary.pattern_to_macro[pattern]
-                idx = macro[3:6]
+                idx = macro[3:-2]  # extract "00001" from "<|M00001|>"
                 placeholder = _PLACEHOLDER_PREFIX + idx + _PLACEHOLDER_SUFFIX
                 chunk = chunk.replace(pattern, placeholder)
             chunk = self._finalize_placeholders(chunk)

@@ -1,5 +1,5 @@
 """
-Decompresses macro tokens back to original C# source code.
+Decompresses macro tokens back to original source code.
 
 This is the inverse of compressor.py. Decompression is always lossless
 and deterministic -- each macro token maps to exactly one pattern.
@@ -9,18 +9,18 @@ import re
 
 from sematok.dictionary import CompressionDictionary
 
-# Regex to match exact macro tokens like <|M001|>, <|M0002|>, etc.
-MACRO_PATTERN = re.compile(r"<\|M(\d{3})\|>")
+# Regex to match exact macro tokens like <|M00001|>
+MACRO_PATTERN = re.compile(r"<\|M(\d+)\|>")
 
-# Regex to match template macro tokens like <|T001:_logger,logger|>
-TEMPLATE_MACRO_PATTERN = re.compile(r"<\|T(\d{3}):([^|]*)\|>")
+# Regex to match template macro tokens like <|T00001:_logger,logger|>
+TEMPLATE_MACRO_PATTERN = re.compile(r"<\|T(\d+):([^|]*)\|>")
 
 # Matches either M or T macros (for contains_macros / list_macros)
-ANY_MACRO_PATTERN = re.compile(r"<\|[MT]\d{3}(?::[^|]*)?\|>")
+ANY_MACRO_PATTERN = re.compile(r"<\|[MT]\d+(?::[^|]*)?\|>")
 
 
 class Decompressor:
-    """Expands macro tokens back to their original C# patterns."""
+    """Expands macro tokens back to their original patterns."""
 
     def __init__(self, dictionary: CompressionDictionary):
         self.dictionary = dictionary

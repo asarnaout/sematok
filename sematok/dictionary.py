@@ -10,24 +10,23 @@ from pathlib import Path
 
 from sematok.languages import get_language
 
-# 3-digit macro IDs (M001-M999, T001-T999) cap each type at 999 entries.
-# Regexes throughout the codebase assume exactly 3 digits.
-MAX_MACROS = 999
-MAX_TEMPLATES = 999
+# 5-digit macro IDs (M00001-M99999, T00001-T99999) cap each type at 99,999 entries.
+MAX_MACROS = 99999
+MAX_TEMPLATES = 99999
 
 
 def _make_macro_token(index: int) -> str:
-    """Generate a macro token string like <|M001|>, <|M002|>, etc."""
-    return f"<|M{index:03d}|>"
+    """Generate a macro token string like <|M00001|>, <|M00002|>, etc."""
+    return f"<|M{index:05d}|>"
 
 
 def _make_template_token(index: int) -> str:
-    """Generate a template token string like <|T001|>, <|T002|>, etc."""
-    return f"<|T{index:03d}|>"
+    """Generate a template token string like <|T00001|>, <|T00002|>, etc."""
+    return f"<|T{index:05d}|>"
 
 
 class CompressionDictionary:
-    """Bidirectional mapping between C# patterns and macro tokens."""
+    """Bidirectional mapping between patterns and macro tokens."""
 
     def __init__(self):
         self.pattern_to_macro: dict[str, str] = {}
@@ -58,7 +57,7 @@ class CompressionDictionary:
             return self.pattern_to_macro[pattern]
         index = len(self.pattern_to_macro) + 1
         if index > MAX_MACROS:
-            raise ValueError(f"Cannot add more than {MAX_MACROS} exact macros (3-digit ID limit)")
+            raise ValueError(f"Cannot add more than {MAX_MACROS} exact macros (5-digit ID limit)")
         macro = _make_macro_token(index)
         self.pattern_to_macro[pattern] = macro
         self.macro_to_pattern[macro] = pattern
@@ -71,7 +70,7 @@ class CompressionDictionary:
             return self.template_to_macro[template]
         self._template_index += 1
         if self._template_index > MAX_TEMPLATES:
-            raise ValueError(f"Cannot add more than {MAX_TEMPLATES} templates (3-digit ID limit)")
+            raise ValueError(f"Cannot add more than {MAX_TEMPLATES} templates (5-digit ID limit)")
         macro = _make_template_token(self._template_index)
         self.template_to_macro[template] = macro
         self.macro_to_template[macro] = template
@@ -153,7 +152,7 @@ class CompressionDictionary:
             d.macro_to_template[entry["macro"]] = entry["template"]
             d.template_slots[entry["template"]] = entry["slots"]
             d.template_categories[entry["template"]] = entry.get("category", "template")
-            idx = int(entry["macro"][3:6])
+            idx = int(entry["macro"][3:-2])
             d._template_index = max(d._template_index, idx)
         return d
 
