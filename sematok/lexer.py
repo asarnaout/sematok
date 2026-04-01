@@ -88,13 +88,13 @@ def _invert_ranges(
 
 def get_safe_ranges(source: str, allow_xmldoc: bool = False) -> list[tuple[int, int]]:
     """
-    Parse C# source code and return byte ranges where compression is safe.
+    Parse source code and return byte ranges where compression is safe.
 
     Safe = everything EXCEPT string literals, comments, and character literals.
     These ranges can be passed to Compressor.compress(source, safe_ranges=...).
 
     Args:
-        source: C# source code as a string.
+        source: Source code as a string.
         allow_xmldoc: If True, ``///`` XML doc comments are treated as safe
             (compressible). Regular ``//`` and ``/* */`` comments remain unsafe.
 

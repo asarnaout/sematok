@@ -1,5 +1,5 @@
 """
-Compresses C# source code by replacing boilerplate patterns with macro tokens.
+Compresses source code by replacing boilerplate patterns with macro tokens.
 
 Uses longest-match-first strategy to avoid partial replacements.
 During the replacement cascade, null-byte delimited placeholders are used
@@ -14,24 +14,33 @@ Two-pass pipeline:
 import re
 
 from sematok.dictionary import CompressionDictionary
-from sematok.languages import get_language
+from sematok.languages import LanguageConfig, get_language
 
 # During replacement, use \x00 delimiters that cannot appear in source text.
 # Converted to final <|...|> format after all replacements are done.
 _PLACEHOLDER_PREFIX = "\x00M"
 _PLACEHOLDER_SUFFIX = "\x00"
 
-# Identifier pattern loaded from language config
-_IDENT = get_language("csharp").ident_pattern
 _SLOT_RE = re.compile(r"\{(\d+)\}")
 
 
 class Compressor:
-    """Replaces C# boilerplate patterns with macro tokens."""
+    """Replaces boilerplate patterns with macro tokens."""
 
-    def __init__(self, dictionary: CompressionDictionary, safe_zones: bool = False):
+    def __init__(
+        self,
+        dictionary: CompressionDictionary,
+        safe_zones: bool = False,
+        language: str | LanguageConfig = "csharp",
+    ):
         self.dictionary = dictionary
         self.safe_zones = safe_zones
+        # Resolve language config
+        if isinstance(language, str):
+            lang = get_language(language)
+        else:
+            lang = language
+        self._ident_pattern = lang.ident_pattern
         # Pre-sort patterns by length descending for longest-match-first
         self._sorted_patterns = dictionary.patterns_by_length
         # Pre-compile template regexes
@@ -40,10 +49,10 @@ class Compressor:
 
     def compress(self, source: str, safe_ranges: list[tuple[int, int]] | None = None) -> str:
         """
-        Compress C# source code by replacing patterns with macro tokens.
+        Compress source code by replacing patterns with macro tokens.
 
         Args:
-            source: Raw C# source code.
+            source: Raw source code.
             safe_ranges: Optional list of (start, end) byte ranges where compression
                          is allowed. If None, compress everywhere.
                          Provided by lexer.py's get_safe_ranges().
@@ -79,7 +88,7 @@ class Compressor:
                     if slot_idx not in seen_groups:
                         group_num += 1
                         seen_groups[slot_idx] = group_num
-                        regex_parts.append(_IDENT)
+                        regex_parts.append(self._ident_pattern)
                     else:
                         # Backreference to first occurrence of this slot
                         regex_parts.append(f"\\{seen_groups[slot_idx]}")

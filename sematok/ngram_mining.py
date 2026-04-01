@@ -1,5 +1,5 @@
 """
-N-gram substring frequency mining for C# boilerplate patterns.
+N-gram substring frequency mining for boilerplate patterns.
 
 Discovers patterns that hand-crafted regex templates miss by counting
 all substrings of length 8-120 across the corpus using a two-pass
@@ -10,7 +10,7 @@ Pass 2: At each surviving position, extend to full-length patterns.
          Apply quality filters and score.
 
 Usage:
-    python -m sematok.ngram_mining --corpus data/raw_cs \
+    python -m sematok.ngram_mining --corpus data/raw_cs --language csharp \
         --exclude-repos ppy--osu JamesNK--Newtonsoft.Json nunit--nunit
 """
 
@@ -22,8 +22,10 @@ from pathlib import Path
 from transformers import AutoTokenizer
 from tqdm import tqdm
 
-from sematok.lexer import get_safe_ranges
+from sematok.languages import LanguageConfig, get_language
+from sematok.lexer import get_safe_ranges, set_language
 from sematok.mining import (
+    DEFAULT_TOKENIZER,
     MIN_CHAR_LENGTH,
     MIN_FREQUENCY,
     MIN_REPOS,
@@ -107,17 +109,18 @@ def _get_corpus_files(
     file_to_repo: dict[str, str],
     exclude_set: set[str],
     max_files: int | None,
+    file_extension: str = ".cs",
 ) -> list[Path]:
-    """Get sorted list of .cs files, excluding eval repos."""
-    cs_files = sorted(corpus_dir.glob("*.cs"))
+    """Get sorted list of source files, excluding eval repos."""
+    files = sorted(corpus_dir.glob(f"*{file_extension}"))
     if exclude_set and file_to_repo:
-        cs_files = [
-            f for f in cs_files
+        files = [
+            f for f in files
             if file_to_repo.get(f.name, "unknown") not in exclude_set
         ]
     if max_files:
-        cs_files = cs_files[:max_files]
-    return cs_files
+        files = files[:max_files]
+    return files
 
 
 def ngram_pass1(
@@ -126,13 +129,14 @@ def ngram_pass1(
     exclude_set: set[str],
     max_files: int | None,
     pass1_threshold: int = PASS1_THRESHOLD,
+    file_extension: str = ".cs",
 ) -> set[str]:
     """
     Pass 1: Count 8-grams at word-boundary starts across corpus.
 
     Returns set of 8-grams appearing in >= pass1_threshold files.
     """
-    cs_files = _get_corpus_files(corpus_dir, file_to_repo, exclude_set, max_files)
+    cs_files = _get_corpus_files(corpus_dir, file_to_repo, exclude_set, max_files, file_extension)
     counter: Counter = Counter()
 
     for file_idx, f in enumerate(tqdm(cs_files, desc="N-gram pass 1")):
@@ -170,6 +174,7 @@ def ngram_pass2(
     exclude_set: set[str],
     max_files: int | None,
     max_length: int = MAX_PATTERN_LENGTH,
+    file_extension: str = ".cs",
 ) -> tuple[Counter, dict[str, set[str]]]:
     """
     Pass 2: Extend surviving 8-grams to full-length patterns.
@@ -180,7 +185,7 @@ def ngram_pass2(
 
     Returns (pattern_counter, pattern_repos) where counts are per-file.
     """
-    cs_files = _get_corpus_files(corpus_dir, file_to_repo, exclude_set, max_files)
+    cs_files = _get_corpus_files(corpus_dir, file_to_repo, exclude_set, max_files, file_extension)
     pattern_counter: Counter = Counter()
     pattern_repos: dict[str, set[str]] = defaultdict(set)
 
@@ -281,9 +286,11 @@ def mine_ngram_patterns(
     exclude_repos: list[str] | None = None,
     pass1_threshold: int = PASS1_THRESHOLD,
     max_pattern_length: int = MAX_PATTERN_LENGTH,
+    language: str | LanguageConfig = "csharp",
+    tokenizer_name: str = DEFAULT_TOKENIZER,
 ) -> list[tuple[str, int, int, float, int]]:
     """
-    Mine n-gram patterns from a corpus of C# files.
+    Mine n-gram patterns from a corpus of source files.
 
     Two-pass approach:
     1. Count 8-grams at word boundaries, keep frequent survivors
@@ -292,12 +299,15 @@ def mine_ngram_patterns(
     Returns list of (pattern, frequency, token_count, score, repo_count)
     sorted by score descending.
     """
+    lang = get_language(language) if isinstance(language, str) else language
+    set_language(lang)
     file_to_repo = _load_file_repo_map(corpus_dir)
     exclude_set = set(exclude_repos) if exclude_repos else set()
 
     print("N-gram mining: Pass 1 (8-gram census)...")
     survivors = ngram_pass1(
         corpus_dir, file_to_repo, exclude_set, max_files, pass1_threshold,
+        file_extension=lang.file_extension,
     )
     print(f"  {len(survivors):,} 8-grams survived (threshold={pass1_threshold})")
 
@@ -308,11 +318,11 @@ def mine_ngram_patterns(
     print("N-gram mining: Pass 2 (extend to full patterns)...")
     pattern_counter, pattern_repos = ngram_pass2(
         corpus_dir, survivors, file_to_repo, exclude_set,
-        max_files, max_pattern_length,
+        max_files, max_pattern_length, file_extension=lang.file_extension,
     )
 
     print("N-gram mining: Filtering and scoring...")
-    enc = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-Coder-1.5B-Instruct")
+    enc = AutoTokenizer.from_pretrained(tokenizer_name)
     scored = filter_and_score_ngrams(
         pattern_counter, pattern_repos, enc,
         min_frequency, min_repos, min_token_span,
@@ -322,8 +332,10 @@ def mine_ngram_patterns(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Mine C# n-gram patterns")
-    parser.add_argument("--corpus", type=str, required=True, help="Directory with .cs files")
+    parser = argparse.ArgumentParser(description="Mine n-gram patterns")
+    parser.add_argument("--corpus", type=str, required=True, help="Directory with source files")
+    parser.add_argument("--language", type=str, default="csharp", help="Language config to use")
+    parser.add_argument("--tokenizer", type=str, default=DEFAULT_TOKENIZER, help="HuggingFace tokenizer for scoring")
     parser.add_argument("--top", type=int, default=100, help="Show top N patterns")
     parser.add_argument("--min-freq", type=int, default=MIN_FREQUENCY)
     parser.add_argument("--min-repos", type=int, default=MIN_REPOS)
@@ -345,6 +357,8 @@ def main():
         exclude_repos=args.exclude_repos,
         pass1_threshold=args.pass1_threshold,
         max_pattern_length=args.max_length,
+        language=args.language,
+        tokenizer_name=args.tokenizer,
     )
 
     print(f"\nTop {min(args.top, len(results))} n-gram patterns by score:")

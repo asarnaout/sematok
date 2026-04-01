@@ -1,18 +1,17 @@
 """
-Prepare fine-tuning data for Unsloth continued pre-training.
+Prepare fine-tuning data for continued pre-training.
 
-Compresses C# files using the 778-pattern macro dictionary and outputs JSONL
-with a single "text" field per line. Unsloth handles tokenization, chunking,
-and sequence packing internally.
+Compresses source files using the macro dictionary and outputs JSONL
+with a single "text" field per line. Training frameworks handle tokenization,
+chunking, and sequence packing internally.
 
 Training data uses a 75/25 compressed/original mix (Token Sugar's validated ratio).
 Eval data is 100% compressed (to measure macro comprehension).
 
-Repo-balanced splitting: train on 21 repos, eval on 3 held-out repos.
+Repo-balanced splitting: train repos vs held-out eval repos.
 
 Usage:
-    python -m data.prepare --corpus data/raw_cs --output data/finetune
-    python -m data.prepare --corpus data/raw_cs --output data/finetune --compress-ratio 0.75 --seed 42
+    python -m data.prepare --corpus data/raw_cs --output data/finetune --language csharp
 """
 
 import argparse
@@ -24,12 +23,8 @@ from tqdm import tqdm
 
 from sematok.compressor import Compressor
 from sematok.dictionary import CompressionDictionary
-from sematok.lexer import get_safe_ranges
-
-
-from sematok.languages import get_language
-
-DEFAULT_EVAL_REPOS = get_language("csharp").eval_repos
+from sematok.languages import LanguageConfig, get_language
+from sematok.lexer import get_safe_ranges, set_language
 
 
 def _load_file_repo_map(corpus_dir: Path) -> dict[str, str]:
@@ -68,7 +63,7 @@ def _split_files_by_repo(
 
 
 def _compress_file(source: str, compressor: Compressor) -> str:
-    """Compress a C# source file using safe zones."""
+    """Compress a source file using safe zones."""
     try:
         safe_ranges = get_safe_ranges(source)
         return compressor.compress(source, safe_ranges=safe_ranges)
@@ -83,21 +78,25 @@ def prepare_data(
     eval_repos: list[str] | None = None,
     compress_ratio: float = 0.75,
     seed: int = 42,
+    language: str | LanguageConfig = "csharp",
 ):
     """
-    Prepare JSONL training data for Unsloth continued pre-training.
+    Prepare JSONL training data for continued pre-training.
 
     Args:
-        corpus_dir: Directory containing .cs files and metadata.jsonl.
+        corpus_dir: Directory containing source files and metadata.jsonl.
         output_dir: Where to write train.jsonl, eval.jsonl, meta.json.
         dictionary_path: Path to dictionary JSON. Defaults to sematok/dictionary.json.
         eval_repos: Held-out repos for evaluation split.
         compress_ratio: Fraction of train files to compress (rest kept original).
         seed: Random seed for reproducible train/original sampling.
+        language: Language name or LanguageConfig instance.
     """
+    lang = get_language(language) if isinstance(language, str) else language
+    set_language(lang)
     output_dir.mkdir(parents=True, exist_ok=True)
     if eval_repos is None:
-        eval_repos = DEFAULT_EVAL_REPOS
+        eval_repos = lang.eval_repos
 
     # Load dictionary
     if dictionary_path and dictionary_path.exists():
@@ -107,26 +106,26 @@ def prepare_data(
         if default_path.exists():
             dictionary = CompressionDictionary.load(default_path)
         else:
-            dictionary = CompressionDictionary.from_seed()
+            dictionary = CompressionDictionary.from_seed(language=lang.name)
     print(f"Dictionary: {dictionary.size} patterns")
 
-    compressor = Compressor(dictionary)
+    compressor = Compressor(dictionary, language=lang)
     rng = random.Random(seed)
 
-    # Collect .cs files
-    cs_files = sorted(corpus_dir.glob("*.cs"))
-    if not cs_files:
-        raise FileNotFoundError(f"No .cs files found in {corpus_dir}")
+    # Collect source files
+    source_files = sorted(corpus_dir.glob(f"*{lang.file_extension}"))
+    if not source_files:
+        raise FileNotFoundError(f"No {lang.file_extension} files found in {corpus_dir}")
 
     # Repo-balanced split
     file_to_repo = _load_file_repo_map(corpus_dir)
     if file_to_repo:
-        train_files, eval_files = _split_files_by_repo(cs_files, file_to_repo, eval_repos)
+        train_files, eval_files = _split_files_by_repo(source_files, file_to_repo, eval_repos)
         print(f"Repo-balanced split: {len(train_files)} train, {len(eval_files)} eval")
         print(f"  Eval repos: {', '.join(eval_repos)}")
     else:
         print("Warning: metadata.jsonl not found, using all files for train")
-        train_files = cs_files
+        train_files = source_files
         eval_files = []
 
     # Process train files
@@ -210,9 +209,10 @@ def prepare_data(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Prepare fine-tuning data for Unsloth")
-    parser.add_argument("--corpus", type=str, required=True, help="Dir with .cs files")
+    parser = argparse.ArgumentParser(description="Prepare fine-tuning data")
+    parser.add_argument("--corpus", type=str, required=True, help="Dir with source files")
     parser.add_argument("--output", type=str, required=True, help="Output directory")
+    parser.add_argument("--language", type=str, default="csharp", help="Language config to use")
     parser.add_argument("--dictionary", type=str, default=None, help="Dictionary JSON path")
     parser.add_argument(
         "--eval-repos", type=str, nargs="+", default=None,
@@ -232,6 +232,7 @@ def main():
         eval_repos=args.eval_repos,
         compress_ratio=args.compress_ratio,
         seed=args.seed,
+        language=args.language,
     )
 
 

@@ -24,10 +24,10 @@ from transformers import AutoTokenizer
 from tqdm import tqdm
 from tree_sitter import Node
 
-from sematok.lexer import get_safe_ranges, parse_source
-from sematok.languages import get_language
+from sematok.lexer import get_safe_ranges, parse_source, set_language
+from sematok.languages import LanguageConfig, get_language
 from sematok.mining import (
-    CANDIDATE_PATTERNS,
+    DEFAULT_TOKENIZER,
     MIN_CHAR_LENGTH,
     MIN_REPOS,
     _get_bpe_token_count,
@@ -39,12 +39,6 @@ from sematok.mining import (
 MIN_TEMPLATE_FREQUENCY = 30
 MAX_SLOTS = 6
 MIN_SLOTS = 1
-
-# Loaded from language config
-_lang = get_language("csharp")
-FIXED_PARENT_TYPES = _lang.fixed_parent_types
-NORMALIZE_PARENT_TYPES = _lang.normalize_parent_types
-STRUCTURAL_NAMES = _lang.structural_names
 
 
 def find_identifiers_in_range(
@@ -87,13 +81,20 @@ def _is_last_identifier_child(node: Node) -> bool:
     return last_ident is not None and last_ident.id == node.id
 
 
-def should_normalize(text: str, parent_type: str, node: Node | None = None) -> bool:
+def should_normalize(
+    text: str,
+    parent_type: str,
+    node: Node | None = None,
+    lang: LanguageConfig | None = None,
+) -> bool:
     """True if this identifier should become a placeholder."""
-    if text in STRUCTURAL_NAMES:
+    if lang is None:
+        lang = get_language("csharp")
+    if text in lang.structural_names:
         return False
-    if parent_type in FIXED_PARENT_TYPES:
+    if parent_type in lang.fixed_parent_types:
         return False
-    if parent_type in NORMALIZE_PARENT_TYPES:
+    if parent_type in lang.normalize_parent_types:
         return True
     # Ambiguous: parameter can hold both type and name
     if parent_type == "parameter":
@@ -109,6 +110,7 @@ def normalize_candidate(
     candidate_start: int,
     root_node: Node,
     source_bytes: bytes,
+    lang: LanguageConfig | None = None,
 ) -> tuple[str, list[str]] | None:
     """Replace normalizable identifiers with {0}, {1}, ...
 
@@ -135,7 +137,7 @@ def normalize_candidate(
     normalizable: list[tuple[str, int, int]] = []  # (text, rel_start, rel_end)
     for text, abs_start, abs_end, parent_type in idents:
         node = nodes_by_pos.get(abs_start)
-        if should_normalize(text, parent_type, node):
+        if should_normalize(text, parent_type, node, lang=lang):
             rel_start = abs_start - candidate_start
             rel_end = abs_end - candidate_start
             normalizable.append((text, rel_start, rel_end))
@@ -174,11 +176,17 @@ def normalize_candidate(
     return template, unique_args
 
 
-def extract_template_candidates(source: str) -> list[tuple[str, list[str]]]:
-    """Extract (template, args) pairs from safe zones of a C# file.
+def extract_template_candidates(
+    source: str,
+    lang: LanguageConfig | None = None,
+) -> list[tuple[str, list[str]]]:
+    """Extract (template, args) pairs from safe zones of a source file.
 
-    Parses once, applies CANDIDATE_PATTERNS regexes, normalizes identifiers.
+    Parses once, applies candidate pattern regexes, normalizes identifiers.
     """
+    if lang is None:
+        lang = get_language("csharp")
+
     try:
         root_node, source_bytes = parse_source(source)
     except Exception:
@@ -195,7 +203,7 @@ def extract_template_candidates(source: str) -> list[tuple[str, list[str]]]:
         chunk_bytes = source_bytes[range_start:range_end]
         chunk_text = chunk_bytes.decode("utf-8", errors="replace")
 
-        for pattern_re in CANDIDATE_PATTERNS:
+        for pattern_re in lang.candidate_patterns:
             for match in pattern_re.finditer(chunk_text):
                 candidate_text = match.group()
                 if len(candidate_text) < MIN_CHAR_LENGTH:
@@ -205,6 +213,7 @@ def extract_template_candidates(source: str) -> list[tuple[str, list[str]]]:
 
                 result = normalize_candidate(
                     candidate_text, file_byte_start, root_node, source_bytes,
+                    lang=lang,
                 )
                 if result is not None:
                     results.append(result)
@@ -221,35 +230,39 @@ def mine_templates(
     max_slots: int = MAX_SLOTS,
     max_files: int | None = None,
     exclude_repos: list[str] | None = None,
+    language: str | LanguageConfig = "csharp",
+    tokenizer_name: str = DEFAULT_TOKENIZER,
 ) -> list[tuple[str, int, int, float, int]]:
     """Mine template patterns from corpus.
 
     Returns [(template, frequency, slot_count, score, repo_count), ...]
     sorted by score descending.
     """
+    lang = get_language(language) if isinstance(language, str) else language
+    set_language(lang)
     file_to_repo = _load_file_repo_map(corpus_dir)
     exclude_set = set(exclude_repos) if exclude_repos else set()
 
-    cs_files = sorted(corpus_dir.glob("*.cs"))
+    files = sorted(corpus_dir.glob(f"*{lang.file_extension}"))
     if exclude_set and file_to_repo:
-        cs_files = [
-            f for f in cs_files
+        files = [
+            f for f in files
             if file_to_repo.get(f.name, "unknown") not in exclude_set
         ]
     if max_files:
-        cs_files = cs_files[:max_files]
+        files = files[:max_files]
 
     template_counter: Counter = Counter()
     template_repos: dict[str, set[str]] = defaultdict(set)
 
-    for f in tqdm(cs_files, desc="Template mining"):
+    for f in tqdm(files, desc="Template mining"):
         try:
             source = f.read_text(encoding="utf-8", errors="replace")
         except Exception:
             continue
 
         repo = file_to_repo.get(f.name, "unknown")
-        candidates = extract_template_candidates(source)
+        candidates = extract_template_candidates(source, lang=lang)
 
         # Deduplicate per file
         file_templates: set[str] = set()
@@ -261,7 +274,7 @@ def mine_templates(
             template_repos[t].add(repo)
 
     # Filter and score
-    enc = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-Coder-1.5B-Instruct")
+    enc = AutoTokenizer.from_pretrained(tokenizer_name)
     scored = []
     rejected = {"low_freq": 0, "few_repos": 0, "few_slots": 0, "many_slots": 0}
 
@@ -301,8 +314,10 @@ def mine_templates(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Mine C# template patterns")
-    parser.add_argument("--corpus", type=str, required=True, help="Directory with .cs files")
+    parser = argparse.ArgumentParser(description="Mine template patterns")
+    parser.add_argument("--corpus", type=str, required=True, help="Directory with source files")
+    parser.add_argument("--language", type=str, default="csharp", help="Language config to use")
+    parser.add_argument("--tokenizer", type=str, default=DEFAULT_TOKENIZER, help="HuggingFace tokenizer for scoring")
     parser.add_argument("--top", type=int, default=100, help="Show top N templates")
     parser.add_argument("--min-freq", type=int, default=MIN_TEMPLATE_FREQUENCY)
     parser.add_argument("--min-repos", type=int, default=MIN_REPOS)
@@ -320,6 +335,8 @@ def main():
         min_repos=args.min_repos,
         max_files=args.max_files,
         exclude_repos=args.exclude_repos,
+        language=args.language,
+        tokenizer_name=args.tokenizer,
     )
 
     print(f"\nTop {min(args.top, len(results))} templates by score:")

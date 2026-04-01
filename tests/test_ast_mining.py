@@ -5,11 +5,13 @@ from sematok.ast_mining import (
     _is_in_safe_range,
     normalize_subtree,
     extract_ast_candidates,
-    SUBTREE_ROOT_TYPES,
     MIN_DEPTH,
     MAX_DEPTH,
     MIN_CHAR_LENGTH,
 )
+from sematok.languages import get_language
+
+SUBTREE_ROOT_TYPES = get_language("csharp").subtree_root_types
 from sematok.lexer import parse_source
 from sematok.dictionary import CompressionDictionary
 from sematok.compressor import Compressor

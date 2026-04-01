@@ -5,7 +5,7 @@ Samples files from the corpus, compresses each with the dictionary,
 and counts net token savings (each macro replaces N BPE tokens with 1).
 
 Usage:
-    python -m sematok.measure --corpus data/raw_cs --dictionary sematok/dictionary.json
+    python -m sematok.measure --corpus data/raw_cs --dictionary sematok/dictionary.json --language csharp
 """
 
 import argparse
@@ -17,12 +17,13 @@ from transformers import AutoTokenizer
 
 from sematok.compressor import Compressor
 from sematok.dictionary import CompressionDictionary
-from sematok.lexer import get_safe_ranges
+from sematok.languages import LanguageConfig, get_language
+from sematok.lexer import get_safe_ranges, set_language
 
 MACRO_RE = re.compile(r"<\|M\d{3}\|>")
 TEMPLATE_RE = re.compile(r"<\|T(\d{3}):([^|]*)\|>")
 
-QWEN_MODEL = "Qwen/Qwen2.5-Coder-1.5B-Instruct"
+DEFAULT_TOKENIZER = "Qwen/Qwen2.5-Coder-1.5B-Instruct"
 
 
 def measure_compression(
@@ -30,6 +31,8 @@ def measure_compression(
     dictionary_path: Path,
     sample_size: int = 2000,
     seed: int = 42,
+    language: str | LanguageConfig = "csharp",
+    tokenizer_name: str = DEFAULT_TOKENIZER,
 ) -> dict:
     """
     Measure compression ratio on a random sample of files.
@@ -37,11 +40,13 @@ def measure_compression(
     Returns dict with total_original, total_savings, total_macros,
     compression_ratio, avg_macros_per_file.
     """
+    lang = get_language(language) if isinstance(language, str) else language
+    set_language(lang)
     d = CompressionDictionary.load(dictionary_path)
-    compressor = Compressor(d)
-    enc = AutoTokenizer.from_pretrained(QWEN_MODEL)
+    compressor = Compressor(d, language=lang)
+    enc = AutoTokenizer.from_pretrained(tokenizer_name)
 
-    files = sorted(corpus_dir.glob("*.cs"))
+    files = sorted(corpus_dir.glob(f"*{lang.file_extension}"))
     random.seed(seed)
     sample = random.sample(files, min(sample_size, len(files)))
 
@@ -103,14 +108,17 @@ def measure_compression(
 
 def main():
     parser = argparse.ArgumentParser(description="Measure compression ratio")
-    parser.add_argument("--corpus", type=str, required=True, help="Directory with .cs files")
+    parser.add_argument("--corpus", type=str, required=True, help="Directory with source files")
     parser.add_argument("--dictionary", type=str, default="sematok/dictionary.json")
+    parser.add_argument("--language", type=str, default="csharp", help="Language config to use")
+    parser.add_argument("--tokenizer", type=str, default=DEFAULT_TOKENIZER, help="HuggingFace tokenizer for scoring")
     parser.add_argument("--sample", type=int, default=2000, help="Number of files to sample")
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 
     results = measure_compression(
         Path(args.corpus), Path(args.dictionary), args.sample, args.seed,
+        language=args.language, tokenizer_name=args.tokenizer,
     )
 
     print(f"Sample: {results['sample_size']} files")

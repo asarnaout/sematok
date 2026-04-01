@@ -4,10 +4,11 @@ For each macro, counts how many distinct repos it appears in and which ones.
 Outputs a threshold analysis showing what would be lost at each --min-repos value.
 
 Usage:
-    python -m sematok.repo_distribution
+    python -m sematok.repo_distribution --language csharp
 
 This helps choose the right --min-repos threshold for mining.py.
 """
+import argparse
 import json
 import re
 from collections import Counter, defaultdict
@@ -18,19 +19,26 @@ from tqdm import tqdm
 from sematok.compressor import Compressor
 from sematok.dictionary import CompressionDictionary
 from sematok.languages import get_language
-from sematok.lexer import get_safe_ranges
+from sematok.lexer import get_safe_ranges, set_language
 
 
 def main():
-    corpus_dir = Path("data/raw_cs")
-    dict_path = Path("sematok/dictionary.json")
+    parser = argparse.ArgumentParser(description="Analyze per-repo macro distribution")
+    parser.add_argument("--language", type=str, default="csharp", help="Language config to use")
+    parser.add_argument("--corpus", type=str, default=None, help="Corpus directory (default: data/raw_<lang>)")
+    parser.add_argument("--dictionary", type=str, default=None, help="Dictionary JSON path")
+    args = parser.parse_args()
 
-    lang = get_language("csharp")
+    lang = get_language(args.language)
+    set_language(lang)
+    corpus_dir = Path(args.corpus) if args.corpus else Path(f"data/raw_{lang.name}")
+    dict_path = Path(args.dictionary) if args.dictionary else Path("sematok/dictionary.json")
+
     eval_repos = set(lang.eval_repos)
 
     # Load dictionary
     d = CompressionDictionary.load(dict_path)
-    compressor = Compressor(d)
+    compressor = Compressor(d, language=lang)
 
     # Load file->repo map
     meta_path = corpus_dir / "metadata.jsonl"
@@ -41,7 +49,7 @@ def main():
             file_to_repo[entry["filename"]] = entry["source"]
 
     # Only training files (exclude eval repos)
-    files = sorted(corpus_dir.glob("*.cs"))
+    files = sorted(corpus_dir.glob(f"*{lang.file_extension}"))
     files = [f for f in files if file_to_repo.get(f.name, "unknown") not in eval_repos]
     print(f"Training files: {len(files)}")
 

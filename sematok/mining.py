@@ -1,7 +1,7 @@
 """
-Pattern mining: discover frequent multi-token C# boilerplate patterns from a corpus.
+Pattern mining: discover frequent multi-token boilerplate patterns from a corpus.
 
-Scans C# files, extracts candidate patterns, scores them by
+Scans source files, extracts candidate patterns, scores them by
 frequency * token_savings, and produces a refined compression dictionary.
 
 Quality filters:
@@ -13,7 +13,7 @@ Quality filters:
 - No pure-logic patterns (only boilerplate/scaffolding)
 
 Usage:
-    python -m sematok.mining --corpus data/raw_cs --output sematok/dictionary.json
+    python -m sematok.mining --corpus data/raw_cs --output sematok/dictionary.json --language csharp
 """
 
 import argparse
@@ -27,14 +27,10 @@ from transformers import AutoTokenizer
 from tqdm import tqdm
 
 from sematok.dictionary import CompressionDictionary
-from sematok.languages import get_language
-from sematok.lexer import get_safe_ranges
+from sematok.languages import LanguageConfig, get_language
+from sematok.lexer import get_safe_ranges, set_language
 
-QWEN_MODEL = "Qwen/Qwen2.5-Coder-1.5B-Instruct"
-
-
-# Loaded from language config. Module-level ref kept for imports by other modules.
-CANDIDATE_PATTERNS = get_language("csharp").candidate_patterns
+DEFAULT_TOKENIZER = "Qwen/Qwen2.5-Coder-1.5B-Instruct"
 
 
 # --- Quality filter thresholds ---
@@ -83,8 +79,14 @@ def _is_valid_pattern(pattern: str) -> bool:
     return True
 
 
-def extract_candidates_from_file(source: str) -> list[str]:
-    """Extract candidate boilerplate patterns from a C# source file."""
+def extract_candidates_from_file(
+    source: str,
+    candidate_patterns: list[re.Pattern] | None = None,
+) -> list[str]:
+    """Extract candidate boilerplate patterns from a source file."""
+    if candidate_patterns is None:
+        candidate_patterns = get_language("csharp").candidate_patterns
+
     try:
         safe_ranges = get_safe_ranges(source, allow_xmldoc=True)
     except Exception:
@@ -97,7 +99,7 @@ def extract_candidates_from_file(source: str) -> list[str]:
     safe_text = "\n".join(safe_text_parts)
 
     candidates = []
-    for pattern_re in CANDIDATE_PATTERNS:
+    for pattern_re in candidate_patterns:
         for match in pattern_re.finditer(safe_text):
             candidate = match.group(0).strip()
             if candidate and _is_valid_pattern(candidate):
@@ -114,20 +116,26 @@ def mine_patterns(
     min_repos: int = MIN_REPOS,
     max_files: int | None = None,
     exclude_repos: list[str] | None = None,
+    language: str | LanguageConfig = "csharp",
+    tokenizer_name: str = DEFAULT_TOKENIZER,
 ) -> list[tuple[str, int, int, float, int]]:
     """
-    Mine frequent boilerplate patterns from a corpus of C# files.
+    Mine frequent boilerplate patterns from a corpus of source files.
 
     Args:
         exclude_repos: Repo names to skip (e.g. held-out eval repos).
             This ensures the dictionary is built only from training data.
+        language: Language name or LanguageConfig instance.
+        tokenizer_name: HuggingFace tokenizer for scoring token savings.
 
     Returns:
         List of (pattern, frequency, token_count, score, repo_count) tuples
         sorted by score descending.
         Score = frequency * (token_count - 1), representing total tokens saved.
     """
-    enc = AutoTokenizer.from_pretrained(QWEN_MODEL)
+    lang = get_language(language) if isinstance(language, str) else language
+    set_language(lang)
+    enc = AutoTokenizer.from_pretrained(tokenizer_name)
 
     # Load repo mapping for cross-repo validation
     file_to_repo = _load_file_repo_map(corpus_dir)
@@ -137,26 +145,26 @@ def mine_patterns(
     pattern_counter: Counter = Counter()
     pattern_repos: dict[str, set[str]] = defaultdict(set)
 
-    cs_files = sorted(corpus_dir.glob("*.cs"))
+    files = sorted(corpus_dir.glob(f"*{lang.file_extension}"))
 
     # Exclude eval repo files from mining
     if exclude_set and file_to_repo:
-        before = len(cs_files)
-        cs_files = [f for f in cs_files if file_to_repo.get(f.name, "unknown") not in exclude_set]
-        print(f"Excluded {before - len(cs_files)} files from {len(exclude_set)} eval repos")
+        before = len(files)
+        files = [f for f in files if file_to_repo.get(f.name, "unknown") not in exclude_set]
+        print(f"Excluded {before - len(files)} files from {len(exclude_set)} eval repos")
 
     if max_files:
-        cs_files = cs_files[:max_files]
+        files = files[:max_files]
 
-    print(f"Mining patterns from {len(cs_files)} files...")
-    for f in tqdm(cs_files, desc="Scanning"):
+    print(f"Mining patterns from {len(files)} files...")
+    for f in tqdm(files, desc="Scanning"):
         try:
             source = f.read_text(encoding="utf-8", errors="replace")
         except Exception:
             continue
 
         repo = file_to_repo.get(f.name, "unknown")
-        candidates = extract_candidates_from_file(source)
+        candidates = extract_candidates_from_file(source, lang.candidate_patterns)
 
         # Deduplicate per file: count each pattern at most once per file
         unique_candidates = set(candidates)
@@ -215,11 +223,13 @@ def _score_on_corpus(
     d: CompressionDictionary,
     corpus_dir: Path,
     exclude_repos: list[str] | None = None,
+    language: str | LanguageConfig = "csharp",
+    tokenizer_name: str = DEFAULT_TOKENIZER,
 ) -> tuple[dict[str, int], dict[str, int], dict[str, int]]:
     """
-    Score every dictionary entry by actual corpus impact using Qwen's tokenizer.
+    Score every dictionary entry by actual corpus impact.
 
-    Compresses files and counts how many Qwen BPE tokens each macro saves.
+    Compresses files and counts how many BPE tokens each macro saves.
     Also tracks how many files and how many distinct repos each macro appears in.
 
     Returns:
@@ -230,13 +240,15 @@ def _score_on_corpus(
     """
     from sematok.compressor import Compressor
 
-    enc = AutoTokenizer.from_pretrained(QWEN_MODEL)
-    compressor = Compressor(d)
+    lang = get_language(language) if isinstance(language, str) else language
+    set_language(lang)
+    enc = AutoTokenizer.from_pretrained(tokenizer_name)
+    compressor = Compressor(d, language=lang)
 
     file_to_repo = _load_file_repo_map(corpus_dir)
     exclude_set = set(exclude_repos) if exclude_repos else set()
 
-    files = sorted(corpus_dir.glob("*.cs"))
+    files = sorted(corpus_dir.glob(f"*{lang.file_extension}"))
     if exclude_set and file_to_repo:
         files = [f for f in files if file_to_repo.get(f.name, "unknown") not in exclude_set]
 
@@ -309,7 +321,7 @@ def _rebuild_top_n(
     If min_repo_count > 0, entries appearing in fewer than that many distinct
     repos are also dropped (prevents repo-specific patterns from surviving).
     If max_entries > 0, at most that many entries are kept (by score rank).
-    Remaining entries are ranked by total Qwen tokens saved and assigned
+    Remaining entries are ranked by total tokens saved and assigned
     fresh sequential macro IDs. The 3-digit macro ID format caps exact macros
     and templates at 999 each.
     """
@@ -446,6 +458,8 @@ def build_mined_dictionary(
     max_ast_templates: int = 1000,
     min_file_count: int = 0,
     max_entries: int = 999,
+    language: str | LanguageConfig = "csharp",
+    tokenizer_name: str = DEFAULT_TOKENIZER,
 ) -> tuple[CompressionDictionary, list[tuple[str, int, int, float, int]]]:
     """
     Build a compression dictionary by mining broadly, then scoring and trimming.
@@ -453,7 +467,7 @@ def build_mined_dictionary(
     Pipeline:
     1. Mine all candidates (seeds + regex + n-gram + templates + AST templates)
        with generous internal limits
-    2. Score every entry by actual Qwen corpus impact on a file sample
+    2. Score every entry by actual corpus impact on a file sample
     3. Keep entries that pass --min-files, --min-repos, and --max-entries filters
 
     Dictionary size is determined by the quality filters. An optional
@@ -461,15 +475,21 @@ def build_mined_dictionary(
     (M001-M999, T001-T999) enforces a hard ceiling of 999 exact macros
     and 999 templates regardless.
 
+    Args:
+        language: Language name or LanguageConfig instance.
+        tokenizer_name: HuggingFace tokenizer for scoring token savings.
+
     Returns:
         (dictionary, mined_patterns) -- the final trimmed dictionary and the
         raw mined results for downstream display/analysis.
     """
+    lang = get_language(language) if isinstance(language, str) else language
+
     # --- Phase 1: Mine broadly ---
     INTERNAL_LIMIT = 10000  # mine many candidates, trim later
 
     if include_seeds:
-        d = CompressionDictionary.from_seed()
+        d = CompressionDictionary.from_seed(language=lang.name)
     else:
         d = CompressionDictionary()
 
@@ -477,6 +497,7 @@ def build_mined_dictionary(
         corpus_dir, top_n=INTERNAL_LIMIT,
         min_repos=min_repos, max_files=max_files,
         exclude_repos=exclude_repos,
+        language=lang, tokenizer_name=tokenizer_name,
     )
 
     mined = []
@@ -487,6 +508,7 @@ def build_mined_dictionary(
             corpus_dir, top_n=INTERNAL_LIMIT,
             min_repos=min_repos, max_files=max_files,
             exclude_repos=exclude_repos,
+            language=lang, tokenizer_name=tokenizer_name,
         )
         mined = merge_mining_results(regex_mined, ngram_mined)
     else:
@@ -511,6 +533,7 @@ def build_mined_dictionary(
             min_repos=min_repos,
             max_files=max_files,
             exclude_repos=exclude_repos,
+            language=lang, tokenizer_name=tokenizer_name,
         )
         added_templates = 0
         for template_str, freq, slot_count, score, repo_count in template_results:
@@ -531,6 +554,7 @@ def build_mined_dictionary(
             min_repos=min_repos,
             max_files=max_files,
             exclude_repos=exclude_repos,
+            language=lang, tokenizer_name=tokenizer_name,
         )
         added_ast = 0
         for template_str, freq, slot_count, score, repo_count in ast_template_results:
@@ -548,7 +572,10 @@ def build_mined_dictionary(
     # --- Phase 2: Score on corpus and trim ---
     needs_trim = min_file_count > 0 or min_repos > 0 or max_entries > 0
     if needs_trim:
-        scores, file_counts, repo_counts = _score_on_corpus(d, corpus_dir, exclude_repos=exclude_repos)
+        scores, file_counts, repo_counts = _score_on_corpus(
+            d, corpus_dir, exclude_repos=exclude_repos,
+            language=lang, tokenizer_name=tokenizer_name,
+        )
         d = _rebuild_top_n(d, scores, file_counts, min_file_count=min_file_count,
                            repo_counts=repo_counts, min_repo_count=min_repos,
                            max_entries=max_entries)
@@ -559,9 +586,11 @@ def build_mined_dictionary(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Mine C# boilerplate patterns")
-    parser.add_argument("--corpus", type=str, required=True, help="Directory with .cs files")
+    parser = argparse.ArgumentParser(description="Mine boilerplate patterns")
+    parser.add_argument("--corpus", type=str, required=True, help="Directory with source files")
     parser.add_argument("--output", type=str, default="sematok/dictionary.json")
+    parser.add_argument("--language", type=str, default="csharp", help="Language config to use (default: csharp)")
+    parser.add_argument("--tokenizer", type=str, default=DEFAULT_TOKENIZER, help="HuggingFace tokenizer for scoring")
     parser.add_argument("--min-repos", type=int, default=MIN_REPOS, help="Min repos a pattern must appear in")
     parser.add_argument("--min-freq", type=int, default=MIN_FREQUENCY, help="Min frequency across corpus")
     parser.add_argument("--max-files", type=int, default=None)
@@ -593,6 +622,8 @@ def main():
         max_ast_templates=args.max_ast_templates,
         min_file_count=args.min_files,
         max_entries=args.max_entries,
+        language=args.language,
+        tokenizer_name=args.tokenizer,
     )
 
     d.save(args.output)

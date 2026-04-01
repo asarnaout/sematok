@@ -19,9 +19,9 @@ from pathlib import Path
 from transformers import AutoTokenizer
 from tqdm import tqdm
 
-from sematok.languages import get_language
-from sematok.lexer import get_safe_ranges, parse_source
-from sematok.mining import MIN_CHAR_LENGTH, MIN_REPOS, _get_bpe_token_count, _load_file_repo_map
+from sematok.languages import LanguageConfig, get_language
+from sematok.lexer import get_safe_ranges, parse_source, set_language
+from sematok.mining import DEFAULT_TOKENIZER, MIN_CHAR_LENGTH, MIN_REPOS, _get_bpe_token_count, _load_file_repo_map
 from sematok.template_mining import MAX_SLOTS, should_normalize
 
 # --- Constants ---
@@ -32,9 +32,6 @@ MAX_SOURCE_LENGTH = 200
 MIN_AST_TEMPLATE_FREQUENCY = 30
 MIN_TOKEN_SPAN = 3
 PRUNE_INTERVAL = 5000
-
-# Loaded from language config
-SUBTREE_ROOT_TYPES = get_language("csharp").subtree_root_types
 
 
 def _subtree_depth(node) -> int:
@@ -61,7 +58,9 @@ def _is_in_safe_range(byte_offset: int, safe_starts: list[int], safe_ends: list[
     return byte_offset < safe_ends[idx]
 
 
-def normalize_subtree(node, source_bytes: bytes) -> tuple[str, list[str]] | None:
+def normalize_subtree(
+    node, source_bytes: bytes, lang: LanguageConfig | None = None,
+) -> tuple[str, list[str]] | None:
     """Extract source text of a subtree, normalize identifiers, collapse whitespace.
 
     Returns (template, [unique_args]) or None if nothing was normalized.
@@ -76,7 +75,7 @@ def normalize_subtree(node, source_bytes: bytes) -> tuple[str, list[str]] | None
         if n.type == "identifier":
             text = source_bytes[n.start_byte:n.end_byte].decode("utf-8", errors="replace")
             parent_type = n.parent.type if n.parent else ""
-            if should_normalize(text, parent_type, n):
+            if should_normalize(text, parent_type, n, lang=lang):
                 rel_start = n.start_byte - node.start_byte
                 rel_end = n.end_byte - node.start_byte
                 ident_replacements.append((rel_start, rel_end, text))
@@ -128,12 +127,16 @@ def normalize_subtree(node, source_bytes: bytes) -> tuple[str, list[str]] | None
     return template, unique_args
 
 
-def extract_ast_candidates(source: str) -> list[tuple[str, list[str]]]:
-    """Extract (template, args) pairs from AST subtrees of a C# file.
+def extract_ast_candidates(
+    source: str, lang: LanguageConfig | None = None,
+) -> list[tuple[str, list[str]]]:
+    """Extract (template, args) pairs from AST subtrees of a source file.
 
     Parses once, walks the full AST, extracts and normalizes subtrees
     at target node types.
     """
+    if lang is None:
+        lang = get_language("csharp")
     try:
         root_node, source_bytes = parse_source(source)
     except Exception:
@@ -158,7 +161,7 @@ def extract_ast_candidates(source: str) -> list[tuple[str, list[str]]]:
     while stack:
         cur = stack.pop()
 
-        if cur.type in SUBTREE_ROOT_TYPES:
+        if cur.type in lang.subtree_root_types:
             # Check safe zone
             if not _is_in_safe_range(cur.start_byte, safe_starts, safe_ends):
                 # Still recurse into children — nested targets may be in safe zones
@@ -178,7 +181,7 @@ def extract_ast_candidates(source: str) -> list[tuple[str, list[str]]]:
                 continue
 
             # Normalize
-            result = normalize_subtree(cur, source_bytes)
+            result = normalize_subtree(cur, source_bytes, lang=lang)
             if result is not None:
                 template, args = result
                 # Final length check after whitespace collapse
@@ -198,35 +201,39 @@ def mine_ast_templates(
     min_repos: int = MIN_REPOS,
     max_files: int | None = None,
     exclude_repos: list[str] | None = None,
+    language: str | LanguageConfig = "csharp",
+    tokenizer_name: str = DEFAULT_TOKENIZER,
 ) -> list[tuple[str, int, int, float, int]]:
     """Mine template patterns from AST subtrees across the corpus.
 
     Returns [(template, frequency, slot_count, score, repo_count), ...]
     sorted by score descending.
     """
+    lang = get_language(language) if isinstance(language, str) else language
+    set_language(lang)
     file_to_repo = _load_file_repo_map(corpus_dir)
     exclude_set = set(exclude_repos) if exclude_repos else set()
 
-    cs_files = sorted(corpus_dir.glob("*.cs"))
+    files = sorted(corpus_dir.glob(f"*{lang.file_extension}"))
     if exclude_set and file_to_repo:
-        cs_files = [
-            f for f in cs_files
+        files = [
+            f for f in files
             if file_to_repo.get(f.name, "unknown") not in exclude_set
         ]
     if max_files:
-        cs_files = cs_files[:max_files]
+        files = files[:max_files]
 
     template_counter: Counter = Counter()
     template_repos: dict[str, set[str]] = defaultdict(set)
 
-    for file_idx, f in enumerate(tqdm(cs_files, desc="AST subtree mining")):
+    for file_idx, f in enumerate(tqdm(files, desc="AST subtree mining")):
         try:
             source = f.read_text(encoding="utf-8", errors="replace")
         except Exception:
             continue
 
         repo = file_to_repo.get(f.name, "unknown")
-        candidates = extract_ast_candidates(source)
+        candidates = extract_ast_candidates(source, lang=lang)
 
         # Per-file dedup
         file_templates: set[str] = set()
@@ -245,7 +252,7 @@ def mine_ast_templates(
             )
 
     # Filter and score
-    enc = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-Coder-1.5B-Instruct")
+    enc = AutoTokenizer.from_pretrained(tokenizer_name)
     scored = []
     rejected = {"low_freq": 0, "few_repos": 0, "few_slots": 0, "many_slots": 0, "few_tokens": 0}
 
@@ -289,8 +296,10 @@ def mine_ast_templates(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Mine C# AST subtree patterns")
-    parser.add_argument("--corpus", type=str, required=True, help="Directory with .cs files")
+    parser = argparse.ArgumentParser(description="Mine AST subtree patterns")
+    parser.add_argument("--corpus", type=str, required=True, help="Directory with source files")
+    parser.add_argument("--language", type=str, default="csharp", help="Language config to use")
+    parser.add_argument("--tokenizer", type=str, default=DEFAULT_TOKENIZER, help="HuggingFace tokenizer for scoring")
     parser.add_argument("--top", type=int, default=100, help="Show top N templates")
     parser.add_argument("--min-freq", type=int, default=MIN_AST_TEMPLATE_FREQUENCY)
     parser.add_argument("--min-repos", type=int, default=MIN_REPOS)
@@ -308,6 +317,8 @@ def main():
         min_repos=args.min_repos,
         max_files=args.max_files,
         exclude_repos=args.exclude_repos,
+        language=args.language,
+        tokenizer_name=args.tokenizer,
     )
 
     print(f"\nTop {min(args.top, len(results))} AST templates by score:")
