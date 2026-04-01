@@ -1,5 +1,5 @@
 """
-Expand Qwen2.5-Coder-1.5B-Instruct's vocabulary with sematok macro tokens.
+Expand a model's vocabulary with sematok macro tokens.
 
 Adds new tokens to the tokenizer and initializes their embeddings using
 either Token Distillation (default) or mean-of-expansion (fallback).
@@ -14,12 +14,19 @@ New tokens (count depends on dictionary):
   - Template prefix tokens:    <|T001:  through <|TNNN:
   - 1 closing delimiter:       |>
 
+Supported model architectures: LLaMA-family (Qwen, LLaMA, Mistral, CodeLlama,
+DeepSeek-Coder). The distillation step accesses model.model.embed_tokens and
+model.model.layers which are standard in these architectures.
+
 Usage:
     # Token distillation (default, requires corpus):
-    python -m training.expand_tokenizer --output models/qwen-sematok-base --corpus data/raw_cs
+    python -m training.expand_tokenizer --output models/sematok-base --corpus data/raw_cs
 
     # Mean-of-expansion fallback:
-    python -m training.expand_tokenizer --output models/qwen-sematok-base --no-distill
+    python -m training.expand_tokenizer --output models/sematok-base --no-distill
+
+    # Different base model:
+    python -m training.expand_tokenizer --output models/sematok-base --model meta-llama/CodeLlama-7b-hf
 """
 
 import argparse
@@ -34,7 +41,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, AddedToken
 
 from sematok.dictionary import CompressionDictionary
 
-QWEN_MODEL = "Qwen/Qwen2.5-Coder-1.5B-Instruct"
+DEFAULT_BASE_MODEL = "Qwen/Qwen2.5-Coder-1.5B-Instruct"
 SLOT_RE = re.compile(r"\{\d+\}")
 
 
@@ -510,8 +517,8 @@ def main():
         help="Path to dictionary JSON (default: sematok/dictionary.json)",
     )
     parser.add_argument(
-        "--model", type=str, default=QWEN_MODEL,
-        help=f"Base model ID (default: {QWEN_MODEL})",
+        "--model", type=str, default=DEFAULT_BASE_MODEL,
+        help=f"Base model ID (default: {DEFAULT_BASE_MODEL})",
     )
 
     # Token distillation arguments

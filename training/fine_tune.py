@@ -1,5 +1,5 @@
 """
-LoRA fine-tune Qwen2.5-Coder-1.5B with sematok macro tokens.
+LoRA fine-tune a model with sematok macro tokens.
 
 Continued pre-training (CLM) via 4-bit QLoRA using Unsloth. The model at
 --model must already have its vocabulary expanded (run expand_tokenizer.py
@@ -9,10 +9,10 @@ MLP, and embedding layers.
 
 Usage:
     python -m training.fine_tune \\
-        --model models/qwen-sematok-base \\
+        --model models/sematok-base \\
         --train data/finetune/train.jsonl \\
         --eval data/finetune/eval.jsonl \\
-        --output models/qwen-sematok-finetuned
+        --output models/sematok-finetuned
 """
 
 import argparse
@@ -62,7 +62,10 @@ DEFAULT_SAVE_STEPS = 500
 DEFAULT_EVAL_STEPS = 500
 DEFAULT_SAVE_TOTAL_LIMIT = 2
 
-TARGET_MODULES = [
+# Standard for LLaMA-family architectures (Qwen, LLaMA, Mistral, CodeLlama).
+# Override with --target-modules for models using different module names
+# (e.g., Falcon uses self_attn, Phi uses fc1/fc2).
+DEFAULT_TARGET_MODULES = [
     "q_proj", "k_proj", "v_proj", "o_proj",
     "gate_proj", "up_proj", "down_proj",
     "embed_tokens", "lm_head",
@@ -86,18 +89,23 @@ def load_model(model_path: str, max_seq_length: int):
     return model, tokenizer
 
 
-def apply_lora(model, lora_r: int, lora_dropout: float):
+def apply_lora(
+    model, lora_r: int, lora_dropout: float,
+    target_modules: list[str] | None = None,
+):
     """Apply LoRA adapters to all attention, MLP, and embedding layers."""
+    if target_modules is None:
+        target_modules = DEFAULT_TARGET_MODULES
     lora_alpha = lora_r * DEFAULT_LORA_ALPHA_FACTOR
     print(f"\nApplying LoRA: r={lora_r}, alpha={lora_alpha}, dropout={lora_dropout}")
-    print(f"  Target modules: {TARGET_MODULES}")
+    print(f"  Target modules: {target_modules}")
 
     model = FastLanguageModel.get_peft_model(
         model,
         r=lora_r,
         lora_alpha=lora_alpha,
         lora_dropout=lora_dropout,
-        target_modules=TARGET_MODULES,
+        target_modules=target_modules,
         use_rslora=True,
         use_gradient_checkpointing="unsloth",
     )
@@ -244,6 +252,10 @@ def main():
     parser.add_argument("--grad-accum", type=int, default=DEFAULT_GRAD_ACCUM)
     parser.add_argument("--max-seq-length", type=int, default=DEFAULT_MAX_SEQ_LENGTH)
     parser.add_argument("--lora-r", type=int, default=DEFAULT_LORA_R)
+    parser.add_argument(
+        "--target-modules", type=str, nargs="+", default=None,
+        help=f"LoRA target modules (default: {DEFAULT_TARGET_MODULES})",
+    )
     parser.add_argument("--save-steps", type=int, default=DEFAULT_SAVE_STEPS)
     parser.add_argument("--eval-steps", type=int, default=DEFAULT_EVAL_STEPS)
     parser.add_argument(
@@ -255,7 +267,8 @@ def main():
     start = time.time()
 
     model, tokenizer = load_model(args.model, args.max_seq_length)
-    model = apply_lora(model, args.lora_r, DEFAULT_LORA_DROPOUT)
+    target_modules = args.target_modules if args.target_modules else None
+    model = apply_lora(model, args.lora_r, DEFAULT_LORA_DROPOUT, target_modules)
     train_dataset, eval_dataset = load_datasets(args.train, args.eval)
     trainer = create_trainer(model, tokenizer, train_dataset, eval_dataset, args)
 

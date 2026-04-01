@@ -3,16 +3,14 @@
 import json
 from pathlib import Path
 
-# Qwen2.5-Coder-1.5B-Instruct's native vocab size (before expansion).
-QWEN_BASE_VOCAB_SIZE = 151665
-
 
 def validate_expanded_vocab(model_path: str) -> int:
     """Check that a model directory contains a properly vocabulary-expanded model.
 
     Validates:
-      1. config.json exists with vocab_size > QWEN_BASE_VOCAB_SIZE
-      2. macro_token_map.json exists
+      1. config.json exists
+      2. macro_token_map.json exists with _original_vocab_size
+      3. Current vocab_size > original vocab size (tokens were added)
 
     Returns the vocab_size on success.
     """
@@ -25,20 +23,24 @@ def validate_expanded_vocab(model_path: str) -> int:
             "Is this the right model directory?"
         )
 
-    with open(config_path, encoding="utf-8") as f:
-        config = json.load(f)
-    vocab_size = config.get("vocab_size", 0)
-
-    if vocab_size <= QWEN_BASE_VOCAB_SIZE:
-        raise ValueError(
-            f"Model has vocab_size={vocab_size}, expected > {QWEN_BASE_VOCAB_SIZE}. "
-            "Run expand_tokenizer.py first (Step 5)."
-        )
-
     token_map_path = model_dir / "macro_token_map.json"
     if not token_map_path.exists():
         raise FileNotFoundError(
             f"No macro_token_map.json in {model_path}. "
+            "Run expand_tokenizer.py first (Step 5)."
+        )
+
+    with open(config_path, encoding="utf-8") as f:
+        config = json.load(f)
+    vocab_size = config.get("vocab_size", 0)
+
+    with open(token_map_path, encoding="utf-8") as f:
+        token_map = json.load(f)
+    original_vocab_size = token_map.get("_original_vocab_size", 0)
+
+    if original_vocab_size > 0 and vocab_size <= original_vocab_size:
+        raise ValueError(
+            f"Model has vocab_size={vocab_size}, expected > {original_vocab_size}. "
             "Run expand_tokenizer.py first (Step 5)."
         )
 
