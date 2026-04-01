@@ -454,7 +454,7 @@ def build_mined_dictionary(
     max_ast_templates: int = 1000,
     score_sample_size: int = 2000,
     min_file_count: int = 0,
-    max_entries: int = 0,
+    max_entries: int = 999,
 ) -> tuple[CompressionDictionary, list[tuple[str, int, int, float, int]]]:
     """
     Build a compression dictionary by mining broadly, then scoring and trimming.
@@ -586,7 +586,7 @@ def main():
     parser.add_argument("--max-ast-templates", type=int, default=1000, help="Max AST-mined templates")
     parser.add_argument("--score-sample", type=int, default=0, help="Files to sample for scoring (0 = all training files)")
     parser.add_argument("--min-files", type=int, default=0, help="Min training files a pattern must appear in (0 = no threshold)")
-    parser.add_argument("--max-entries", type=int, default=0, help="Max entries in final dictionary (0 = no limit, capped at 999 by macro ID format)")
+    parser.add_argument("--max-entries", type=int, default=999, help="Max entries in final dictionary (default: 999, the 3-digit macro ID limit)")
     parser.add_argument("--verbose", action="store_true", help="Print all accepted patterns")
     args = parser.parse_args()
 
