@@ -304,20 +304,20 @@ def _rebuild_top_n(
     d: CompressionDictionary,
     scores: dict[str, int],
     file_counts: dict[str, int],
-    top_n: int,
     min_file_count: int = 0,
     repo_counts: dict[str, int] | None = None,
     min_repo_count: int = 0,
 ) -> CompressionDictionary:
     """
-    Rebuild a dictionary with only the top N entries by corpus impact score.
+    Rebuild a dictionary keeping only entries that pass quality filters.
 
     Entries that never fired (score=0) are dropped. If min_file_count > 0,
     entries appearing in fewer than that many files are also dropped.
     If min_repo_count > 0, entries appearing in fewer than that many distinct
     repos are also dropped (prevents repo-specific patterns from surviving).
     Remaining entries are ranked by total Qwen tokens saved and assigned
-    fresh sequential macro IDs.
+    fresh sequential macro IDs. The 3-digit macro ID format caps exact macros
+    and templates at 999 each.
     """
     ranked = sorted(scores.items(), key=lambda x: -x[1])
 
@@ -327,9 +327,8 @@ def _rebuild_top_n(
     skipped_low_freq = 0
     skipped_low_repos = 0
 
+    from sematok.dictionary import MAX_MACROS, MAX_TEMPLATES
     for macro, score in ranked:
-        if kept_patterns + kept_templates >= top_n:
-            break
 
         fc = file_counts.get(macro, 0)
         if min_file_count > 0 and fc < min_file_count:
@@ -343,11 +342,15 @@ def _rebuild_top_n(
                 continue
 
         if macro in d.macro_to_pattern:
+            if kept_patterns >= MAX_MACROS:
+                continue
             pattern = d.macro_to_pattern[macro]
             category = d.pattern_categories.get(pattern, "mined")
             new_d.add_pattern(pattern, category=category)
             kept_patterns += 1
         elif macro in d.macro_to_template:
+            if kept_templates >= MAX_TEMPLATES:
+                continue
             template = d.macro_to_template[macro]
             slots = d.template_slots[template]
             category = d.template_categories.get(template, "template")
@@ -355,15 +358,14 @@ def _rebuild_top_n(
             kept_templates += 1
 
     total = kept_patterns + kept_templates
-    print(f"\nTrimmed to top {total}: {kept_patterns} exact + {kept_templates} templates")
+    print(f"\nKept {total} entries: {kept_patterns} exact + {kept_templates} templates")
     if min_file_count > 0:
         print(f"Skipped {skipped_low_freq} entries below min file count ({min_file_count})")
     if min_repo_count > 0:
         print(f"Skipped {skipped_low_repos} entries below min repo count ({min_repo_count})")
     if ranked:
         top_score = ranked[0][1]
-        cutoff_score = ranked[min(top_n - 1, len(ranked) - 1)][1] if len(ranked) >= top_n else 0
-        print(f"Score range: {top_score} (best) ... {cutoff_score} (cutoff)")
+        print(f"Score range: {top_score} (best) ... {ranked[-1][1]} (worst)")
 
     # --- Frequency distribution report ---
     print(f"\nFrequency distribution (all {len(ranked)} scored entries):")
@@ -425,7 +427,6 @@ def _rebuild_top_n(
 
 def build_mined_dictionary(
     corpus_dir: Path,
-    top_n: int = 999,
     include_seeds: bool = True,
     min_repos: int = MIN_REPOS,
     max_files: int | None = None,
@@ -445,7 +446,11 @@ def build_mined_dictionary(
     1. Mine all candidates (seeds + regex + n-gram + templates + AST templates)
        with generous internal limits
     2. Score every entry by actual Qwen corpus impact on a file sample
-    3. Keep only the top_n entries by total tokens saved
+    3. Keep entries that pass --min-files and --min-repos filters
+
+    Dictionary size is determined by the quality filters, not an arbitrary cap.
+    The 3-digit macro ID format (M001-M999, T001-T999) enforces a hard ceiling
+    of 999 exact macros and 999 templates.
 
     Returns:
         (dictionary, mined_patterns) -- the final trimmed dictionary and the
@@ -532,13 +537,13 @@ def build_mined_dictionary(
     print(f"\nTotal candidates before scoring: {total_before} ({d.size} exact + {d.template_count} templates)")
 
     # --- Phase 2: Score on corpus and trim ---
-    needs_trim = total_before > top_n or min_file_count > 0 or min_repos > 0
+    needs_trim = min_file_count > 0 or min_repos > 0
     if needs_trim:
         scores, file_counts, repo_counts = _score_on_corpus(d, corpus_dir, sample_size=score_sample_size, exclude_repos=exclude_repos)
-        d = _rebuild_top_n(d, scores, file_counts, top_n, min_file_count=min_file_count,
+        d = _rebuild_top_n(d, scores, file_counts, min_file_count=min_file_count,
                            repo_counts=repo_counts, min_repo_count=min_repos)
     else:
-        print(f"Only {total_before} entries — no trimming needed (target: {top_n})")
+        print(f"{total_before} entries, no quality filters specified — skipping scoring phase")
 
     return d, mined
 
@@ -547,7 +552,6 @@ def main():
     parser = argparse.ArgumentParser(description="Mine C# boilerplate patterns")
     parser.add_argument("--corpus", type=str, required=True, help="Directory with .cs files")
     parser.add_argument("--output", type=str, default="sematok/dictionary.json")
-    parser.add_argument("--top", type=int, default=999, help="Final dictionary size after corpus impact scoring")
     parser.add_argument("--min-repos", type=int, default=MIN_REPOS, help="Min repos a pattern must appear in")
     parser.add_argument("--min-freq", type=int, default=MIN_FREQUENCY, help="Min frequency across corpus")
     parser.add_argument("--max-files", type=int, default=None)
@@ -568,7 +572,6 @@ def main():
 
     d, mined = build_mined_dictionary(
         Path(args.corpus),
-        top_n=args.top,
         include_seeds=not args.no_seeds,
         min_repos=args.min_repos,
         max_files=args.max_files,

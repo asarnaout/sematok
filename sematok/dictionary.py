@@ -10,6 +10,11 @@ from pathlib import Path
 
 from sematok.languages import get_language
 
+# 3-digit macro IDs (M001-M999, T001-T999) cap each type at 999 entries.
+# Regexes throughout the codebase assume exactly 3 digits.
+MAX_MACROS = 999
+MAX_TEMPLATES = 999
+
 
 def _make_macro_token(index: int) -> str:
     """Generate a macro token string like <|M001|>, <|M002|>, etc."""
@@ -52,6 +57,8 @@ class CompressionDictionary:
         if pattern in self.pattern_to_macro:
             return self.pattern_to_macro[pattern]
         index = len(self.pattern_to_macro) + 1
+        if index > MAX_MACROS:
+            raise ValueError(f"Cannot add more than {MAX_MACROS} exact macros (3-digit ID limit)")
         macro = _make_macro_token(index)
         self.pattern_to_macro[pattern] = macro
         self.macro_to_pattern[macro] = pattern
@@ -63,6 +70,8 @@ class CompressionDictionary:
         if template in self.template_to_macro:
             return self.template_to_macro[template]
         self._template_index += 1
+        if self._template_index > MAX_TEMPLATES:
+            raise ValueError(f"Cannot add more than {MAX_TEMPLATES} templates (3-digit ID limit)")
         macro = _make_template_token(self._template_index)
         self.template_to_macro[template] = macro
         self.macro_to_template[macro] = template
