@@ -81,7 +81,6 @@ python -m sematok.mining \
     --exclude-repos microsoft--garnet kgrzybek--modular-monolith-with-ddd \
         nunit--nunit JamesNK--Newtonsoft.Json AngleSharp--AngleSharp \
         ThreeMammals--Ocelot fullstackhero--dotnet-starter-kit \
-
     --min-files 0 \
     --min-repos 2
 ```
@@ -112,7 +111,6 @@ python -m sematok.mining \
     --exclude-repos microsoft--garnet kgrzybek--modular-monolith-with-ddd \
         nunit--nunit JamesNK--Newtonsoft.Json AngleSharp--AngleSharp \
         ThreeMammals--Ocelot fullstackhero--dotnet-starter-kit \
-
     --min-files 500 \
     --min-repos 2
 ```
