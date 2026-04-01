@@ -36,7 +36,7 @@ def set_language(lang: LanguageConfig) -> None:
 
 
 def _collect_unsafe_ranges(
-    node: Node, source_bytes: bytes | None = None, allow_xmldoc: bool = False,
+    node: Node, source_bytes: bytes | None = None,
 ) -> list[tuple[int, int]]:
     """Collect byte ranges of unsafe nodes (iterative to handle deep ASTs)."""
     lang = _get_lang()
@@ -45,12 +45,11 @@ def _collect_unsafe_ranges(
     while stack:
         cur = stack.pop()
         if cur.type in lang.unsafe_node_types:
-            if (allow_xmldoc and cur.type == "comment"
-                    and source_bytes is not None and lang.safe_comment_prefix):
-                text = source_bytes[cur.start_byte:cur.end_byte]
-                if text.startswith(lang.safe_comment_prefix):
-                    stack.extend(reversed(cur.children))
-                    continue  # doc comment -- treat as safe
+            if (lang.is_safe_override is not None
+                    and source_bytes is not None
+                    and lang.is_safe_override(cur, source_bytes)):
+                stack.extend(reversed(cur.children))
+                continue  # language says this node is safe
             ranges.append((cur.start_byte, cur.end_byte))
             continue  # Don't recurse into unsafe nodes
         stack.extend(reversed(cur.children))
@@ -86,17 +85,15 @@ def _invert_ranges(
     return safe
 
 
-def get_safe_ranges(source: str, allow_xmldoc: bool = False) -> list[tuple[int, int]]:
+def get_safe_ranges(source: str) -> list[tuple[int, int]]:
     """
     Parse source code and return byte ranges where compression is safe.
 
     Safe = everything EXCEPT string literals, comments, and character literals.
-    These ranges can be passed to Compressor.compress(source, safe_ranges=...).
+    Languages can override specific unsafe nodes via is_safe_override (e.g.
+    C# treats ``///`` doc comments as safe, Python could treat docstrings as safe).
 
-    Args:
-        source: Source code as a string.
-        allow_xmldoc: If True, ``///`` XML doc comments are treated as safe
-            (compressible). Regular ``//`` and ``/* */`` comments remain unsafe.
+    These ranges can be passed to Compressor.compress(source, safe_ranges=...).
 
     Returns:
         List of (start, end) byte ranges where compression can be applied.
@@ -104,11 +101,11 @@ def get_safe_ranges(source: str, allow_xmldoc: bool = False) -> list[tuple[int, 
     """
     source_bytes = source.encode("utf-8")
     tree = _get_parser().parse(source_bytes)
-    unsafe = _collect_unsafe_ranges(tree.root_node, source_bytes, allow_xmldoc)
+    unsafe = _collect_unsafe_ranges(tree.root_node, source_bytes)
     return _invert_ranges(unsafe, len(source_bytes))
 
 
-def get_unsafe_ranges(source: str, allow_xmldoc: bool = False) -> list[tuple[int, int]]:
+def get_unsafe_ranges(source: str) -> list[tuple[int, int]]:
     """
     Parse source code and return byte ranges where compression is NOT safe.
 
@@ -116,7 +113,7 @@ def get_unsafe_ranges(source: str, allow_xmldoc: bool = False) -> list[tuple[int
     """
     source_bytes = source.encode("utf-8")
     tree = _get_parser().parse(source_bytes)
-    return _collect_unsafe_ranges(tree.root_node, source_bytes, allow_xmldoc)
+    return _collect_unsafe_ranges(tree.root_node, source_bytes)
 
 
 def parse_source(source: str) -> tuple[Node, bytes]:

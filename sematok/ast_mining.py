@@ -143,7 +143,7 @@ def extract_ast_candidates(
         return []
 
     try:
-        safe_ranges = get_safe_ranges(source, allow_xmldoc=True)
+        safe_ranges = get_safe_ranges(source)
     except Exception:
         safe_ranges = [(0, len(source.encode("utf-8")))]
 

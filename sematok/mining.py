@@ -88,7 +88,7 @@ def extract_candidates_from_file(
         candidate_patterns = get_language("csharp").candidate_patterns
 
     try:
-        safe_ranges = get_safe_ranges(source, allow_xmldoc=True)
+        safe_ranges = get_safe_ranges(source)
     except Exception:
         safe_ranges = [(0, len(source.encode("utf-8")))]
 
@@ -264,7 +264,7 @@ def _score_on_corpus(
         repo = file_to_repo.get(f.name, "unknown")
         source = f.read_text(encoding="utf-8", errors="replace")
         try:
-            safe_ranges = get_safe_ranges(source, allow_xmldoc=True)
+            safe_ranges = get_safe_ranges(source)
         except Exception:
             safe_ranges = [(0, len(source.encode("utf-8")))]
 

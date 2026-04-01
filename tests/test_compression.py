@@ -189,37 +189,28 @@ def test_safe_zones_compression():
 
 # -- XML doc safe zone tests --
 
-def test_xmldoc_default_unsafe():
-    """By default, /// XML doc comments are unsafe (not compressible)."""
+def test_xmldoc_becomes_safe():
+    """C# is_safe_override makes /// comments safe zones."""
     source = '/// <summary>\npublic class Foo { }'
     safe = get_safe_ranges(source)
-    source_bytes = source.encode("utf-8")
-    safe_text = b"".join(source_bytes[s:e] for s, e in safe)
-    assert b"/// <summary>" not in safe_text
-
-
-def test_xmldoc_becomes_safe():
-    """With allow_xmldoc=True, /// comments become safe zones."""
-    source = '/// <summary>\npublic class Foo { }'
-    safe = get_safe_ranges(source, allow_xmldoc=True)
     source_bytes = source.encode("utf-8")
     safe_text = b"".join(source_bytes[s:e] for s, e in safe)
     assert b"/// <summary>" in safe_text
 
 
 def test_regular_comment_stays_unsafe():
-    """Regular // comments remain unsafe even with allow_xmldoc=True."""
+    """Regular // comments remain unsafe (is_safe_override only matches ///)."""
     source = '// Regular comment\npublic class Foo { }'
-    unsafe = get_unsafe_ranges(source, allow_xmldoc=True)
+    unsafe = get_unsafe_ranges(source)
     source_bytes = source.encode("utf-8")
     unsafe_text = b"".join(source_bytes[s:e] for s, e in unsafe)
     assert b"// Regular comment" in unsafe_text
 
 
 def test_block_comment_stays_unsafe():
-    """Block comments remain unsafe even with allow_xmldoc=True."""
+    """Block comments remain unsafe (is_safe_override only matches ///)."""
     source = '/* block */\npublic class Foo { }'
-    unsafe = get_unsafe_ranges(source, allow_xmldoc=True)
+    unsafe = get_unsafe_ranges(source)
     source_bytes = source.encode("utf-8")
     unsafe_text = b"".join(source_bytes[s:e] for s, e in unsafe)
     assert b"/* block */" in unsafe_text
@@ -232,7 +223,7 @@ def test_xmldoc_roundtrip_with_compression():
     decompressor = Decompressor(d)
 
     source = '/// <summary>\n/// </summary>\npublic class Foo { get; set; }'
-    safe = get_safe_ranges(source, allow_xmldoc=True)
+    safe = get_safe_ranges(source)
     compressed = compressor.compress(source, safe_ranges=safe)
     decompressed = decompressor.decompress(compressed)
     assert decompressed == source

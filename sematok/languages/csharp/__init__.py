@@ -8,6 +8,14 @@ from tree_sitter import Language
 from sematok.languages import LanguageConfig
 
 
+def _is_xmldoc_comment(node, source_bytes: bytes) -> bool:
+    """Treat /// XML doc comments as safe (compressible)."""
+    if node.type == "comment":
+        text = source_bytes[node.start_byte:node.end_byte]
+        return text.startswith(b"///")
+    return False
+
+
 def get_config() -> LanguageConfig:
     """Return the C# language configuration."""
     return LanguageConfig(
@@ -15,7 +23,7 @@ def get_config() -> LanguageConfig:
         file_extension=".cs",
         tree_sitter_language=Language(tscsharp.language()),
         unsafe_node_types=UNSAFE_NODE_TYPES,
-        safe_comment_prefix=b"///",
+        is_safe_override=_is_xmldoc_comment,
         candidate_patterns=CANDIDATE_PATTERNS,
         seed_patterns=SEED_PATTERNS,
         subtree_root_types=SUBTREE_ROOT_TYPES,

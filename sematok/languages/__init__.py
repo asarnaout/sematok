@@ -9,8 +9,10 @@ knowledge lives in these configs.
 
 import importlib
 import re
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 
 @dataclass
@@ -24,8 +26,10 @@ class LanguageConfig:
 
     # --- Lexer: safe zone detection ---
     unsafe_node_types: set[str] = field(default_factory=set)
-    # For XML doc-style comments that should be treated as safe
-    safe_comment_prefix: bytes | None = None  # e.g. b"///" for C#
+    # Optional callback: (node, source_bytes) -> bool.
+    # Called on nodes that matched unsafe_node_types. Return True to override
+    # and treat the node as safe (e.g. C# "///" doc comments, Python docstrings).
+    is_safe_override: Callable[[Any, bytes], bool] | None = None
 
     # --- Mining: regex candidate extraction ---
     candidate_patterns: list[re.Pattern] = field(default_factory=list)

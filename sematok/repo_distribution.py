@@ -68,7 +68,7 @@ def main():
         repo = file_to_repo.get(f.name, "unknown")
         try:
             source = f.read_text(encoding="utf-8", errors="replace")
-            safe_ranges = get_safe_ranges(source, allow_xmldoc=True)
+            safe_ranges = get_safe_ranges(source)
             compressed = compressor.compress(source, safe_ranges=safe_ranges)
         except Exception:
             continue

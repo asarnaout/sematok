@@ -34,9 +34,11 @@ def get_config() -> LanguageConfig:
             # "comment",
             # "string_literal",
         },
-        # If the language has doc-comment prefixes that ARE safe to compress
-        # (e.g. C#'s "///"), set this so the lexer can carve them out.
-        safe_comment_prefix=None,  # e.g. b"///" for C#, b"#" for Python docstrings
+        # Optional callback: (node, source_bytes) -> bool.
+        # Called on nodes matching unsafe_node_types. Return True to override
+        # and treat the node as safe. See csharp/ for an example that treats
+        # "///" doc comments as safe.
+        is_safe_override=None,
 
         # --- Mining: regex candidate extraction ---
         # Patterns that match boilerplate snippets in the language.
