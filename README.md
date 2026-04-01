@@ -60,31 +60,33 @@ python -m data.download --output data/raw_cs
 
 This produces ~122K `.cs` files (592 MB) with a `metadata.jsonl` mapping each file to its source repo.
 
-### Step 2: Mine Dictionary
+### Step 2a: Choose Mining Parameters
 
-The dictionary (`sematok/dictionary.json`) is already committed. To re-mine from scratch:
+Mining requires two parameters that depend on your corpus. Both have analysis tools that help you pick the right values.
+
+**`--min-repos`** — minimum number of distinct source repos a pattern must appear in. Filters out project-internal patterns (e.g., `PlatformDetection` from dotnet/runtime) while keeping domain-specific patterns used across multiple projects. Run the repo distribution analysis on your corpus:
+
+```bash
+python -m sematok.repo_distribution
+```
+
+This prints a threshold table showing how many entries survive at each value. We chose `--min-repos 2`.
+
+**`--min-files`** — minimum number of training files a pattern must appear in (after compression). Controls dictionary size and ensures every macro gets enough training exposure. The mining pipeline prints a threshold analysis table at the end of every run, so run mining once with `--min-files 0` to see the full picture:
 
 ```bash
 python -m sematok.mining \
     --corpus data/raw_cs \
-    --output sematok/dictionary.json \
+    --output /dev/null \
     --exclude-repos microsoft--garnet kgrzybek--modular-monolith-with-ddd \
         nunit--nunit JamesNK--Newtonsoft.Json AngleSharp--AngleSharp \
         ThreeMammals--Ocelot fullstackhero--dotnet-starter-kit \
     --score-sample 0 \
-    --min-files 500 \
+    --min-files 0 \
     --min-repos 2
 ```
 
-This mines ~11K candidates, scores each by actual Qwen token savings on **all** training files (116K), and keeps entries that appear in at least 500 files and at least 2 distinct repos. The seven excluded repos are held out for evaluation.
-
-Dictionary size is determined by `--min-files` and `--min-repos`. To set a hard upper limit, use `--max-entries N` (e.g., `--max-entries 800`). The 3-digit macro ID format (`<|M001|>` through `<|M999|>`) enforces an absolute ceiling of 999 exact macros and 999 templates. If any limit is hit, mining prints a warning showing how many eligible entries were dropped.
-
-#### Choosing `--min-files`
-
-`--min-files N` sets the minimum number of training files a pattern must appear in (after compression) to make the final dictionary. This controls dictionary size and ensures every macro gets enough training exposure for the model to learn it.
-
-To choose the right value, run mining with `--min-files 0` and check the threshold analysis table printed at the end of the output:
+The output includes:
 
 ```
 --min-files threshold analysis (use this to choose --min-files):
@@ -99,19 +101,25 @@ To choose the right value, run mining with `--min-files 0` and check the thresho
 
 We chose `--min-files 500` because 868 entries capture 97.3% of total compression -- adding more yields diminishing returns, and every macro appears in enough training files for the model to learn it.
 
-#### Choosing `--min-repos`
+### Step 2b: Mine Dictionary
 
-`--min-repos N` ensures every pattern in the final dictionary appears in at least N distinct source repos. This filters out patterns that are internal to a single project (e.g., `PlatformDetection` from dotnet/runtime, `Roslyn.Utilities` from Roslyn) while keeping patterns that are domain-specific but used across multiple projects (e.g., ASP.NET middleware patterns appearing in 2-3 web framework repos).
-
-This is enforced in both the initial mining phase (candidates from too few repos are rejected early) and the final corpus scoring/trimming phase (entries that score well but are repo-specific are still dropped).
-
-To find the right threshold for your corpus, run the repo distribution analysis:
+The dictionary (`sematok/dictionary.json`) is already committed. To re-mine from scratch using the parameters chosen above:
 
 ```bash
-python -m sematok.repo_distribution
+python -m sematok.mining \
+    --corpus data/raw_cs \
+    --output sematok/dictionary.json \
+    --exclude-repos microsoft--garnet kgrzybek--modular-monolith-with-ddd \
+        nunit--nunit JamesNK--Newtonsoft.Json AngleSharp--AngleSharp \
+        ThreeMammals--Ocelot fullstackhero--dotnet-starter-kit \
+    --score-sample 0 \
+    --min-files 500 \
+    --min-repos 2
 ```
 
-This scans all training files and reports how many entries would survive at each `--min-repos` threshold.
+This mines ~11K candidates, scores each by actual Qwen token savings on **all** training files (116K), and keeps entries that pass both filters. The seven excluded repos are held out for evaluation.
+
+`--max-entries N` sets a hard upper limit on dictionary size (default: 999). The 3-digit macro ID format (`<|M001|>` through `<|M999|>`) enforces an absolute ceiling of 999 exact macros and 999 templates. If any limit is hit, mining prints a warning showing how many eligible entries were dropped.
 
 ### Step 3: Measure Compression
 
