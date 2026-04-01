@@ -13,7 +13,7 @@ Quality filters:
 - No pure-logic patterns (only boilerplate/scaffolding)
 
 Usage:
-    python -m sematok.mining --corpus data/raw_cs --output sematok/dictionary.json --language csharp
+    python -m sematok.mining --corpus data/raw_cs --language csharp
 """
 
 import argparse
@@ -588,7 +588,7 @@ def build_mined_dictionary(
 def main():
     parser = argparse.ArgumentParser(description="Mine boilerplate patterns")
     parser.add_argument("--corpus", type=str, required=True, help="Directory with source files")
-    parser.add_argument("--output", type=str, default="sematok/dictionary.json")
+    parser.add_argument("--output", type=str, default=None, help="Output dictionary path (default: sematok/languages/<lang>/dictionary.json)")
     parser.add_argument("--language", type=str, default="csharp", help="Language config to use (default: csharp)")
     parser.add_argument("--tokenizer", type=str, default=DEFAULT_TOKENIZER, help="HuggingFace tokenizer for scoring")
     parser.add_argument("--min-repos", type=int, default=MIN_REPOS, help="Min repos a pattern must appear in")
@@ -626,8 +626,13 @@ def main():
         tokenizer_name=args.tokenizer,
     )
 
-    d.save(args.output)
-    print(f"\nDictionary saved to {args.output}")
+    from sematok.languages import get_dictionary_path
+    output_path = args.output
+    if output_path is None:
+        lang_dict = get_dictionary_path(args.language)
+        output_path = str(lang_dict) if lang_dict else f"sematok/languages/{args.language}/dictionary.json"
+    d.save(output_path)
+    print(f"\nDictionary saved to {output_path}")
     print(f"Stats: {d.stats()}")
 
     # Print top patterns (reuse results from build, no re-scan)

@@ -5,7 +5,7 @@ Samples files from the corpus, compresses each with the dictionary,
 and counts net token savings (each macro replaces N BPE tokens with 1).
 
 Usage:
-    python -m sematok.measure --corpus data/raw_cs --dictionary sematok/dictionary.json --language csharp
+    python -m sematok.measure --corpus data/raw_cs --language csharp
 """
 
 import argparse
@@ -109,15 +109,23 @@ def measure_compression(
 def main():
     parser = argparse.ArgumentParser(description="Measure compression ratio")
     parser.add_argument("--corpus", type=str, required=True, help="Directory with source files")
-    parser.add_argument("--dictionary", type=str, default="sematok/dictionary.json")
+    parser.add_argument("--dictionary", type=str, default=None, help="Dictionary JSON (default: auto-detect from language)")
     parser.add_argument("--language", type=str, default="csharp", help="Language config to use")
     parser.add_argument("--tokenizer", type=str, default=DEFAULT_TOKENIZER, help="HuggingFace tokenizer for scoring")
     parser.add_argument("--sample", type=int, default=2000, help="Number of files to sample")
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 
+    from sematok.languages import get_dictionary_path
+    dict_path = args.dictionary
+    if dict_path is None:
+        resolved = get_dictionary_path(args.language)
+        if resolved is None:
+            raise FileNotFoundError(f"No dictionary found for language '{args.language}'")
+        dict_path = str(resolved)
+
     results = measure_compression(
-        Path(args.corpus), Path(args.dictionary), args.sample, args.seed,
+        Path(args.corpus), Path(dict_path), args.sample, args.seed,
         language=args.language, tokenizer_name=args.tokenizer,
     )
 

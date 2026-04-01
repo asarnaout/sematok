@@ -10,6 +10,7 @@ knowledge lives in these configs.
 import importlib
 import re
 from dataclasses import dataclass, field
+from pathlib import Path
 
 
 @dataclass
@@ -47,7 +48,7 @@ class LanguageConfig:
 
 
 _REGISTRY: dict[str, str] = {
-    "csharp": "sematok.languages.csharp",
+    "csharp": "sematok.languages.csharp",  # sematok/languages/csharp/__init__.py
 }
 
 
@@ -64,3 +65,10 @@ def get_language(name: str = "csharp") -> LanguageConfig:
 def available_languages() -> list[str]:
     """List registered language names."""
     return sorted(_REGISTRY.keys())
+
+
+def get_dictionary_path(language: str) -> Path | None:
+    """Return path to the shipped dictionary for a language, or None if absent."""
+    pkg_dir = Path(__file__).parent / language
+    dict_path = pkg_dir / "dictionary.json"
+    return dict_path if dict_path.exists() else None

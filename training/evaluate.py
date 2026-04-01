@@ -59,7 +59,7 @@ from tqdm import tqdm
 # Defaults
 DEFAULT_MAX_SEQ_LENGTH = 2048
 DEFAULT_COMPRESSED_EVAL = "data/finetune/eval.jsonl"
-DEFAULT_DICTIONARY = "sematok/dictionary.json"
+DEFAULT_DICTIONARY = "sematok/languages/csharp/dictionary.json"
 DEFAULT_OUTPUT = "out/eval_results.json"
 
 # ---------------------------------------------------------------------------

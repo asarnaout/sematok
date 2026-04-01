@@ -513,8 +513,8 @@ def main():
         help="Output directory for expanded model + tokenizer",
     )
     parser.add_argument(
-        "--dictionary", type=str, default="sematok/dictionary.json",
-        help="Path to dictionary JSON (default: sematok/dictionary.json)",
+        "--dictionary", type=str, default="sematok/languages/csharp/dictionary.json",
+        help="Path to dictionary JSON (default: sematok/languages/csharp/dictionary.json)",
     )
     parser.add_argument(
         "--model", type=str, default=DEFAULT_BASE_MODEL,

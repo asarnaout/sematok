@@ -32,7 +32,12 @@ def main():
     lang = get_language(args.language)
     set_language(lang)
     corpus_dir = Path(args.corpus) if args.corpus else Path(f"data/raw_{lang.name}")
-    dict_path = Path(args.dictionary) if args.dictionary else Path("sematok/dictionary.json")
+    from sematok.languages import get_dictionary_path
+    if args.dictionary:
+        dict_path = Path(args.dictionary)
+    else:
+        resolved = get_dictionary_path(args.language)
+        dict_path = resolved if resolved else Path(f"sematok/languages/{args.language}/dictionary.json")
 
     eval_repos = set(lang.eval_repos)
 

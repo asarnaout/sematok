@@ -99,11 +99,12 @@ def prepare_data(
         eval_repos = lang.eval_repos
 
     # Load dictionary
+    from sematok.languages import get_dictionary_path
     if dictionary_path and dictionary_path.exists():
         dictionary = CompressionDictionary.load(dictionary_path)
     else:
-        default_path = Path("sematok/dictionary.json")
-        if default_path.exists():
+        default_path = get_dictionary_path(lang.name)
+        if default_path and default_path.exists():
             dictionary = CompressionDictionary.load(default_path)
         else:
             dictionary = CompressionDictionary.from_seed(language=lang.name)

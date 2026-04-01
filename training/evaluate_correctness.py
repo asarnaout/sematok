@@ -527,8 +527,8 @@ def main():
         help="Compressed eval JSONL (default: data/finetune/eval.jsonl)",
     )
     parser.add_argument(
-        "--dictionary", default="sematok/dictionary.json",
-        help="Compression dictionary (default: sematok/dictionary.json)",
+        "--dictionary", default="sematok/languages/csharp/dictionary.json",
+        help="Compression dictionary (default: sematok/languages/csharp/dictionary.json)",
     )
     parser.add_argument(
         "--output", default="out/correctness_results.json",
