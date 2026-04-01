@@ -405,6 +405,21 @@ def _rebuild_top_n(
         if count > 0:
             print(f"  {label:<25} {count:>5} entries")
 
+    # --- Threshold analysis: help user choose --min-files ---
+    total_impact = sum(scores.values())
+    all_entries = [(m, scores.get(m, 0), file_counts.get(m, 0)) for m, _ in ranked if scores.get(m, 0) > 0]
+    thresholds = [0, 10, 50, 100, 200, 500, 1000, 2000, 5000]
+    print(f"\n--min-files threshold analysis (use this to choose --min-files):")
+    print(f"  {'Threshold':<12} {'Entries':<10} {'Total impact':>14} {'% of impact':>12}")
+    print(f"  {'-'*12} {'-'*10} {'-'*14} {'-'*12}")
+    for t in thresholds:
+        surviving = [(m, s, fc) for m, s, fc in all_entries if fc >= t]
+        impact = sum(s for _, s, _ in surviving)
+        pct = impact / total_impact * 100 if total_impact > 0 else 0
+        count = len(surviving)
+        marker = "  <-- current" if t == min_file_count else ""
+        print(f"  >= {t:<8} {count:<10} {impact:>14,} {pct:>11.1f}%{marker}")
+
     return new_d
 
 

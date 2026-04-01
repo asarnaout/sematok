@@ -35,7 +35,14 @@ The macro layer works as pre/post-processing -- the model's original tokenizer s
 
 ### Dictionary Size Selection
 
-The dictionary size was chosen empirically by mining a large candidate pool (11,186 patterns) and scoring every candidate against all 116,069 training files. The scoring tracks both total token savings and the number of files each pattern appears in:
+The dictionary size is controlled by `--min-files`, which sets the minimum number of training files a pattern must appear in (after compression) to be kept. The mining pipeline prints a threshold analysis table showing entries and compression impact at various thresholds, so you can choose the right value for your corpus in a single run:
+
+```bash
+# Run mining with --min-files 0 to see the full threshold analysis
+python -m sematok.mining --corpus data/raw_cs --min-files 0 --score-sample 0 ...
+```
+
+The output includes a table like:
 
 | Min file threshold | Entries surviving | % of corpus impact |
 |--------------------|-------------------|--------------------|
@@ -44,7 +51,7 @@ The dictionary size was chosen empirically by mining a large candidate pool (11,
 | **500+ files**     | **868**           | **97.3%**          |
 | 100+ files         | 1,094             | 99.8%              |
 
-The 500-file threshold was chosen because:
+We chose `--min-files 500` because:
 - 868 entries capture 97.3% of total compression -- adding more yields diminishing returns
 - Every macro appears in at least 500 of 116K training files, ensuring the model sees each one enough times to learn it
 - The previous 999-entry dictionary (scored on a 2,000-file sample) had 40% of macros never appear in training -- this approach eliminates that problem entirely
