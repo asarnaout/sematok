@@ -145,6 +145,16 @@ Adds macro tokens to Qwen2.5-Coder-1.5B-Instruct (count depends on dictionary si
 
 Use `--no-distill` to skip distillation and use mean-of-expansion for all tokens (faster, lower quality).
 
+### Step 5.5: Embedding Warmup
+
+```bash
+python -m training.warmup_embeddings \
+    --model models/qwen-sematok-base \
+    --train data/finetune/train.jsonl
+```
+
+Freezes the entire transformer body and trains only the new macro token embedding rows for 2 epochs on compressed training data. This lets the embeddings migrate from their distillation-initialized positions to where the model actually needs them, before LoRA adapters start learning around them in Step 6. Trains ~2.7M parameters (vs ~7M for LoRA), runs in 1--3 hours.
+
 ### Step 6: Fine-Tune
 
 ```bash
