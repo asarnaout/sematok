@@ -1,3 +1,21 @@
+[project]
+name = "sematok"
+version = "0.1.0"
+description = "Semantic token compression for code LLMs"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+dependencies = [
+    "tree-sitter>=0.21",
+    "tqdm",
+]
+
+[project.optional-dependencies]
+csharp = ["tree-sitter-c-sharp"]
+mining = ["transformers", "torch>=2.0"]
+training = ["transformers", "torch>=2.0", "unsloth", "peft", "bitsandbytes", "accelerate", "datasets"]
+dev = ["pytest"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 norecursedirs = ["data", "out", ".git"]
