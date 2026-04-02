@@ -419,6 +419,8 @@ REPOS = [
     ("Flow-Launcher", "Flow.Launcher"),     # MIT
     # --- New repos: app-layer (permissive only) ---
     ("Squidex", "squidex"),                 # MIT
+    ("JustArchiNET", "ArchiSteamFarm"),     # Apache-2.0
+    ("simplcommerce", "SimplCommerce"),     # Apache-2.0
 ]
 
 EVAL_REPOS = [
@@ -431,4 +433,5 @@ EVAL_REPOS = [
     "fullstackhero--dotnet-starter-kit",       # Web app, API + Blazor (community)
     "inkle--ink",                              # Unity: narrative scripting (eval Unity domain)
     "Flow-Launcher--Flow.Launcher",            # Desktop MVVM: WPF launcher (eval MVVM domain)
+    "simplcommerce--SimplCommerce",            # App-layer: e-commerce platform (eval app domain)
 ]
