@@ -104,7 +104,7 @@ namespace MyApp
 def test_roundtrip_lossless():
     """Core invariant: decompress(compress(source)) == source."""
     d = CompressionDictionary.from_seed("csharp")
-    compressor = Compressor(d)
+    compressor = Compressor(d, language="csharp")
     decompressor = Decompressor(d)
 
     compressed = compressor.compress(SAMPLE_CS_CODE)
@@ -115,7 +115,7 @@ def test_roundtrip_lossless():
 def test_compression_reduces_size():
     """Compressed text should be shorter than original (for code with boilerplate)."""
     d = CompressionDictionary.from_seed("csharp")
-    compressor = Compressor(d)
+    compressor = Compressor(d, language="csharp")
 
     compressed = compressor.compress(SAMPLE_CS_CODE)
     assert len(compressed) < len(SAMPLE_CS_CODE)
@@ -124,7 +124,7 @@ def test_compression_reduces_size():
 def test_compression_contains_macros():
     """Compressed output should contain macro tokens."""
     d = CompressionDictionary.from_seed("csharp")
-    compressor = Compressor(d)
+    compressor = Compressor(d, language="csharp")
     decompressor = Decompressor(d)
 
     compressed = compressor.compress(SAMPLE_CS_CODE)
@@ -133,7 +133,7 @@ def test_compression_contains_macros():
 
 def test_empty_input():
     d = CompressionDictionary.from_seed("csharp")
-    compressor = Compressor(d)
+    compressor = Compressor(d, language="csharp")
     decompressor = Decompressor(d)
 
     assert compressor.compress("") == ""
@@ -143,7 +143,7 @@ def test_empty_input():
 def test_no_matching_patterns():
     """Text with no C# boilerplate should pass through unchanged."""
     d = CompressionDictionary.from_seed("csharp")
-    compressor = Compressor(d)
+    compressor = Compressor(d, language="csharp")
 
     plain_text = "Hello, this is just plain English text with no C# patterns."
     assert compressor.compress(plain_text) == plain_text
@@ -151,7 +151,7 @@ def test_no_matching_patterns():
 
 def test_compression_stats():
     d = CompressionDictionary.from_seed("csharp")
-    compressor = Compressor(d)
+    compressor = Compressor(d, language="csharp")
 
     stats = compressor.compression_stats(SAMPLE_CS_CODE)
     assert stats["original_chars"] > stats["compressed_chars"]
@@ -163,7 +163,7 @@ def test_compression_stats():
 def test_multiple_occurrences():
     """Pattern appearing multiple times should all be replaced."""
     d = CompressionDictionary.from_seed("csharp")
-    compressor = Compressor(d)
+    compressor = Compressor(d, language="csharp")
     decompressor = Decompressor(d)
 
     source = "{ get; set; } and also { get; set; } and another { get; set; }"
@@ -175,7 +175,7 @@ def test_multiple_occurrences():
 def test_safe_zones_compression():
     """Compression with safe zones should skip unsafe regions."""
     d = CompressionDictionary.from_seed("csharp")
-    compressor = Compressor(d)
+    compressor = Compressor(d, language="csharp")
     decompressor = Decompressor(d)
 
     source = 'string msg = "using System;"; using System;'
@@ -221,7 +221,7 @@ def test_block_comment_stays_unsafe():
 def test_xmldoc_roundtrip_with_compression():
     """Compressing XML doc patterns in safe zones is lossless."""
     d = CompressionDictionary.from_seed("csharp")
-    compressor = Compressor(d)
+    compressor = Compressor(d, language="csharp")
     decompressor = Decompressor(d)
 
     source = '/// <summary>\n/// </summary>\npublic class Foo { get; set; }'
@@ -294,7 +294,7 @@ def test_template_compression_roundtrip():
     """decompress(compress(source)) == source for template-compressible code."""
     d = CompressionDictionary()
     d.add_template("this.{0} = {1};", slot_count=2)
-    compressor = Compressor(d)
+    compressor = Compressor(d, language="csharp")
     decompressor = Decompressor(d)
 
     source = "public Foo(ILogger logger) { this._logger = logger; }"
@@ -309,7 +309,7 @@ def test_exact_before_template():
     d = CompressionDictionary()
     d.add_pattern("throw new NotImplementedException();", "exception")
     d.add_template("throw new {0}();", slot_count=1)
-    compressor = Compressor(d)
+    compressor = Compressor(d, language="csharp")
 
     source = "throw new NotImplementedException(); throw new ArgumentException();"
     compressed = compressor.compress(source)
@@ -323,7 +323,7 @@ def test_template_with_safe_zones():
     """Templates skip unsafe regions (strings)."""
     d = CompressionDictionary()
     d.add_template("this.{0} = {1};", slot_count=2)
-    compressor = Compressor(d)
+    compressor = Compressor(d, language="csharp")
 
     source = 'string s = "this._x = x;"; this._y = y;'
     safe = get_safe_ranges(source)
@@ -338,7 +338,7 @@ def test_template_repeated_slot():
     """Repeated {0} uses backreference -- same identifier at both positions."""
     d = CompressionDictionary()
     d.add_template("{0} ?? throw new ArgumentNullException(nameof({0}))", slot_count=1)
-    compressor = Compressor(d)
+    compressor = Compressor(d, language="csharp")
     decompressor = Decompressor(d)
 
     source = "x ?? throw new ArgumentNullException(nameof(x))"
@@ -350,7 +350,7 @@ def test_template_repeated_slot():
 def test_no_templates_backward_compatible():
     """Empty template dictionary = exact-only compression, no errors."""
     d = CompressionDictionary.from_seed("csharp")
-    compressor = Compressor(d)
+    compressor = Compressor(d, language="csharp")
     decompressor = Decompressor(d)
 
     source = "using System; public class Foo { get; set; }"

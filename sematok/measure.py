@@ -125,8 +125,9 @@ def main():
         dict_path = str(resolved)
 
     results = measure_compression(
-        Path(args.corpus), Path(dict_path), args.sample, args.seed,
-        language=args.language, tokenizer_name=args.tokenizer,
+        Path(args.corpus), Path(dict_path),
+        language=args.language, sample_size=args.sample, seed=args.seed,
+        tokenizer_name=args.tokenizer,
     )
 
     print(f"Sample: {results['sample_size']} files")

@@ -173,7 +173,7 @@ def test_compress_file_roundtrip():
     from sematok.decompressor import Decompressor
 
     d = CompressionDictionary.from_seed("csharp")
-    compressor = Compressor(d)
+    compressor = Compressor(d, language="csharp")
     decompressor = Decompressor(d)
 
     compressed = _compress_file(SAMPLE_CS, compressor)

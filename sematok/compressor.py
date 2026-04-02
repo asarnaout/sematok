@@ -30,8 +30,8 @@ class Compressor:
     def __init__(
         self,
         dictionary: CompressionDictionary,
+        language: str | LanguageConfig,
         safe_zones: bool = False,
-        language: str | LanguageConfig = "csharp",
     ):
         self.dictionary = dictionary
         self.safe_zones = safe_zones

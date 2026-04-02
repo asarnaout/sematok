@@ -243,7 +243,7 @@ def test_ast_template_compression_roundtrip():
     d.add_template("this.{0} = {1};", 2, category="ast_template")
 
     source = "this._logger = logger;"
-    comp = Compressor(d)
+    comp = Compressor(d, language="csharp")
     compressed = comp.compress(source)
     assert "<|T00001:" in compressed
 
