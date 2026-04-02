@@ -405,6 +405,20 @@ REPOS = [
     ("App-vNext", "Polly"),                 # BSD-3-Clause
     ("serilog", "serilog"),                 # Apache-2.0
     ("DapperLib", "Dapper"),                # Apache-2.0
+    # --- New repos: Unity game development ---
+    ("Unity-Technologies", "ml-agents"),    # Apache-2.0
+    ("MirrorNetworking", "Mirror"),         # MIT
+    ("Cysharp", "UniTask"),                 # MIT
+    ("inkle", "ink"),                       # MIT
+    ("dbrizov", "NaughtyAttributes"),       # MIT
+    # --- New repos: desktop MVVM ---
+    ("CommunityToolkit", "dotnet"),         # MIT
+    ("AvaloniaUI", "Avalonia"),             # MIT
+    ("files-community", "Files"),           # MIT
+    ("NickeManarin", "ScreenToGif"),        # MS-PL (permissive)
+    ("Flow-Launcher", "Flow.Launcher"),     # MIT
+    # --- New repos: app-layer (permissive only) ---
+    ("Squidex", "squidex"),                 # MIT
 ]
 
 EVAL_REPOS = [
@@ -415,4 +429,6 @@ EVAL_REPOS = [
     "AngleSharp--AngleSharp",                  # HTML parser (community, German)
     "ThreeMammals--Ocelot",                    # API gateway, middleware (community, xUnit)
     "fullstackhero--dotnet-starter-kit",       # Web app, API + Blazor (community)
+    "inkle--ink",                              # Unity: narrative scripting (eval Unity domain)
+    "Flow-Launcher--Flow.Launcher",            # Desktop MVVM: WPF launcher (eval MVVM domain)
 ]
