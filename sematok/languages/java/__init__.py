@@ -502,10 +502,12 @@ REPOS = [
     ("grpc", "grpc-java"),                        # Apache-2.0
     ("ReactiveX", "RxJava"),                      # Apache-2.0
     ("reactor", "reactor-core"),                  # Apache-2.0
-    # --- Android (3) ---
+    # --- Android (5) ---
     ("google", "dagger"),                         # Apache-2.0
     ("airbnb", "lottie-android"),                 # Apache-2.0
     ("greenrobot", "EventBus"),                   # Apache-2.0
+    ("yuliskov", "SmartTube"),                    # MIT
+    ("android10", "Android-CleanArchitecture"),   # Apache-2.0
     # --- Testing (4) ---
     ("mockito", "mockito"),                       # MIT
     ("testcontainers", "testcontainers-java"),   # MIT

@@ -496,6 +496,14 @@ REPOS = [
 
     # --- Headless CMS / commerce (1) ---
     ("medusajs", "medusa"),                       # MIT          | Headless commerce
+
+    # --- React Native (2) ---
+    ("expo", "expo"),                             # MIT          | RN development platform
+    ("react-navigation", "react-navigation"),     # MIT          | RN navigation library
+
+    # --- Electron / desktop (2) ---
+    ("microsoft", "vscode"),                      # MIT          | VS Code editor
+    ("toeverything", "AFFiNE"),                   # MIT          | Knowledge base / whiteboard
 ]
 
 EVAL_REPOS = [
