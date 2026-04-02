@@ -12,6 +12,7 @@ dependencies = [
 
 [project.optional-dependencies]
 csharp = ["tree-sitter-c-sharp"]
+python = ["tree-sitter-python"]
 mining = ["transformers", "torch>=2.0"]
 training = ["transformers", "torch>=2.0", "unsloth", "peft", "bitsandbytes", "accelerate", "datasets"]
 dev = ["pytest"]

@@ -8,19 +8,21 @@ from sematok.dictionary import CompressionDictionary
 from sematok.languages import get_language
 from sematok.compressor import Compressor
 from sematok.decompressor import Decompressor
-from sematok.lexer import get_safe_ranges, get_unsafe_ranges
+from sematok.lexer import get_safe_ranges, get_unsafe_ranges, set_language
+
+set_language(get_language("csharp"))
 
 
 # -- Dictionary tests --
 
 def test_dictionary_from_seed():
-    d = CompressionDictionary.from_seed()
+    d = CompressionDictionary.from_seed("csharp")
     assert d.size == len(get_language("csharp").seed_patterns)
     assert d.size > 0
 
 
 def test_dictionary_bidirectional():
-    d = CompressionDictionary.from_seed()
+    d = CompressionDictionary.from_seed("csharp")
     for pattern, macro in d.pattern_to_macro.items():
         assert d.macro_to_pattern[macro] == pattern
 
@@ -42,7 +44,7 @@ def test_dictionary_add_duplicate():
 
 
 def test_dictionary_remove():
-    d = CompressionDictionary.from_seed()
+    d = CompressionDictionary.from_seed("csharp")
     original_size = d.size
     pattern = list(d.pattern_to_macro.keys())[0]
     d.remove_pattern(pattern)
@@ -51,7 +53,7 @@ def test_dictionary_remove():
 
 
 def test_dictionary_save_load():
-    d = CompressionDictionary.from_seed()
+    d = CompressionDictionary.from_seed("csharp")
     with tempfile.NamedTemporaryFile(suffix=".json", delete=False, mode="w") as f:
         path = f.name
 
@@ -65,7 +67,7 @@ def test_dictionary_save_load():
 
 
 def test_dictionary_patterns_by_length():
-    d = CompressionDictionary.from_seed()
+    d = CompressionDictionary.from_seed("csharp")
     patterns = d.patterns_by_length
     for i in range(len(patterns) - 1):
         assert len(patterns[i]) >= len(patterns[i + 1])
@@ -101,7 +103,7 @@ namespace MyApp
 
 def test_roundtrip_lossless():
     """Core invariant: decompress(compress(source)) == source."""
-    d = CompressionDictionary.from_seed()
+    d = CompressionDictionary.from_seed("csharp")
     compressor = Compressor(d)
     decompressor = Decompressor(d)
 
@@ -112,7 +114,7 @@ def test_roundtrip_lossless():
 
 def test_compression_reduces_size():
     """Compressed text should be shorter than original (for code with boilerplate)."""
-    d = CompressionDictionary.from_seed()
+    d = CompressionDictionary.from_seed("csharp")
     compressor = Compressor(d)
 
     compressed = compressor.compress(SAMPLE_CS_CODE)
@@ -121,7 +123,7 @@ def test_compression_reduces_size():
 
 def test_compression_contains_macros():
     """Compressed output should contain macro tokens."""
-    d = CompressionDictionary.from_seed()
+    d = CompressionDictionary.from_seed("csharp")
     compressor = Compressor(d)
     decompressor = Decompressor(d)
 
@@ -130,7 +132,7 @@ def test_compression_contains_macros():
 
 
 def test_empty_input():
-    d = CompressionDictionary.from_seed()
+    d = CompressionDictionary.from_seed("csharp")
     compressor = Compressor(d)
     decompressor = Decompressor(d)
 
@@ -140,7 +142,7 @@ def test_empty_input():
 
 def test_no_matching_patterns():
     """Text with no C# boilerplate should pass through unchanged."""
-    d = CompressionDictionary.from_seed()
+    d = CompressionDictionary.from_seed("csharp")
     compressor = Compressor(d)
 
     plain_text = "Hello, this is just plain English text with no C# patterns."
@@ -148,7 +150,7 @@ def test_no_matching_patterns():
 
 
 def test_compression_stats():
-    d = CompressionDictionary.from_seed()
+    d = CompressionDictionary.from_seed("csharp")
     compressor = Compressor(d)
 
     stats = compressor.compression_stats(SAMPLE_CS_CODE)
@@ -160,7 +162,7 @@ def test_compression_stats():
 
 def test_multiple_occurrences():
     """Pattern appearing multiple times should all be replaced."""
-    d = CompressionDictionary.from_seed()
+    d = CompressionDictionary.from_seed("csharp")
     compressor = Compressor(d)
     decompressor = Decompressor(d)
 
@@ -172,7 +174,7 @@ def test_multiple_occurrences():
 
 def test_safe_zones_compression():
     """Compression with safe zones should skip unsafe regions."""
-    d = CompressionDictionary.from_seed()
+    d = CompressionDictionary.from_seed("csharp")
     compressor = Compressor(d)
     decompressor = Decompressor(d)
 
@@ -218,7 +220,7 @@ def test_block_comment_stays_unsafe():
 
 def test_xmldoc_roundtrip_with_compression():
     """Compressing XML doc patterns in safe zones is lossless."""
-    d = CompressionDictionary.from_seed()
+    d = CompressionDictionary.from_seed("csharp")
     compressor = Compressor(d)
     decompressor = Decompressor(d)
 
@@ -254,7 +256,7 @@ def test_template_add_duplicate():
 
 def test_template_save_load_roundtrip(tmp_path):
     """Templates survive JSON serialization."""
-    d = CompressionDictionary.from_seed()
+    d = CompressionDictionary.from_seed("csharp")
     d.add_template("this.{0} = {1};", slot_count=2)
     d.add_template("return {0};", slot_count=1)
     path = tmp_path / "dict.json"
@@ -269,7 +271,7 @@ def test_template_save_load_roundtrip(tmp_path):
 
 def test_template_save_load_no_templates(tmp_path):
     """Loading a dictionary without templates key works (backward compat)."""
-    d = CompressionDictionary.from_seed()
+    d = CompressionDictionary.from_seed("csharp")
     path = tmp_path / "dict.json"
     d.save(path)
     loaded = CompressionDictionary.load(path)
@@ -347,7 +349,7 @@ def test_template_repeated_slot():
 
 def test_no_templates_backward_compatible():
     """Empty template dictionary = exact-only compression, no errors."""
-    d = CompressionDictionary.from_seed()
+    d = CompressionDictionary.from_seed("csharp")
     compressor = Compressor(d)
     decompressor = Decompressor(d)
 

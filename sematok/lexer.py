@@ -17,7 +17,9 @@ _parser: Parser | None = None
 def _get_lang() -> LanguageConfig:
     global _lang
     if _lang is None:
-        _lang = get_language("csharp")
+        raise RuntimeError(
+            "No language set. Call set_language(lang) before using the lexer."
+        )
     return _lang
 
 

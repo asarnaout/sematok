@@ -24,7 +24,7 @@ from sematok.lexer import get_safe_ranges, set_language
 
 def main():
     parser = argparse.ArgumentParser(description="Analyze per-repo macro distribution")
-    parser.add_argument("--language", type=str, default="csharp", help="Language config to use")
+    parser.add_argument("--language", type=str, required=True, help="Language config to use (e.g. csharp, python)")
     parser.add_argument("--corpus", type=str, default=None, help="Corpus directory (default: data/raw_<lang>)")
     parser.add_argument("--dictionary", type=str, default=None, help="Dictionary JSON path")
     args = parser.parse_args()

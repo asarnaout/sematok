@@ -2,5 +2,6 @@ torch>=2.0
 transformers
 tree-sitter>=0.21
 tree-sitter-c-sharp
+tree-sitter-python
 tqdm
 pytest

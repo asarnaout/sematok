@@ -40,7 +40,7 @@ class CompressionDictionary:
         self._template_index: int = 0
 
     @classmethod
-    def from_seed(cls, language: str = "csharp") -> "CompressionDictionary":
+    def from_seed(cls, language: str) -> "CompressionDictionary":
         """Create a dictionary from the hand-picked seed patterns."""
         lang = get_language(language)
         d = cls()

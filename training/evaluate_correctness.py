@@ -531,8 +531,8 @@ def main():
         help="Compression dictionary (default: auto-detect from language)",
     )
     parser.add_argument(
-        "--language", type=str, default="csharp",
-        help="Language config (used to locate default dictionary)",
+        "--language", type=str, required=True,
+        help="Language config (e.g. csharp, python)",
     )
     parser.add_argument(
         "--output", default="out/correctness_results.json",

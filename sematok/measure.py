@@ -29,9 +29,9 @@ DEFAULT_TOKENIZER = "Qwen/Qwen2.5-Coder-1.5B-Instruct"
 def measure_compression(
     corpus_dir: Path,
     dictionary_path: Path,
+    language: str | LanguageConfig,
     sample_size: int = 2000,
     seed: int = 42,
-    language: str | LanguageConfig = "csharp",
     tokenizer_name: str = DEFAULT_TOKENIZER,
 ) -> dict:
     """
@@ -110,7 +110,7 @@ def main():
     parser = argparse.ArgumentParser(description="Measure compression ratio")
     parser.add_argument("--corpus", type=str, required=True, help="Directory with source files")
     parser.add_argument("--dictionary", type=str, default=None, help="Dictionary JSON (default: auto-detect from language)")
-    parser.add_argument("--language", type=str, default="csharp", help="Language config to use")
+    parser.add_argument("--language", type=str, required=True, help="Language config to use (e.g. csharp, python)")
     parser.add_argument("--tokenizer", type=str, default=DEFAULT_TOKENIZER, help="HuggingFace tokenizer for scoring")
     parser.add_argument("--sample", type=int, default=2000, help="Number of files to sample")
     parser.add_argument("--seed", type=int, default=42)

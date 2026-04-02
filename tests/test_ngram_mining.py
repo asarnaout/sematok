@@ -7,6 +7,10 @@ from sematok.ngram_mining import (
     _is_valid_ngram,
 )
 from sematok.mining import merge_mining_results
+from sematok.languages import get_language
+from sematok.lexer import set_language
+
+set_language(get_language("csharp"))
 
 
 # -- extract_safe_segments tests --

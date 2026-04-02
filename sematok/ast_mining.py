@@ -65,6 +65,9 @@ def normalize_subtree(
 
     Returns (template, [unique_args]) or None if nothing was normalized.
     """
+    if lang is None:
+        from sematok.lexer import _get_lang
+        lang = _get_lang()
     raw = source_bytes[node.start_byte:node.end_byte].decode("utf-8", errors="replace")
 
     # Collect normalizable identifier leaves within this subtree
@@ -136,7 +139,8 @@ def extract_ast_candidates(
     at target node types.
     """
     if lang is None:
-        lang = get_language("csharp")
+        from sematok.lexer import _get_lang
+        lang = _get_lang()
     try:
         root_node, source_bytes = parse_source(source)
     except Exception:
@@ -196,12 +200,12 @@ def extract_ast_candidates(
 
 def mine_ast_templates(
     corpus_dir: Path,
+    language: str | LanguageConfig,
     top_n: int = 1000,
     min_frequency: int = MIN_AST_TEMPLATE_FREQUENCY,
     min_repos: int = MIN_REPOS,
     max_files: int | None = None,
     exclude_repos: list[str] | None = None,
-    language: str | LanguageConfig = "csharp",
     tokenizer_name: str = DEFAULT_TOKENIZER,
 ) -> list[tuple[str, int, int, float, int]]:
     """Mine template patterns from AST subtrees across the corpus.
@@ -298,7 +302,7 @@ def mine_ast_templates(
 def main():
     parser = argparse.ArgumentParser(description="Mine AST subtree patterns")
     parser.add_argument("--corpus", type=str, required=True, help="Directory with source files")
-    parser.add_argument("--language", type=str, default="csharp", help="Language config to use")
+    parser.add_argument("--language", type=str, required=True, help="Language config to use (e.g. csharp, python)")
     parser.add_argument("--tokenizer", type=str, default=DEFAULT_TOKENIZER, help="HuggingFace tokenizer for scoring")
     parser.add_argument("--top", type=int, default=100, help="Show top N templates")
     parser.add_argument("--min-freq", type=int, default=MIN_AST_TEMPLATE_FREQUENCY)

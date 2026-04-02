@@ -31,6 +31,7 @@ def get_config() -> LanguageConfig:
         normalize_parent_types=NORMALIZE_PARENT_TYPES,
         structural_names=STRUCTURAL_NAMES,
         ident_pattern=r"([a-zA-Z_]\w*)",
+        skip_path_patterns=SKIP_PATH_PATTERNS,
         repos=REPOS,
         eval_repos=EVAL_REPOS,
     )
@@ -337,6 +338,18 @@ STRUCTURAL_NAMES = {
     "ConfigureAwait", "GetAwaiter", "GetResult",
     "ThrowIfNull", "IsNullOrEmpty", "IsNullOrWhiteSpace",
 }
+
+# ---------------------------------------------------------------------------
+# Download: paths to skip when extracting source files
+# ---------------------------------------------------------------------------
+
+SKIP_PATH_PATTERNS = [
+    "obj/",
+    "bin/",
+    ".designer.cs",
+    "assemblyinfo.cs",
+    "globalassemblyinfo",
+]
 
 # ---------------------------------------------------------------------------
 # Data: repos and eval splits

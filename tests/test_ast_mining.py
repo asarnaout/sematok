@@ -10,9 +10,11 @@ from sematok.ast_mining import (
     MIN_CHAR_LENGTH,
 )
 from sematok.languages import get_language
+from sematok.lexer import parse_source, set_language
 
-SUBTREE_ROOT_TYPES = get_language("csharp").subtree_root_types
-from sematok.lexer import parse_source
+_CSHARP = get_language("csharp")
+set_language(_CSHARP)
+SUBTREE_ROOT_TYPES = _CSHARP.subtree_root_types
 from sematok.dictionary import CompressionDictionary
 from sematok.compressor import Compressor
 from sematok.decompressor import Decompressor

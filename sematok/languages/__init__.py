@@ -46,6 +46,10 @@ class LanguageConfig:
     # --- Compressor: identifier capture ---
     ident_pattern: str = r"([a-zA-Z_]\w*)"
 
+    # --- Download: paths to skip when extracting source files ---
+    # Substrings matched against lowercased file paths during corpus extraction.
+    skip_path_patterns: list[str] = field(default_factory=list)
+
     # --- Data: repos and eval splits ---
     repos: list[tuple[str, str]] = field(default_factory=list)
     eval_repos: list[str] = field(default_factory=list)
@@ -53,10 +57,11 @@ class LanguageConfig:
 
 _REGISTRY: dict[str, str] = {
     "csharp": "sematok.languages.csharp",  # sematok/languages/csharp/__init__.py
+    "python": "sematok.languages.python",  # sematok/languages/python/__init__.py
 }
 
 
-def get_language(name: str = "csharp") -> LanguageConfig:
+def get_language(name: str) -> LanguageConfig:
     """Load a language config by name."""
     module_path = _REGISTRY.get(name)
     if module_path is None:

@@ -89,7 +89,8 @@ def should_normalize(
 ) -> bool:
     """True if this identifier should become a placeholder."""
     if lang is None:
-        lang = get_language("csharp")
+        from sematok.lexer import _get_lang
+        lang = _get_lang()
     if text in lang.structural_names:
         return False
     if parent_type in lang.fixed_parent_types:
@@ -185,7 +186,8 @@ def extract_template_candidates(
     Parses once, applies candidate pattern regexes, normalizes identifiers.
     """
     if lang is None:
-        lang = get_language("csharp")
+        from sematok.lexer import _get_lang
+        lang = _get_lang()
 
     try:
         root_node, source_bytes = parse_source(source)
@@ -223,6 +225,7 @@ def extract_template_candidates(
 
 def mine_templates(
     corpus_dir: Path,
+    language: str | LanguageConfig,
     top_n: int = 2000,
     min_frequency: int = MIN_TEMPLATE_FREQUENCY,
     min_repos: int = MIN_REPOS,
@@ -230,7 +233,6 @@ def mine_templates(
     max_slots: int = MAX_SLOTS,
     max_files: int | None = None,
     exclude_repos: list[str] | None = None,
-    language: str | LanguageConfig = "csharp",
     tokenizer_name: str = DEFAULT_TOKENIZER,
 ) -> list[tuple[str, int, int, float, int]]:
     """Mine template patterns from corpus.
@@ -316,7 +318,7 @@ def mine_templates(
 def main():
     parser = argparse.ArgumentParser(description="Mine template patterns")
     parser.add_argument("--corpus", type=str, required=True, help="Directory with source files")
-    parser.add_argument("--language", type=str, default="csharp", help="Language config to use")
+    parser.add_argument("--language", type=str, required=True, help="Language config to use (e.g. csharp, python)")
     parser.add_argument("--tokenizer", type=str, default=DEFAULT_TOKENIZER, help="HuggingFace tokenizer for scoring")
     parser.add_argument("--top", type=int, default=100, help="Show top N templates")
     parser.add_argument("--min-freq", type=int, default=MIN_TEMPLATE_FREQUENCY)

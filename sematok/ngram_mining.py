@@ -109,7 +109,7 @@ def _get_corpus_files(
     file_to_repo: dict[str, str],
     exclude_set: set[str],
     max_files: int | None,
-    file_extension: str = ".cs",
+    file_extension: str,
 ) -> list[Path]:
     """Get sorted list of source files, excluding eval repos."""
     files = sorted(corpus_dir.glob(f"*{file_extension}"))
@@ -128,18 +128,18 @@ def ngram_pass1(
     file_to_repo: dict[str, str],
     exclude_set: set[str],
     max_files: int | None,
+    file_extension: str,
     pass1_threshold: int = PASS1_THRESHOLD,
-    file_extension: str = ".cs",
 ) -> set[str]:
     """
     Pass 1: Count 8-grams at word-boundary starts across corpus.
 
     Returns set of 8-grams appearing in >= pass1_threshold files.
     """
-    cs_files = _get_corpus_files(corpus_dir, file_to_repo, exclude_set, max_files, file_extension)
+    src_files = _get_corpus_files(corpus_dir, file_to_repo, exclude_set, max_files, file_extension)
     counter: Counter = Counter()
 
-    for file_idx, f in enumerate(tqdm(cs_files, desc="N-gram pass 1")):
+    for file_idx, f in enumerate(tqdm(src_files, desc="N-gram pass 1")):
         try:
             source = f.read_text(encoding="utf-8", errors="replace")
         except Exception:
@@ -173,8 +173,8 @@ def ngram_pass2(
     file_to_repo: dict[str, str],
     exclude_set: set[str],
     max_files: int | None,
+    file_extension: str,
     max_length: int = MAX_PATTERN_LENGTH,
-    file_extension: str = ".cs",
 ) -> tuple[Counter, dict[str, set[str]]]:
     """
     Pass 2: Extend surviving 8-grams to full-length patterns.
@@ -185,11 +185,11 @@ def ngram_pass2(
 
     Returns (pattern_counter, pattern_repos) where counts are per-file.
     """
-    cs_files = _get_corpus_files(corpus_dir, file_to_repo, exclude_set, max_files, file_extension)
+    src_files = _get_corpus_files(corpus_dir, file_to_repo, exclude_set, max_files, file_extension)
     pattern_counter: Counter = Counter()
     pattern_repos: dict[str, set[str]] = defaultdict(set)
 
-    for file_idx, f in enumerate(tqdm(cs_files, desc="N-gram pass 2")):
+    for file_idx, f in enumerate(tqdm(src_files, desc="N-gram pass 2")):
         try:
             source = f.read_text(encoding="utf-8", errors="replace")
         except Exception:
@@ -278,6 +278,7 @@ def filter_and_score_ngrams(
 
 def mine_ngram_patterns(
     corpus_dir: Path,
+    language: str | LanguageConfig,
     top_n: int = 1000,
     min_frequency: int = MIN_FREQUENCY,
     min_token_span: int = MIN_TOKEN_SPAN,
@@ -286,7 +287,6 @@ def mine_ngram_patterns(
     exclude_repos: list[str] | None = None,
     pass1_threshold: int = PASS1_THRESHOLD,
     max_pattern_length: int = MAX_PATTERN_LENGTH,
-    language: str | LanguageConfig = "csharp",
     tokenizer_name: str = DEFAULT_TOKENIZER,
 ) -> list[tuple[str, int, int, float, int]]:
     """
@@ -306,8 +306,8 @@ def mine_ngram_patterns(
 
     print("N-gram mining: Pass 1 (8-gram census)...")
     survivors = ngram_pass1(
-        corpus_dir, file_to_repo, exclude_set, max_files, pass1_threshold,
-        file_extension=lang.file_extension,
+        corpus_dir, file_to_repo, exclude_set, max_files,
+        file_extension=lang.file_extension, pass1_threshold=pass1_threshold,
     )
     print(f"  {len(survivors):,} 8-grams survived (threshold={pass1_threshold})")
 
@@ -318,7 +318,7 @@ def mine_ngram_patterns(
     print("N-gram mining: Pass 2 (extend to full patterns)...")
     pattern_counter, pattern_repos = ngram_pass2(
         corpus_dir, survivors, file_to_repo, exclude_set,
-        max_files, max_pattern_length, file_extension=lang.file_extension,
+        max_files, file_extension=lang.file_extension, max_length=max_pattern_length,
     )
 
     print("N-gram mining: Filtering and scoring...")
@@ -334,7 +334,7 @@ def mine_ngram_patterns(
 def main():
     parser = argparse.ArgumentParser(description="Mine n-gram patterns")
     parser.add_argument("--corpus", type=str, required=True, help="Directory with source files")
-    parser.add_argument("--language", type=str, default="csharp", help="Language config to use")
+    parser.add_argument("--language", type=str, required=True, help="Language config to use (e.g. csharp, python)")
     parser.add_argument("--tokenizer", type=str, default=DEFAULT_TOKENIZER, help="HuggingFace tokenizer for scoring")
     parser.add_argument("--top", type=int, default=100, help="Show top N patterns")
     parser.add_argument("--min-freq", type=int, default=MIN_FREQUENCY)

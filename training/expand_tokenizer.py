@@ -524,8 +524,8 @@ def main():
         help=f"Base model ID (default: {DEFAULT_BASE_MODEL})",
     )
     parser.add_argument(
-        "--language", type=str, default="csharp",
-        help="Language config to use (default: csharp)",
+        "--language", type=str, required=True,
+        help="Language config to use (e.g. csharp, python)",
     )
 
     # Token distillation arguments

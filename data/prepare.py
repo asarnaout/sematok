@@ -74,11 +74,11 @@ def _compress_file(source: str, compressor: Compressor) -> str:
 def prepare_data(
     corpus_dir: Path,
     output_dir: Path,
+    language: str | LanguageConfig,
     dictionary_path: Path | None = None,
     eval_repos: list[str] | None = None,
     compress_ratio: float = 0.75,
     seed: int = 42,
-    language: str | LanguageConfig = "csharp",
 ):
     """
     Prepare JSONL training data for continued pre-training.
@@ -213,7 +213,7 @@ def main():
     parser = argparse.ArgumentParser(description="Prepare fine-tuning data")
     parser.add_argument("--corpus", type=str, required=True, help="Dir with source files")
     parser.add_argument("--output", type=str, required=True, help="Output directory")
-    parser.add_argument("--language", type=str, default="csharp", help="Language config to use")
+    parser.add_argument("--language", type=str, required=True, help="Language config to use (e.g. csharp, python)")
     parser.add_argument("--dictionary", type=str, default=None, help="Dictionary JSON path")
     parser.add_argument(
         "--eval-repos", type=str, nargs="+", default=None,

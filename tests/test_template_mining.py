@@ -1,6 +1,6 @@
 """Tests for template mining: AST-guided identifier normalization."""
 
-from sematok.lexer import parse_source
+from sematok.lexer import parse_source, set_language
 from sematok.languages import get_language
 from sematok.template_mining import (
     find_identifiers_in_range,
@@ -9,7 +9,9 @@ from sematok.template_mining import (
     extract_template_candidates,
 )
 
-STRUCTURAL_NAMES = get_language("csharp").structural_names
+_CSHARP = get_language("csharp")
+set_language(_CSHARP)
+STRUCTURAL_NAMES = _CSHARP.structural_names
 
 
 # -- should_normalize tests --

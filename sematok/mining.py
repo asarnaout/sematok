@@ -85,7 +85,7 @@ def extract_candidates_from_file(
 ) -> list[str]:
     """Extract candidate boilerplate patterns from a source file."""
     if candidate_patterns is None:
-        candidate_patterns = get_language("csharp").candidate_patterns
+        raise ValueError("candidate_patterns must be provided")
 
     try:
         safe_ranges = get_safe_ranges(source)
@@ -110,13 +110,13 @@ def extract_candidates_from_file(
 
 def mine_patterns(
     corpus_dir: Path,
+    language: str | LanguageConfig,
     top_n: int = 1000,
     min_frequency: int = MIN_FREQUENCY,
     min_token_span: int = MIN_TOKEN_SPAN,
     min_repos: int = MIN_REPOS,
     max_files: int | None = None,
     exclude_repos: list[str] | None = None,
-    language: str | LanguageConfig = "csharp",
     tokenizer_name: str = DEFAULT_TOKENIZER,
 ) -> list[tuple[str, int, int, float, int]]:
     """
@@ -222,8 +222,8 @@ def merge_mining_results(
 def _score_on_corpus(
     d: CompressionDictionary,
     corpus_dir: Path,
+    language: str | LanguageConfig,
     exclude_repos: list[str] | None = None,
-    language: str | LanguageConfig = "csharp",
     tokenizer_name: str = DEFAULT_TOKENIZER,
 ) -> tuple[dict[str, float], dict[str, int], dict[str, int]]:
     """
@@ -458,6 +458,7 @@ def _rebuild_top_n(
 
 def build_mined_dictionary(
     corpus_dir: Path,
+    language: str | LanguageConfig,
     include_seeds: bool = True,
     min_repos: int = MIN_REPOS,
     max_files: int | None = None,
@@ -469,7 +470,6 @@ def build_mined_dictionary(
     max_ast_templates: int = 1000,
     min_file_count: int = 0,
     max_entries: int = 999,
-    language: str | LanguageConfig = "csharp",
     tokenizer_name: str = DEFAULT_TOKENIZER,
 ) -> tuple[CompressionDictionary, list[tuple[str, int, int, float, int]]]:
     """
@@ -600,7 +600,7 @@ def main():
     parser = argparse.ArgumentParser(description="Mine boilerplate patterns")
     parser.add_argument("--corpus", type=str, required=True, help="Directory with source files")
     parser.add_argument("--output", type=str, default=None, help="Output dictionary path (default: sematok/languages/<lang>/dictionary.json)")
-    parser.add_argument("--language", type=str, default="csharp", help="Language config to use (default: csharp)")
+    parser.add_argument("--language", type=str, required=True, help="Language config to use (e.g. csharp, python)")
     parser.add_argument("--tokenizer", type=str, default=DEFAULT_TOKENIZER, help="HuggingFace tokenizer for scoring")
     parser.add_argument("--min-repos", type=int, default=MIN_REPOS, help="Min repos a pattern must appear in")
     parser.add_argument("--min-freq", type=int, default=MIN_FREQUENCY, help="Min frequency across corpus")

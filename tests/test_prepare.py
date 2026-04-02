@@ -6,8 +6,12 @@ from pathlib import Path
 
 from sematok.dictionary import CompressionDictionary
 from sematok.compressor import Compressor
+from sematok.languages import get_language
+from sematok.lexer import set_language
 
 from data.prepare import prepare_data, _compress_file
+
+set_language(get_language("csharp"))
 
 
 # -- Helpers --
@@ -62,7 +66,7 @@ def test_prepare_creates_output_files():
         corpus = _make_corpus(tmp_path, {"a.cs": SAMPLE_CS, "b.cs": SIMPLE_CS})
         output = tmp_path / "out"
 
-        prepare_data(corpus, output, eval_repos=[])
+        prepare_data(corpus, output, language="csharp", eval_repos=[])
 
         assert (output / "train.jsonl").exists()
         assert (output / "eval.jsonl").exists()
@@ -76,7 +80,7 @@ def test_jsonl_format():
         corpus = _make_corpus(tmp_path, {"a.cs": SAMPLE_CS, "b.cs": SAMPLE_CS})
         output = tmp_path / "out"
 
-        prepare_data(corpus, output, eval_repos=[])
+        prepare_data(corpus, output, language="csharp", eval_repos=[])
 
         with open(output / "train.jsonl", encoding="utf-8") as f:
             for line in f:
@@ -95,7 +99,7 @@ def test_compression_mix():
         corpus = _make_corpus(tmp_path, files)
         output = tmp_path / "out"
 
-        prepare_data(corpus, output, eval_repos=[], compress_ratio=0.75, seed=42)
+        prepare_data(corpus, output, language="csharp", eval_repos=[], compress_ratio=0.75, seed=42)
 
         has_macros = 0
         no_macros = 0
@@ -120,7 +124,7 @@ def test_eval_all_compressed():
         corpus = _make_corpus(tmp_path, files, repos)
         output = tmp_path / "out"
 
-        prepare_data(corpus, output, eval_repos=["eval-repo"])
+        prepare_data(corpus, output, language="csharp", eval_repos=["eval-repo"])
 
         with open(output / "eval.jsonl", encoding="utf-8") as f:
             lines = f.readlines()
@@ -140,7 +144,7 @@ def test_repo_split():
         corpus = _make_corpus(tmp_path, files, repos)
         output = tmp_path / "out"
 
-        prepare_data(corpus, output, eval_repos=["eval-repo"])
+        prepare_data(corpus, output, language="csharp", eval_repos=["eval-repo"])
 
         meta = json.loads((output / "meta.json").read_text())
         assert meta["train_files"] == 2
@@ -154,7 +158,7 @@ def test_meta_json_contents():
         corpus = _make_corpus(tmp_path, {"a.cs": SAMPLE_CS})
         output = tmp_path / "out"
 
-        prepare_data(corpus, output, eval_repos=[])
+        prepare_data(corpus, output, language="csharp", eval_repos=[])
 
         meta = json.loads((output / "meta.json").read_text())
         assert "dictionary_size" in meta
@@ -168,7 +172,7 @@ def test_compress_file_roundtrip():
     """Compressed file should decompress back to original."""
     from sematok.decompressor import Decompressor
 
-    d = CompressionDictionary.from_seed()
+    d = CompressionDictionary.from_seed("csharp")
     compressor = Compressor(d)
     decompressor = Decompressor(d)
 

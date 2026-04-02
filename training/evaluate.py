@@ -399,8 +399,8 @@ def main():
     parser.add_argument("--dictionary", type=str,
                         default=None,
                         help="Dictionary path for decompression (default: auto-detect from language)")
-    parser.add_argument("--language", type=str, default="csharp",
-                        help="Language config (used to locate default dictionary)")
+    parser.add_argument("--language", type=str, required=True,
+                        help="Language config (e.g. csharp, python)")
     parser.add_argument("--output", type=str, default=DEFAULT_OUTPUT,
                         help=f"JSON results output (default: {DEFAULT_OUTPUT})")
     parser.add_argument("--max-seq-length", type=int,

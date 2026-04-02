@@ -81,6 +81,13 @@ def get_config() -> LanguageConfig:
         # Regex for capturing identifiers in template macros.
         ident_pattern=r"([a-zA-Z_]\w*)",
 
+        # --- Download: paths to skip when extracting source files ---
+        # Substrings matched against lowercased file paths during corpus extraction.
+        skip_path_patterns=[
+            # "obj/", "bin/",  # C# example
+            # "__pycache__/", ".pyc",  # Python example
+        ],
+
         # --- Data: repos and eval splits ---
         # (owner, repo) pairs for mining corpora.
         repos=[
