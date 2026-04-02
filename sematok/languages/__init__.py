@@ -65,6 +65,7 @@ _REGISTRY: dict[str, str] = {
     "python": "sematok.languages.python",  # sematok/languages/python/__init__.py
     "java": "sematok.languages.java",      # sematok/languages/java/__init__.py
     "typescript": "sematok.languages.typescript",  # sematok/languages/typescript/__init__.py
+    "go": "sematok.languages.go",                    # sematok/languages/go/__init__.py
 }
 
 
