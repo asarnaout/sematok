@@ -356,71 +356,73 @@ SKIP_PATH_PATTERNS = [
 # ---------------------------------------------------------------------------
 
 REPOS = [
-    # --- Original 24 repos (dotnet / microsoft ecosystem) ---
+    # --- Runtime & compiler ---
     ("dotnet", "runtime"),
     ("dotnet", "roslyn"),
-    ("dotnet", "aspnetcore"),
-    ("dotnet", "efcore"),
-    ("dotnet", "maui"),
-    ("dotnet", "orleans"),
-    ("dotnet", "machinelearning"),
-    ("dotnet", "wpf"),
-    ("dotnet", "winforms"),
-    ("dotnet", "yarp"),
-    ("dotnet", "reactive"),
-    ("dotnet", "BenchmarkDotNet"),
-    ("dotnet", "eShop"),
-    ("microsoft", "semantic-kernel"),
-    ("microsoft", "garnet"),
-    ("JamesNK", "Newtonsoft.Json"),
     ("icsharpcode", "ILSpy"),
-    ("ppy", "osu"),
-    ("MudBlazor", "MudBlazor"),
-    ("Humanizr", "Humanizer"),
-    ("autofac", "Autofac"),
-    ("nunit", "nunit"),
-    ("bchavez", "Bogus"),
-    ("spectreconsole", "spectre.console"),
-    # --- New repos: web app patterns ---
+    # --- Web frameworks ---
+    ("dotnet", "aspnetcore"),
+    ("dotnet", "yarp"),
+    ("ThreeMammals", "Ocelot"),
+    ("domaindrivendev", "Swashbuckle.AspNetCore"),
+    # --- Web applications ---
+    ("dotnet", "eShop"),
     ("jasontaylordev", "CleanArchitecture"),
     ("fullstackhero", "dotnet-starter-kit"),
     ("EduardoPires", "EquinoxProject"),
-    ("OrchardCMS", "OrchardCore"),          # BSD-3-Clause
-    # --- New repos: messaging / event-driven / CQRS ---
+    ("OrchardCMS", "OrchardCore"),              # BSD-3-Clause
+    ("kgrzybek", "modular-monolith-with-ddd"),
+    ("Squidex", "squidex"),
+    ("JustArchiNET", "ArchiSteamFarm"),         # Apache-2.0
+    ("simplcommerce", "SimplCommerce"),         # Apache-2.0
+    # --- Data access & storage ---
+    ("dotnet", "efcore"),
+    ("DapperLib", "Dapper"),                    # Apache-2.0
+    ("JasperFx", "marten"),
+    ("microsoft", "garnet"),
+    # --- UI frameworks ---
+    ("dotnet", "maui"),
+    ("dotnet", "wpf"),
+    ("dotnet", "winforms"),
+    ("MudBlazor", "MudBlazor"),
+    # --- Desktop & MVVM ---
+    ("CommunityToolkit", "dotnet"),
+    ("AvaloniaUI", "Avalonia"),
+    ("files-community", "Files"),
+    ("NickeManarin", "ScreenToGif"),            # MS-PL (permissive)
+    ("Flow-Launcher", "Flow.Launcher"),
+    ("ppy", "osu"),
+    # --- Unity ---
+    ("Unity-Technologies", "ml-agents"),        # Apache-2.0
+    ("MirrorNetworking", "Mirror"),
+    ("Cysharp", "UniTask"),
+    ("inkle", "ink"),
+    ("dbrizov", "NaughtyAttributes"),
+    # --- Messaging & CQRS ---
+    ("dotnet", "orleans"),
     ("BrighterCommand", "Brighter"),
     ("JasperFx", "wolverine"),
-    ("JasperFx", "marten"),
     ("dotnetcore", "CAP"),
-    ("MassTransit", "MassTransit"),         # Apache-2.0
-    # --- New repos: xUnit / testing ---
-    ("xunit", "xunit"),                     # Apache-2.0
-    ("ThreeMammals", "Ocelot"),
+    ("MassTransit", "MassTransit"),             # Apache-2.0
+    # --- Testing & benchmarking ---
+    ("nunit", "nunit"),
+    ("xunit", "xunit"),                         # Apache-2.0
     ("VerifyTests", "Verify"),
-    ("domaindrivendev", "Swashbuckle.AspNetCore"),
-    # --- New repos: community / diverse conventions ---
-    ("kgrzybek", "modular-monolith-with-ddd"),
+    ("dotnet", "BenchmarkDotNet"),
+    ("bchavez", "Bogus"),
+    # --- Libraries & utilities ---
+    ("autofac", "Autofac"),
+    ("FluentValidation", "FluentValidation"),   # Apache-2.0
+    ("App-vNext", "Polly"),                     # BSD-3-Clause
+    ("JamesNK", "Newtonsoft.Json"),
     ("AngleSharp", "AngleSharp"),
     ("MapsterMapper", "Mapster"),
-    ("FluentValidation", "FluentValidation"),  # Apache-2.0
-    ("App-vNext", "Polly"),                 # BSD-3-Clause
-    ("serilog", "serilog"),                 # Apache-2.0
-    ("DapperLib", "Dapper"),                # Apache-2.0
-    # --- New repos: Unity game development ---
-    ("Unity-Technologies", "ml-agents"),    # Apache-2.0
-    ("MirrorNetworking", "Mirror"),         # MIT
-    ("Cysharp", "UniTask"),                 # MIT
-    ("inkle", "ink"),                       # MIT
-    ("dbrizov", "NaughtyAttributes"),       # MIT
-    # --- New repos: desktop MVVM ---
-    ("CommunityToolkit", "dotnet"),         # MIT
-    ("AvaloniaUI", "Avalonia"),             # MIT
-    ("files-community", "Files"),           # MIT
-    ("NickeManarin", "ScreenToGif"),        # MS-PL (permissive)
-    ("Flow-Launcher", "Flow.Launcher"),     # MIT
-    # --- New repos: app-layer (permissive only) ---
-    ("Squidex", "squidex"),                 # MIT
-    ("JustArchiNET", "ArchiSteamFarm"),     # Apache-2.0
-    ("simplcommerce", "SimplCommerce"),     # Apache-2.0
+    ("serilog", "serilog"),                     # Apache-2.0
+    ("Humanizr", "Humanizer"),
+    ("spectreconsole", "spectre.console"),
+    ("dotnet", "reactive"),
+    ("microsoft", "semantic-kernel"),
+    ("dotnet", "machinelearning"),
 ]
 
 EVAL_REPOS = [
