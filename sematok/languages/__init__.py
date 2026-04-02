@@ -58,6 +58,7 @@ class LanguageConfig:
 _REGISTRY: dict[str, str] = {
     "csharp": "sematok.languages.csharp",  # sematok/languages/csharp/__init__.py
     "python": "sematok.languages.python",  # sematok/languages/python/__init__.py
+    "java": "sematok.languages.java",      # sematok/languages/java/__init__.py
 }
 
 
