@@ -50,6 +50,11 @@ class LanguageConfig:
     # Substrings matched against lowercased file paths during corpus extraction.
     skip_path_patterns: list[str] = field(default_factory=list)
 
+    # --- Download: source file extensions for multi-extension languages ---
+    # If set, these extensions are used to find source files in repos.
+    # If empty, falls back to [file_extension]. Corpus output always uses file_extension.
+    source_extensions: list[str] = field(default_factory=list)
+
     # --- Data: repos and eval splits ---
     repos: list[tuple[str, str]] = field(default_factory=list)
     eval_repos: list[str] = field(default_factory=list)
@@ -59,6 +64,7 @@ _REGISTRY: dict[str, str] = {
     "csharp": "sematok.languages.csharp",  # sematok/languages/csharp/__init__.py
     "python": "sematok.languages.python",  # sematok/languages/python/__init__.py
     "java": "sematok.languages.java",      # sematok/languages/java/__init__.py
+    "typescript": "sematok.languages.typescript",  # sematok/languages/typescript/__init__.py
 }
 
 

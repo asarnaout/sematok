@@ -14,6 +14,7 @@ dependencies = [
 csharp = ["tree-sitter-c-sharp"]
 python = ["tree-sitter-python"]
 java = ["tree-sitter-java"]
+typescript = ["tree-sitter-typescript"]
 mining = ["transformers", "torch>=2.0"]
 training = ["transformers", "torch>=2.0", "unsloth", "peft", "bitsandbytes", "accelerate", "datasets"]
 dev = ["pytest"]

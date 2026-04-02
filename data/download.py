@@ -41,6 +41,7 @@ def extract_source_files(
     repos_dir: Path,
     output_dir: Path,
     file_extension: str = ".py",
+    source_extensions: list[str] | None = None,
     min_length: int = 100,
     max_length: int = 50000,
     max_files: int | None = None,
@@ -63,8 +64,13 @@ def extract_source_files(
                 continue
 
             repo_name = repo_dir.name
-            src_files = list(repo_dir.rglob(f"*{file_extension}"))
-            print(f"  {repo_name}: {len(src_files)} {file_extension} files found")
+            extensions = source_extensions or [file_extension]
+            src_files = []
+            for ext in extensions:
+                src_files.extend(repo_dir.rglob(f"*{ext}"))
+            src_files.sort()  # deterministic order across extensions
+            ext_label = "/".join(extensions)
+            print(f"  {repo_name}: {len(src_files)} {ext_label} files found")
 
             skip_list = skip_path_patterns or []
             for src_file in tqdm(src_files, desc=f"  {repo_name}", leave=False):
@@ -135,11 +141,14 @@ def main():
             continue
 
     # Step 2: Extract source files
-    print(f"\nExtracting {lang.file_extension} files...")
+    extensions = lang.source_extensions or [lang.file_extension]
+    ext_label = "/".join(extensions)
+    print(f"\nExtracting {ext_label} files...")
     count = extract_source_files(
         repos_dir,
         Path(output_path),
         file_extension=lang.file_extension,
+        source_extensions=lang.source_extensions or None,
         min_length=args.min_length,
         max_length=args.max_length,
         max_files=args.max_files,
