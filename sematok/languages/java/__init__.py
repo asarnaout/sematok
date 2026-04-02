@@ -533,8 +533,9 @@ REPOS = [
     ("apache", "maven"),                          # Apache-2.0
     ("dbeaver", "dbeaver"),                       # Apache-2.0
     ("SeleniumHQ", "selenium"),                   # Apache-2.0
-    # --- Game development (1) ---
+    # --- Game development (2) ---
     ("libgdx", "libgdx"),                         # Apache-2.0
+    ("jMonkeyEngine", "jmonkeyengine"),           # BSD-3-Clause
 ]
 
 EVAL_REPOS = [
@@ -544,7 +545,6 @@ EVAL_REPOS = [
     "ben-manes--caffeine",                        # Apache-2.0  | Caching library
     "keycloak--keycloak",                         # Apache-2.0  | Identity & access mgmt
     "debezium--debezium",                         # Apache-2.0  | Change data capture
-    "dbeaver--dbeaver",                           # Apache-2.0  | Desktop DB application
     "resilience4j--resilience4j",                 # Apache-2.0  | Fault tolerance
     "jhy--jsoup",                                 # MIT         | HTML parser / utility
     "libgdx--libgdx",                             # Apache-2.0  | Game development
