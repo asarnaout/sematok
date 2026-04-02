@@ -225,16 +225,17 @@ def _score_on_corpus(
     exclude_repos: list[str] | None = None,
     language: str | LanguageConfig = "csharp",
     tokenizer_name: str = DEFAULT_TOKENIZER,
-) -> tuple[dict[str, int], dict[str, int], dict[str, int]]:
+) -> tuple[dict[str, float], dict[str, int], dict[str, int]]:
     """
-    Score every dictionary entry by actual corpus impact.
+    Score every dictionary entry by repo-weighted corpus impact.
 
-    Compresses files and counts how many BPE tokens each macro saves.
-    Also tracks how many files and how many distinct repos each macro appears in.
+    Each repo contributes equally to a macro's score regardless of repo size.
+    For each macro, score = sum over repos of (savings_in_repo / files_in_repo).
+    This prevents large repos from dominating the dictionary ranking.
 
     Returns:
         (scores, file_counts, repo_counts) where:
-        - scores: {macro: total_tokens_saved}
+        - scores: {macro: repo_weighted_score}
         - file_counts: {macro: number_of_files_it_appeared_in}
         - repo_counts: {macro: number_of_distinct_repos_it_appeared_in}
     """
@@ -255,13 +256,15 @@ def _score_on_corpus(
     macro_re = re.compile(r"<\|M\d+\|>")
     template_re = re.compile(r"<\|T(\d+):([^|]*)\|>")
 
-    scores: Counter = Counter()
+    repo_total_files: Counter = Counter()
+    repo_macro_savings: dict[str, Counter] = defaultdict(Counter)
     file_counts: Counter = Counter()
     repo_sets: dict[str, set[str]] = defaultdict(set)
 
     print(f"\nScoring {len(files)} files for corpus impact...")
     for f in tqdm(files, desc="Scoring"):
         repo = file_to_repo.get(f.name, "unknown")
+        repo_total_files[repo] += 1
         source = f.read_text(encoding="utf-8", errors="replace")
         try:
             safe_ranges = get_safe_ranges(source)
@@ -278,7 +281,7 @@ def _score_on_corpus(
             if pattern:
                 saving = len(enc.encode(pattern, add_special_tokens=False)) - 1
                 if saving > 0:
-                    scores[macro] += saving
+                    repo_macro_savings[macro][repo] += saving
                     seen_in_file.add(macro)
 
         for match in template_re.finditer(compressed):
@@ -293,20 +296,28 @@ def _score_on_corpus(
                 macro_tokens = 1 + len(enc.encode(":" + ",".join(args), add_special_tokens=False))
                 saving = expanded_tokens - macro_tokens
                 if saving > 0:
-                    scores[macro_base] += saving
+                    repo_macro_savings[macro_base][repo] += saving
                     seen_in_file.add(macro_base)
 
         for macro in seen_in_file:
             file_counts[macro] += 1
             repo_sets[macro].add(repo)
 
+    # Compute repo-weighted scores: each repo contributes equally
+    scores: dict[str, float] = {}
+    for macro, per_repo in repo_macro_savings.items():
+        score = 0.0
+        for repo, total_savings in per_repo.items():
+            score += total_savings / repo_total_files[repo]
+        scores[macro] = score
+
     repo_counts = {macro: len(repos) for macro, repos in repo_sets.items()}
-    return dict(scores), dict(file_counts), repo_counts
+    return scores, dict(file_counts), repo_counts
 
 
 def _rebuild_top_n(
     d: CompressionDictionary,
-    scores: dict[str, int],
+    scores: dict[str, float],
     file_counts: dict[str, int],
     min_file_count: int = 0,
     repo_counts: dict[str, int] | None = None,
@@ -321,7 +332,7 @@ def _rebuild_top_n(
     If min_repo_count > 0, entries appearing in fewer than that many distinct
     repos are also dropped (prevents repo-specific patterns from surviving).
     If max_entries > 0, at most that many entries are kept (by score rank).
-    Remaining entries are ranked by total tokens saved and assigned
+    Remaining entries are ranked by repo-weighted score and assigned
     fresh sequential macro IDs. The 5-digit macro ID format caps exact macros
     and templates at 99,999 each.
     """
@@ -385,16 +396,16 @@ def _rebuild_top_n(
               f"(max {MAX_MACROS} exact + {MAX_TEMPLATES} templates). Raise --min-files to reduce count.")
     if ranked:
         top_score = ranked[0][1]
-        print(f"Score range: {top_score} (best) ... {ranked[-1][1]} (worst)")
+        print(f"Score range: {top_score:.1f} (best) ... {ranked[-1][1]:.1f} (worst)")
 
     # --- Frequency distribution report ---
     print(f"\nFrequency distribution (all {len(ranked)} scored entries):")
-    print(f"{'Rank':<6} {'Score':>8} {'Files':>8} {'Repos':>6} {'Avg/File':>9} {'Type':<5} Pattern")
+    print(f"{'Rank':<6} {'Score':>8} {'Files':>8} {'Repos':>6} {'Avg/Repo':>9} {'Type':<5} Pattern")
     print("-" * 110)
     for i, (macro, score) in enumerate(ranked):
         fc = file_counts.get(macro, 0)
         rc = repo_counts.get(macro, 0) if repo_counts else 0
-        avg = score / fc if fc > 0 else 0
+        avg = score / rc if rc > 0 else 0
         if macro in d.macro_to_pattern:
             ptype = "exact"
             label = repr(d.macro_to_pattern[macro])
@@ -407,7 +418,7 @@ def _rebuild_top_n(
         # Truncate long patterns for display
         if len(label) > 50:
             label = label[:47] + "..."
-        print(f"{i+1:<6} {score:>8} {fc:>8} {rc:>6} {avg:>9.1f} {ptype:<5} {label}")
+        print(f"{i+1:<6} {score:>8.1f} {fc:>8} {rc:>6} {avg:>9.1f} {ptype:<5} {label}")
 
     # Summary buckets
     all_fc = [file_counts.get(m, 0) for m, _ in ranked]
@@ -440,7 +451,7 @@ def _rebuild_top_n(
         pct = impact / total_impact * 100 if total_impact > 0 else 0
         count = len(surviving)
         marker = "  <-- current" if t == min_file_count else ""
-        print(f"  >= {t:<8} {count:<10} {impact:>14,} {pct:>11.1f}%{marker}")
+        print(f"  >= {t:<8} {count:<10} {impact:>14.1f} {pct:>11.1f}%{marker}")
 
     return new_d
 
