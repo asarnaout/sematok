@@ -464,7 +464,7 @@ REPOS = [
     ("tornadoweb", "tornado"),               # Apache-2.0
     ("encode", "starlette"),                  # BSD-3-Clause
     ("wagtail", "wagtail"),                   # BSD-3-Clause
-    # --- Data science / ML / deep learning (7) ---
+    # --- Data science / ML / deep learning (8) ---
     ("pandas-dev", "pandas"),                 # BSD-3-Clause
     ("scikit-learn", "scikit-learn"),          # BSD-3-Clause
     ("huggingface", "transformers"),           # Apache-2.0
@@ -472,6 +472,16 @@ REPOS = [
     ("google", "jax"),                        # Apache-2.0
     ("dask", "dask"),                         # BSD-3-Clause
     ("mlflow", "mlflow"),                     # Apache-2.0
+    ("gradio-app", "gradio"),                 # Apache-2.0
+    # --- Numerical / scientific computing (3) ---
+    ("numpy", "numpy"),                       # BSD-3-Clause
+    ("scipy", "scipy"),                       # BSD-3-Clause
+    ("sympy", "sympy"),                       # BSD-3-Clause
+    # --- Visualization (4) ---
+    ("matplotlib", "matplotlib"),             # PSF-2.0
+    ("bokeh", "bokeh"),                       # BSD-3-Clause
+    ("plotly", "plotly.py"),                  # MIT
+    ("mwaskom", "seaborn"),                   # BSD-3-Clause
     # --- CLI tools & system utilities (6) ---
     ("Textualize", "rich"),                   # MIT
     ("pallets", "click"),                     # BSD-3-Clause
@@ -479,13 +489,14 @@ REPOS = [
     ("Textualize", "textual"),               # MIT
     ("httpie", "cli"),                        # BSD-3-Clause
     ("tqdm", "tqdm"),                         # MIT
-    # --- DevOps / infrastructure / cloud (6) ---
+    # --- DevOps / infrastructure / cloud (7) ---
     ("apache", "airflow"),                    # Apache-2.0
     ("docker", "docker-py"),                  # Apache-2.0
     ("kubernetes-client", "python"),          # Apache-2.0
     ("boto", "boto3"),                        # Apache-2.0
     ("saltstack", "salt"),                    # Apache-2.0
     ("spotify", "luigi"),                     # Apache-2.0
+    ("dagster-io", "dagster"),               # Apache-2.0
     # --- Networking / async / protocols (4) ---
     ("aio-libs", "aiohttp"),                  # Apache-2.0
     ("encode", "httpx"),                      # BSD-3-Clause
@@ -499,6 +510,13 @@ REPOS = [
     ("sqlalchemy", "sqlalchemy"),             # MIT
     ("sqlalchemy", "alembic"),               # MIT
     ("coleifer", "peewee"),                   # MIT
+    # --- Data validation (3) ---
+    ("pydantic", "pydantic"),                # MIT
+    ("python-attrs", "attrs"),               # MIT
+    ("marshmallow-code", "marshmallow"),     # MIT
+    # --- Task queue / job processing (2) ---
+    ("celery", "celery"),                    # BSD-3-Clause
+    ("rq", "rq"),                            # BSD-2-Clause
     # --- Security / cryptography (3) ---
     ("pyca", "cryptography"),                # Apache-2.0 + BSD
     ("PyCQA", "bandit"),                     # Apache-2.0
@@ -515,6 +533,13 @@ REPOS = [
     ("scrapy", "scrapy"),                     # BSD-3-Clause
     ("home-assistant", "core"),              # Apache-2.0
     ("Rapptz", "discord.py"),               # MIT
+    # --- GUI frameworks (3) ---
+    ("kivy", "kivy"),                        # MIT
+    ("beeware", "toga"),                     # BSD-3-Clause
+    ("r0x0r", "pywebview"),                  # BSD-3-Clause
+    # --- Documentation tools (2) ---
+    ("mkdocs", "mkdocs"),                    # BSD-2-Clause
+    ("sphinx-doc", "sphinx"),                # BSD-2-Clause
     # --- Package management / build tools (2) ---
     ("python-poetry", "poetry"),             # MIT
     ("pypa", "pip"),                          # MIT
@@ -524,7 +549,7 @@ EVAL_REPOS = [
     "pydantic--pydantic",                     # MIT         | Data validation
     "celery--celery",                         # BSD-3-Clause| Task queue
     "gradio-app--gradio",                     # Apache-2.0  | ML UI
-    "matplotlib--matplotlib",                 # PSF-like    | Visualization
+    "matplotlib--matplotlib",                 # PSF-2.0     | Visualization
     "numpy--numpy",                           # BSD-3-Clause| Numerical computing
     "dagster-io--dagster",                    # Apache-2.0  | Data orchestration
     "bokeh--bokeh",                           # BSD-3-Clause| Interactive viz
