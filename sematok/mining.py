@@ -293,7 +293,8 @@ def _score_on_corpus(
                 for i, arg in enumerate(args):
                     expanded = expanded.replace(f"{{{i}}}", arg)
                 expanded_tokens = len(enc.encode(expanded, add_special_tokens=False))
-                macro_tokens = 1 + len(enc.encode(":" + ",".join(args), add_special_tokens=False))
+                # prefix (1 token) + BPE(args) + closer (1 token)
+                macro_tokens = 2 + len(enc.encode(",".join(args), add_special_tokens=False))
                 saving = expanded_tokens - macro_tokens
                 if saving > 0:
                     repo_macro_savings[macro_base][repo] += saving

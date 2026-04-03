@@ -288,7 +288,11 @@ def mine_ast_templates(
             rejected["few_tokens"] += 1
             continue
 
-        score = freq * (token_count - 1)
+        # Template cost: prefix (1 token) + BPE(args) + closer (1 token)
+        args_str = ",".join(["_varName"] * slot_count)
+        macro_cost = 2 + _get_bpe_token_count(args_str, enc)
+        savings_per_match = token_count - macro_cost
+        score = freq * max(savings_per_match, 0)
         scored.append((template, freq, slot_count, score, repo_count))
 
     scored.sort(key=lambda x: x[3], reverse=True)

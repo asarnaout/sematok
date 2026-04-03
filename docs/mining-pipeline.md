@@ -193,7 +193,7 @@ For every file in the corpus:
 1. **Compress the file** using the full candidate dictionary
 2. **For each macro that appears** in the compressed output, calculate the BPE token savings:
    - Exact macros: `tokens_in_original_pattern - 1` (the macro itself is 1 token)
-   - Template macros: `tokens_in_expanded_text - (1 + tokens_in_args)` (the macro plus its arguments cost tokens too)
+   - Template macros: `tokens_in_expanded_text - (2 + tokens_in_args)` (prefix + args + closer cost tokens)
 3. **Track per-repo savings** so that a single large repo doesn't dominate the scores
 
 The final score for each entry is **repo-weighted**: each repo contributes its per-file-average savings equally, regardless of how many files it has. This prevents a massive repo from inflating the score of repo-specific patterns.
