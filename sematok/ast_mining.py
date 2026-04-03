@@ -116,10 +116,8 @@ def normalize_subtree(
         return None
 
     # Reject adjacent placeholders with no literal separator
-    if re.search(r"\}\s*\{", template):
-        stripped = template.replace(" ", "").replace("\t", "")
-        if "}{" in stripped:
-            return None
+    if "}{" in template:
+        return None
 
     # Reject pure-placeholder templates (need at least one literal keyword/type)
     without_placeholders = re.sub(r"\{\d+\}", "", template)
