@@ -40,7 +40,7 @@ assert original == source_code
 Install dependencies:
 
 ```bash
-pip install tree-sitter tree-sitter-c-sharp tqdm
+pip install tree-sitter tree-sitter-c-sharp tree-sitter-python tree-sitter-java tree-sitter-typescript tree-sitter-go tqdm
 ```
 
 For mining and training, also install:
@@ -53,7 +53,11 @@ pip install transformers torch unsloth peft bitsandbytes accelerate datasets
 
 | Language | Status | Dictionary |
 |----------|--------|------------|
-| C# | Shipped | `sematok/languages/csharp/dictionary.json` |
+| C# | Config + dictionary | `sematok/languages/csharp/dictionary.json` |
+| Python | Config ready | Needs mining |
+| Java | Config ready | Needs mining |
+| TypeScript | Config ready | Needs mining |
+| Go | Config ready | Needs mining |
 | *Your language* | [Add it](#adding-a-language) | — |
 
 ## How It Works
@@ -65,7 +69,7 @@ The compressor uses a greedy longest-match-first strategy with two passes:
 1. **Exact macros** (`<|M...|>`): Direct string replacement, longest patterns first. Null-byte placeholders prevent delimiter collisions during the cascade.
 2. **Template macros** (`<|T...:args|>`): Compiled regex patterns with identifier capture. Variables are normalized to positional slots (`{0}`, `{1}`).
 
-Compression only happens in **safe zones** -- regions outside string literals, comments, and character literals, identified by tree-sitter parsing. XML doc comments (`///`) are optionally treated as safe.
+Compression only happens in **safe zones** -- regions outside string literals, comments, and character literals, identified by tree-sitter parsing. Languages can override specific comment types as safe (e.g., C# XML doc comments `///`, TypeScript JSDoc `/** ... */`) to compress repetitive documentation boilerplate.
 
 Decompression is lossless: `decompress(compress(source)) == source` for all inputs.
 
@@ -117,38 +121,46 @@ Use `--target-modules` in the fine-tuning step to override LoRA targets for non-
 ### Step 1: Download Corpus
 
 ```bash
-python -m data.download --language csharp --output data/raw
+python -m data.download --language csharp
 ```
 
 ### Step 2: Mine Dictionary
 
-First, analyze your corpus to choose mining parameters:
+First, run a full analysis mine with relaxed thresholds to see the threshold
+analysis tables. This mines broadly (`--min-repos 0`) and scores every
+candidate against the full corpus. The output includes a `--min-files`
+threshold table and a per-entry frequency distribution with repo counts:
 
 ```bash
-# See how many entries survive at each --min-repos threshold
-python -m sematok.repo_distribution --language csharp --corpus data/raw
-
-# Run mining with --min-files 0 to see the threshold analysis table
 python -m sematok.mining \
-    --corpus data/raw \
+    --corpus data/raw_csharp \
     --language csharp \
-    --output /dev/null \
-    --min-files 0 \
-    --min-repos 2
+    --output out/analysis_csharp.json \
+    --min-files 1 \
+    --min-repos 0 \
+    --max-entries 0
 ```
 
-Then mine the dictionary with your chosen parameters:
+Then run `repo_distribution` on the analysis dictionary to choose
+`--min-repos` (shows how many entries survive at each threshold):
+
+```bash
+python -m sematok.repo_distribution \
+    --language csharp \
+    --corpus data/raw_csharp \
+    --dictionary out/analysis_csharp.json
+```
+
+Then mine the final dictionary with your chosen parameters:
 
 ```bash
 python -m sematok.mining \
-    --corpus data/raw \
+    --corpus data/raw_csharp \
     --language csharp \
     --output sematok/languages/csharp/dictionary.json \
-    --exclude-repos microsoft--garnet kgrzybek--modular-monolith-with-ddd \
-        nunit--nunit JamesNK--Newtonsoft.Json AngleSharp--AngleSharp \
-        ThreeMammals--Ocelot fullstackhero--dotnet-starter-kit \
-    --min-files 500 \
-    --min-repos 2
+    --min-files <chosen> \
+    --min-repos <chosen> \
+    --max-entries 999
 ```
 
 `--max-entries N` sets a hard upper limit on dictionary size (default: 999). The 5-digit macro ID format (`<|M00001|>` through `<|M99999|>`) supports up to 99,999 exact macros and 99,999 templates.
@@ -156,13 +168,13 @@ python -m sematok.mining \
 ### Step 3: Measure Compression
 
 ```bash
-python -m sematok.measure --corpus data/raw --language csharp
+python -m sematok.measure --corpus data/raw_csharp --language csharp
 ```
 
 ### Step 4: Prepare Training Data
 
 ```bash
-python -m data.prepare --corpus data/raw --language csharp --output data/finetune
+python -m data.prepare --corpus data/raw_csharp --language csharp --output data/finetune
 ```
 
 Produces `train.jsonl` and `eval.jsonl`. Training data uses a 75/25 compressed/original mix (configurable via `--compress-ratio`). Eval data is 100% compressed.
@@ -173,7 +185,7 @@ Produces `train.jsonl` and `eval.jsonl`. Training data uses a 75/25 compressed/o
 python -m training.expand_tokenizer \
     --model Qwen/Qwen2.5-Coder-1.5B-Instruct \
     --output models/sematok-base \
-    --corpus data/raw \
+    --corpus data/raw_csharp \
     --language csharp
 ```
 
@@ -290,9 +302,11 @@ sematok/                    # Compression engine (language-agnostic)
     languages/
         __init__.py         # Language registry + get_dictionary_path()
         TEMPLATE.py         # Skeleton for adding a new language
-        csharp/
-            __init__.py     # C# patterns, node types, repos
-            dictionary.json # Shipped C# dictionary
+        csharp/             # C# config + shipped dictionary
+        python/             # Python config
+        java/               # Java config
+        typescript/         # TypeScript config
+        go/                 # Go config
     dictionary.py           # Pattern <-> macro mapping
     compressor.py           # Greedy compression with safe zones
     decompressor.py         # Lossless macro expansion
