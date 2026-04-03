@@ -94,9 +94,6 @@ def _is_valid_ngram(pattern: str) -> bool:
     # Not a single identifier
     if re.fullmatch(r"\w+", pattern):
         return False
-    # Must contain at least one punctuation/operator character
-    if not re.search(r"[^\w\s]", pattern):
-        return False
     # No more than 50% whitespace
     ws = sum(1 for c in pattern if c in " \t")
     if ws > len(pattern) * MAX_WHITESPACE_RATIO:
