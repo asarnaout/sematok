@@ -10,44 +10,13 @@ public static void Main(string[] args)     -->  <|M026|>
 throw new ArgumentNullException(nameof(x)) -->  <|T005:x|>
 ```
 
-Multiple BPE tokens become 1. Every occurrence, every file, across the entire context window.
+Multiple BPE tokens collapse to 1. The saved context goes to code that actually matters.
 
 ## Why
 
 BPE tokenizers are trained on a massive mix of languages and text. They optimize for the average and can never look at a 45-character boilerplate string and decide "this should be 1 token."
 
 Every language has boilerplate -- access modifiers, import statements, type annotations, decorator patterns -- that consumes tokens carrying zero reasoning value. Sematok reclaims that capacity.
-
-## Quick Start
-
-```python
-from sematok import Compressor, Decompressor, CompressionDictionary, get_safe_ranges
-
-# Load the shipped C# dictionary
-d = CompressionDictionary.load("sematok/languages/csharp/dictionary.json")
-
-# Compress
-compressor = Compressor(d, language="csharp")
-safe_ranges = get_safe_ranges(source_code)
-compressed = compressor.compress(source_code, safe_ranges=safe_ranges)
-
-# Decompress (lossless)
-decompressor = Decompressor(d)
-original = decompressor.decompress(compressed)
-assert original == source_code
-```
-
-Install dependencies:
-
-```bash
-pip install tree-sitter tree-sitter-c-sharp tree-sitter-python tree-sitter-java tree-sitter-typescript tree-sitter-go tqdm
-```
-
-For mining and training, also install:
-
-```bash
-pip install transformers torch unsloth peft bitsandbytes accelerate datasets
-```
 
 ## Supported Languages
 
@@ -58,61 +27,16 @@ pip install transformers torch unsloth peft bitsandbytes accelerate datasets
 | Java | Config ready | Needs mining |
 | TypeScript | Config ready | Needs mining |
 | Go | Config ready | Needs mining |
-| *Your language* | [Add it](#adding-a-language) | — |
-
-## How It Works
-
-### Compression
-
-The compressor uses a greedy longest-match-first strategy with two passes:
-
-1. **Exact macros** (`<|M...|>`): Direct string replacement, longest patterns first. Null-byte placeholders prevent delimiter collisions during the cascade.
-2. **Template macros** (`<|T...:args|>`): Compiled regex patterns with identifier capture. Variables are normalized to positional slots (`{0}`, `{1}`).
-
-Compression only happens in **safe zones** -- regions outside string literals, comments, and character literals, identified by tree-sitter parsing. Languages can override specific comment types as safe (e.g., C# XML doc comments `///`, TypeScript JSDoc `/** ... */`) to compress repetitive documentation boilerplate.
-
-Decompression is lossless: `decompress(compress(source)) == source` for all inputs.
-
-### Mining Pipeline
-
-The dictionary is built from a corpus of source files:
-
-1. **Candidate extraction** -- regex patterns, AST subtrees, and n-gram frequency analysis surface recurring boilerplate
-2. **Corpus scoring** -- each candidate is scored by actual BPE token savings across all training files
-3. **Filtering** -- minimum file-frequency (`--min-files`) and repo-diversity (`--min-repos`) thresholds eliminate rare or project-specific patterns
-4. **Template generalization** -- AST-guided identifier normalization discovers parameterized patterns (e.g., `throw new ArgumentNullException(nameof({0}))`)
-
-### Training Pipeline
-
-1. **Expand tokenizer** -- add macro tokens to the base model's vocabulary
-2. **Initialize embeddings** -- Token Distillation optimizes new embeddings so early-layer hidden states match the original sub-tokens
-3. **Warmup** -- freeze the transformer body, train only new embedding rows
-4. **Fine-tune** -- LoRA continued pre-training on a mix of compressed and original code
-5. **Evaluate** -- perplexity comparison and functional correctness tests
-
-## Adding a Language
-
-1. Copy the template to a new package:
-   ```bash
-   cp sematok/languages/TEMPLATE.py sematok/languages/yourlang/__init__.py
-   ```
-
-2. Fill in the `LanguageConfig` fields. See `sematok/languages/csharp/__init__.py` for a complete example. You need:
-   - A tree-sitter grammar (`pip install tree-sitter-<grammar>`)
-   - Unsafe node types (comments, strings) for safe zone detection
-   - Candidate patterns (regexes matching boilerplate in your language)
-   - AST node types for subtree mining
-   - Identifier normalization rules for template discovery
-   - A list of repos to mine from
-
-3. Register the language in `sematok/languages/__init__.py`:
-   ```python
-   _REGISTRY["yourlang"] = "sematok.languages.yourlang"
-   ```
-
-4. Mine a dictionary, prepare data, and train -- all pipeline commands accept `--language yourlang`.
+| *Your language* | [Add it](docs/adding-a-language.md) | — |
 
 ## Training a Model
+
+Install dependencies:
+
+```bash
+pip install tree-sitter tree-sitter-c-sharp tree-sitter-python tree-sitter-java tree-sitter-typescript tree-sitter-go tqdm
+pip install transformers torch unsloth peft bitsandbytes accelerate datasets
+```
 
 All training commands accept `--model` to specify any HuggingFace model. The default is `Qwen/Qwen2.5-Coder-1.5B-Instruct`. Token Distillation and LoRA target modules assume a LLaMA-family architecture (`model.model.layers`, `model.model.embed_tokens`). This covers Qwen, Mistral, LLaMA, and most recent open-weight code models.
 
@@ -271,6 +195,36 @@ To train a single model that handles multiple languages:
 
 Each language's macros use distinct ID ranges, so there are no collisions. The `--max-entries` default of 999 per language keeps individual dictionaries reasonable.
 
+## How It Works
+
+### Compression
+
+The compressor uses a greedy longest-match-first strategy with two passes:
+
+1. **Exact macros** (`<|M...|>`): Direct string replacement, longest patterns first. Null-byte placeholders prevent delimiter collisions during the cascade.
+2. **Template macros** (`<|T...:args|>`): Compiled regex patterns with identifier capture. Variables are normalized to positional slots (`{0}`, `{1}`).
+
+Compression only happens in **safe zones** -- regions outside string literals, comments, and character literals, identified by tree-sitter parsing. Languages can override specific comment types as safe (e.g., C# XML doc comments `///`, TypeScript JSDoc `/** ... */`) to compress repetitive documentation boilerplate.
+
+Decompression is lossless: `decompress(compress(source)) == source` for all inputs.
+
+### Mining Pipeline
+
+The dictionary is built from a corpus of source files:
+
+1. **Candidate extraction** -- regex patterns, AST subtrees, and n-gram frequency analysis surface recurring boilerplate
+2. **Corpus scoring** -- each candidate is scored by actual BPE token savings across all training files
+3. **Filtering** -- minimum file-frequency (`--min-files`) and repo-diversity (`--min-repos`) thresholds eliminate rare or project-specific patterns
+4. **Template generalization** -- AST-guided identifier normalization discovers parameterized patterns (e.g., `throw new ArgumentNullException(nameof({0}))`)
+
+### Training Pipeline
+
+1. **Expand tokenizer** -- add macro tokens to the base model's vocabulary
+2. **Initialize embeddings** -- Token Distillation optimizes new embeddings so early-layer hidden states match the original sub-tokens
+3. **Warmup** -- freeze the transformer body, train only new embedding rows
+4. **Fine-tune** -- LoRA continued pre-training on a mix of compressed and original code
+5. **Evaluate** -- perplexity comparison and functional correctness tests
+
 ## API Reference
 
 ```python
@@ -323,14 +277,9 @@ training/
 tests/                      # 96 tests
 ```
 
-## Running Tests
-
-```bash
-pytest
-```
-
 ## Additional Documentation
 
+- [Adding a Language](docs/adding-a-language.md) — How to add tree-sitter support for a new language
 - [Manual Mining Workflow](docs/manual-mining.md) — Step-by-step mining with full control over `--min-files`, `--min-repos`, and `--max-entries`
 
 ## Prior Art
