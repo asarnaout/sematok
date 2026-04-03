@@ -732,7 +732,7 @@ def main():
     parser.add_argument("--output", type=str, default=None, help="Output dictionary path (default: sematok/languages/<lang>/dictionary.json)")
     parser.add_argument("--language", type=str, required=True, help="Language config to use (e.g. csharp, python)")
     parser.add_argument("--tokenizer", type=str, default=DEFAULT_TOKENIZER, help="HuggingFace tokenizer for scoring")
-    parser.add_argument("--min-repos", type=int, default=MIN_REPOS, help="Min repos a pattern must appear in")
+    parser.add_argument("--min-repos", type=int, default=None, help="Min repos a pattern must appear in")
     parser.add_argument("--min-freq", type=int, default=MIN_FREQUENCY, help="Min frequency across corpus")
     parser.add_argument("--max-files", type=int, default=None)
     parser.add_argument("--no-seeds", action="store_true", help="Don't include seed patterns")
@@ -771,8 +771,7 @@ def main():
 
     # In auto mode: default min-repos to 2, force scoring, auto-derive scores path
     if args.auto:
-        import sys
-        min_repos = args.min_repos if "--min-repos" in sys.argv else 2
+        min_repos = args.min_repos if args.min_repos is not None else 2
         min_files = 1  # force scoring; auto-selection overrides this
         scores_output = args.scores_output
         if not scores_output:
@@ -784,7 +783,7 @@ def main():
             base = output_path.rsplit(".", 1)[0]
             scores_output = f"{base}_scores.json"
     else:
-        min_repos = args.min_repos
+        min_repos = args.min_repos if args.min_repos is not None else MIN_REPOS
         min_files = args.min_files
         scores_output = args.scores_output
 
