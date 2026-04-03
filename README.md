@@ -141,19 +141,9 @@ selects quality thresholds:
   constraint). Pass `--max-entries N` to cap dictionary size if the
   surviving entry count is too high for your model.
 
-The command saves a scores sidecar alongside the dictionary. To adjust
-`--min-files` or `--max-entries` after mining without re-running:
-
-```bash
-python -m sematok.mining \
-    --refilter sematok/languages/csharp/dictionary_scores.json \
-    --output sematok/languages/csharp/dictionary.json \
-    --language csharp \
-    --min-files <new_value> \
-    --max-entries <new_value>
-```
-
-For full manual control over all thresholds, see
+A scores sidecar is saved alongside the dictionary, allowing you to
+adjust `--min-files` or `--max-entries` later via `--refilter` without
+re-mining. For details and full manual control over all thresholds, see
 [Manual Mining Workflow](docs/manual-mining.md).
 
 ### Step 3: Measure Compression
