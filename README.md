@@ -226,6 +226,7 @@ tests/                      # Compression, decompression, and roundtrip tests
 - [Adding a Language](docs/adding-a-language.md) — How to add tree-sitter support for a new language
 - [Manual Mining Workflow](docs/manual-mining.md) — Step-by-step mining with full control over `--min-files`, `--min-repos`, and `--max-entries`
 - [Multi-Language Training](docs/multi-language-training.md) — Train a single model across multiple languages
+- [Experiment Results](docs/results.md) — Mining, compression, training, and evaluation metrics per language
 
 ## Prior Art
 
