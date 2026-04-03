@@ -37,6 +37,7 @@ class CompressionDictionary:
         self.macro_to_template: dict[str, str] = {}
         self.template_slots: dict[str, int] = {}
         self.template_categories: dict[str, str] = {}
+        self._pattern_index: int = 0
         self._template_index: int = 0
 
     @classmethod
@@ -49,13 +50,15 @@ class CompressionDictionary:
             d.pattern_to_macro[pattern] = macro
             d.macro_to_pattern[macro] = pattern
             d.pattern_categories[pattern] = category
+        d._pattern_index = len(lang.seed_patterns)
         return d
 
     def add_pattern(self, pattern: str, category: str = "mined") -> str:
         """Add a new pattern to the dictionary. Returns the assigned macro token."""
         if pattern in self.pattern_to_macro:
             return self.pattern_to_macro[pattern]
-        index = len(self.pattern_to_macro) + 1
+        self._pattern_index += 1
+        index = self._pattern_index
         if index > MAX_MACROS:
             raise ValueError(f"Cannot add more than {MAX_MACROS} exact macros (5-digit ID limit)")
         macro = _make_macro_token(index)
@@ -147,6 +150,8 @@ class CompressionDictionary:
             d.pattern_to_macro[entry["pattern"]] = entry["macro"]
             d.macro_to_pattern[entry["macro"]] = entry["pattern"]
             d.pattern_categories[entry["pattern"]] = entry.get("category", "unknown")
+            idx = int(entry["macro"][3:-2])
+            d._pattern_index = max(d._pattern_index, idx)
         for entry in data.get("templates", []):
             d.template_to_macro[entry["template"]] = entry["macro"]
             d.macro_to_template[entry["macro"]] = entry["template"]
