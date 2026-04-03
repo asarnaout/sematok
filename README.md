@@ -14,20 +14,20 @@ Multiple BPE tokens collapse to 1. The saved context goes to code that actually 
 
 ## Why
 
-BPE tokenizers are trained on a massive mix of languages and text. They optimize for the average and can never look at a 45-character boilerplate string and decide "this should be 1 token."
+BPE tokenizers have a fixed vocabulary budget shared across every language and domain in their training data. A 45-character C# boilerplate string will never outcompete cross-domain patterns for a vocabulary slot, no matter how often it appears in code.
 
 Every language has boilerplate -- access modifiers, import statements, type annotations, decorator patterns -- that consumes tokens carrying zero reasoning value. Sematok reclaims that capacity.
 
 ## Supported Languages
 
-| Language | Status | Dictionary |
-|----------|--------|------------|
-| C# | Config + dictionary | `sematok/languages/csharp/dictionary.json` |
-| Python | Config ready | Needs mining |
-| Java | Config ready | Needs mining |
-| TypeScript | Config ready | Needs mining |
-| Go | Config ready | Needs mining |
-| *Your language* | [Add it](docs/adding-a-language.md) | — |
+| Language | Dictionary |
+|----------|------------|
+| C# | `sematok/languages/csharp/dictionary.json` |
+| Python | `sematok/languages/python/dictionary.json` |
+| Java | `sematok/languages/java/dictionary.json` |
+| TypeScript | `sematok/languages/typescript/dictionary.json` |
+| Go | `sematok/languages/go/dictionary.json` |
+| *Your language* | [Add it](docs/adding-a-language.md) |
 
 ## Training a Model
 
