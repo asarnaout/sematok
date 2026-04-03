@@ -213,8 +213,14 @@ def merge_mining_results(
     for result_list in [regex_results, ngram_results]:
         for entry in result_list:
             pattern = entry[0]
-            if pattern not in by_pattern or entry[1] > by_pattern[pattern][1]:
+            if pattern not in by_pattern:
                 by_pattern[pattern] = entry
+            else:
+                existing = by_pattern[pattern]
+                # Keep higher frequency, preserve max repo_count from either source
+                best = max(entry, existing, key=lambda x: x[1])
+                max_repos = max(entry[4], existing[4])
+                by_pattern[pattern] = (*best[:4], max_repos)
     return sorted(by_pattern.values(), key=lambda x: x[3], reverse=True)
 
 
