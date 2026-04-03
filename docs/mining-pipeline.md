@@ -158,7 +158,27 @@ this.logger = logger;  → this.{0} = {0};
 this.name = name;      → this.{0} = {0};
 ```
 
-All three lines collapse to the same template. At compression time, `this.logger = logger;` becomes `<|T00001:logger|>`.
+All three lines collapse to the same template: `this.{0} = {0};`. The dictionary stores this template once, assigned a macro ID like `<|T00001|>`.
+
+### What the model sees
+
+At compression time, identifiers are captured as arguments:
+
+```
+this.bar = bar;       → <|T00001:bar|>
+this.logger = logger; → <|T00001:logger|>
+this.name = name;     → <|T00001:name|>
+```
+
+The tokenizer expansion step (`expand_tokenizer.py`) registers two kinds of tokens for templates: a **prefix** (`<|T00001:`) and a shared **closer** (`|>`). The argument between them is tokenized as regular BPE. So the model sees:
+
+```
+tokens:  <|T00001:  logger  |>
+         ─────────  ──────  ──
+         1 token    1 token  1 token
+```
+
+Instead of tokenizing `this.logger = logger;` as 5 BPE tokens, the compressed form costs 3 tokens -- a saving of 2 tokens per occurrence. At decompression, the argument is plugged back into the `{0}` slots to recover the original line exactly.
 
 ### Step 4: Count and filter
 
