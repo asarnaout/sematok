@@ -158,10 +158,13 @@ def normalize_candidate(
         return None
 
     # Build template by replacing identifiers right-to-left (preserves positions)
-    template = candidate_text
+    # Work in byte space since rel_start/rel_end are byte offsets from tree-sitter
+    template_bytes = candidate_text.encode("utf-8")
     for text, rel_start, rel_end in reversed(normalizable):
         slot_idx = text_to_slot[text]
-        template = template[:rel_start] + f"{{{slot_idx}}}" + template[rel_end:]
+        slot_bytes = f"{{{slot_idx}}}".encode("utf-8")
+        template_bytes = template_bytes[:rel_start] + slot_bytes + template_bytes[rel_end:]
+    template = template_bytes.decode("utf-8", errors="replace")
 
     # Reject if template equals the candidate (nothing normalized)
     if template == candidate_text:
@@ -213,8 +216,8 @@ def extract_template_candidates(
                 candidate_text = match.group()
                 if len(candidate_text) < MIN_CHAR_LENGTH:
                     continue
-                # File byte position = safe range start + match byte offset
-                file_byte_start = range_start + match.start()
+                # File byte position = safe range start + byte length of text before match
+                file_byte_start = range_start + len(chunk_text[:match.start()].encode("utf-8"))
 
                 result = normalize_candidate(
                     candidate_text, file_byte_start, root_node, source_bytes,

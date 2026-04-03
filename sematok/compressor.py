@@ -146,11 +146,19 @@ class Compressor:
         if not safe_ranges:
             return source
 
-        # Merge safe ranges with gaps (unsafe regions) and process in order
+        # Convert byte offsets (from tree-sitter) to character offsets for str slicing
+        source_bytes = source.encode("utf-8")
+        char_ranges = []
+        for byte_start, byte_end in sorted(safe_ranges):
+            char_start = len(source_bytes[:byte_start].decode("utf-8", errors="replace"))
+            char_end = len(source_bytes[:byte_end].decode("utf-8", errors="replace"))
+            char_ranges.append((char_start, char_end))
+
+        # Process chunks: compress safe ranges, pass through unsafe regions unchanged
         result_parts = []
         prev_end = 0
 
-        for start, end in sorted(safe_ranges):
+        for start, end in char_ranges:
             # Unsafe region before this safe range: pass through unchanged
             if prev_end < start:
                 result_parts.append(source[prev_end:start])
