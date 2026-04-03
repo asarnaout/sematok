@@ -137,8 +137,6 @@ selects quality thresholds:
   total compression impact)
 - **`--min-repos`** defaults to 2 (filters single-repo patterns). Override
   with `--auto --min-repos 3` if needed.
-- **`--max-entries`** is not auto-selected (it's a training capacity
-  constraint — depends on your model size and training budget).
 
 If the dictionary has too many entries for your model, trim it instantly
 without re-mining:
