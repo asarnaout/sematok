@@ -229,6 +229,7 @@ def mine_ast_templates(
 
     template_counter: Counter = Counter()
     template_repos: dict[str, set[str]] = defaultdict(set)
+    ident_freq: Counter = Counter()  # frequency-weighted identifier census
 
     for file_idx, f in enumerate(tqdm(files, desc="AST subtree mining")):
         try:
@@ -243,6 +244,8 @@ def mine_ast_templates(
         file_templates: set[str] = set()
         for template, args in candidates:
             file_templates.add(template)
+            for arg in args:
+                ident_freq[arg] += 1
 
         template_counter.update(file_templates)
         for t in file_templates:
@@ -257,6 +260,23 @@ def mine_ast_templates(
 
     # Filter and score
     enc = AutoTokenizer.from_pretrained(tokenizer_name)
+
+    # Compute frequency-weighted average BPE cost per identifier
+    if ident_freq:
+        bpe_cache: dict[str, int] = {}
+        for ident in ident_freq:
+            bpe_cache[ident] = _get_bpe_token_count(ident, enc)
+        total_weighted = sum(bpe_cache[ident] * count for ident, count in ident_freq.items())
+        total_count = sum(ident_freq.values())
+        avg_ident_bpe = total_weighted / total_count
+        # Pick the real identifier closest to the average as the scoring proxy
+        representative_ident = min(ident_freq, key=lambda x: abs(bpe_cache[x] - avg_ident_bpe))
+        print(f"Identifier census: {len(ident_freq):,} unique, {total_count:,} total, "
+              f"avg BPE cost={avg_ident_bpe:.2f}, proxy={representative_ident!r} "
+              f"({bpe_cache[representative_ident]} tokens)")
+    else:
+        representative_ident = "_varName"
+
     scored = []
     rejected = {"low_freq": 0, "few_repos": 0, "few_slots": 0, "many_slots": 0, "few_tokens": 0}
 
@@ -279,17 +299,17 @@ def mine_ast_templates(
             rejected["many_slots"] += 1
             continue
 
-        # Estimate tokens saved per match
+        # Score using corpus-derived representative identifier
         estimated = template
         for i in range(slot_count):
-            estimated = estimated.replace(f"{{{i}}}", "_varName")
+            estimated = estimated.replace(f"{{{i}}}", representative_ident)
         token_count = _get_bpe_token_count(estimated, enc)
         if token_count < MIN_TOKEN_SPAN:
             rejected["few_tokens"] += 1
             continue
 
         # Template cost: prefix (1 token) + BPE(args) + closer (1 token)
-        args_str = ",".join(["_varName"] * slot_count)
+        args_str = ",".join([representative_ident] * slot_count)
         macro_cost = 2 + _get_bpe_token_count(args_str, enc)
         savings_per_match = token_count - macro_cost
         score = freq * max(savings_per_match, 0)
