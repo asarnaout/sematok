@@ -25,11 +25,19 @@ def _is_jsdoc(node, source_bytes: bytes) -> bool:
     JSDoc contains highly repetitive boilerplate: @param, @returns, @throws,
     @deprecated, @example, {@link}, {@code}, etc.  Regular block comments
     (/* ... */) and line comments (// ...) remain unsafe.
+
+    License headers (/** @license ... */) are excluded — they are
+    repo-specific text, not compressible boilerplate.
     """
     if node.type != "comment":
         return False
     text = source_bytes[node.start_byte:node.end_byte]
-    return text.startswith(b"/**")
+    if not text.startswith(b"/**"):
+        return False
+    # Exclude license headers (e.g. Angular's /** @license ... */)
+    if b"@license" in text:
+        return False
+    return True
 
 
 # ---------------------------------------------------------------------------

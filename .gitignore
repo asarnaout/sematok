@@ -1,6 +1,11 @@
 # Training data (cloned repos and extracted files)
 data/repos/
 data/raw_cs/
+data/raw_csharp/
+data/raw_python/
+data/raw_java/
+data/raw_typescript/
+data/raw_go/
 data/compressed/
 data/baseline/
 data/finetune/
