@@ -193,10 +193,10 @@ sematok/                    # Compression engine (language-agnostic)
         __init__.py         # Language registry + get_dictionary_path()
         TEMPLATE.py         # Skeleton for adding a new language
         csharp/             # C# config + shipped dictionary
-        python/             # Python config
-        java/               # Java config
-        typescript/         # TypeScript config
-        go/                 # Go config
+        python/             # Python config + shipped dictionary
+        java/               # Java config + shipped dictionary
+        typescript/         # TypeScript config + shipped dictionary
+        go/                 # Go config + shipped dictionary
     dictionary.py           # Pattern <-> macro mapping
     compressor.py           # Greedy compression with safe zones
     decompressor.py         # Lossless macro expansion
@@ -218,7 +218,7 @@ training/
     evaluate.py             # Perplexity evaluation
     evaluate_correctness.py # Functional correctness (generation test)
     vocab_utils.py          # Vocabulary validation utilities
-tests/                      # 96 tests
+tests/                      # Compression, decompression, and roundtrip tests
 ```
 
 ## Additional Documentation
