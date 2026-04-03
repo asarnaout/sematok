@@ -75,13 +75,13 @@ entries by impact. You can also raise `--min-files` to be more selective.
 For full manual control over all thresholds, see
 [Manual Mining Workflow](docs/manual-mining.md).
 
-### Step 3: Measure Compression
+Optionally, measure the compression ratio:
 
 ```bash
 python -m sematok.measure --corpus data/raw_csharp --language csharp
 ```
 
-### Step 4: Prepare Training Data
+### Step 3: Prepare Training Data
 
 ```bash
 python -m data.prepare --corpus data/raw_csharp --language csharp --output data/finetune
@@ -89,7 +89,7 @@ python -m data.prepare --corpus data/raw_csharp --language csharp --output data/
 
 Produces `train.jsonl` and `eval.jsonl`. Training data uses a 75/25 compressed/original mix (configurable via `--compress-ratio`). Eval data is 100% compressed.
 
-### Step 5: Expand Tokenizer
+### Step 4: Expand Tokenizer
 
 ```bash
 python -m training.expand_tokenizer \
@@ -101,7 +101,7 @@ python -m training.expand_tokenizer \
 
 Adds macro tokens and initializes embeddings via Token Distillation ([arXiv:2505.20133](https://arxiv.org/abs/2505.20133)). Use `--no-distill` for faster mean-of-expansion initialization.
 
-### Step 5.5: Embedding Warmup
+### Step 4.5: Embedding Warmup
 
 ```bash
 python -m training.warmup_embeddings \
@@ -111,7 +111,7 @@ python -m training.warmup_embeddings \
 
 Freezes the transformer body and trains only new macro token embedding rows for 2 epochs.
 
-### Step 6: Fine-Tune
+### Step 5: Fine-Tune
 
 ```bash
 python -m training.fine_tune \
@@ -123,7 +123,7 @@ python -m training.fine_tune \
 
 LoRA continued pre-training (CLM). QLoRA 4-bit, rank 16, 1 epoch. LoRA targets assume a LLaMA-family architecture (Qwen, Mistral, LLaMA). Use `--target-modules` to override for non-standard architectures.
 
-### Step 7: Evaluate
+### Step 6: Evaluate
 
 ```bash
 python -m training.evaluate --all \

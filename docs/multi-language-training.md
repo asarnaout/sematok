@@ -26,7 +26,7 @@ To train a single model that handles multiple languages:
    cat data/ft_cs/eval.jsonl data/ft_py/eval.jsonl > data/ft_mixed/eval.jsonl
    ```
 
-4. Expand tokenizer with `--no-distill` (distillation requires a single-language corpus; the embedding warmup in Step 5.5 handles multi-language):
+4. Expand tokenizer with `--no-distill` (distillation requires a single-language corpus; the embedding warmup in Step 4.5 handles multi-language):
    ```bash
    python -m training.expand_tokenizer \
        --dictionary merged_dictionary.json \
