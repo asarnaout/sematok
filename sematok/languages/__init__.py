@@ -42,6 +42,9 @@ class LanguageConfig:
     fixed_parent_types: set[str] = field(default_factory=set)
     normalize_parent_types: set[str] = field(default_factory=set)
     structural_names: set[str] = field(default_factory=set)
+    # Parent types where only the last identifier child should be normalized
+    # (e.g., parameter nodes containing both type and name identifiers)
+    ambiguous_parent_types: set[str] = field(default_factory=set)
 
     # --- Compressor: identifier capture ---
     ident_pattern: str = r"([a-zA-Z_]\w*)"

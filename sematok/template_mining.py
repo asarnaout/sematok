@@ -97,8 +97,8 @@ def should_normalize(
         return False
     if parent_type in lang.normalize_parent_types:
         return True
-    # Ambiguous: parameter can hold both type and name
-    if parent_type == "parameter":
+    # Ambiguous: parent can hold both type and name identifiers
+    if parent_type in lang.ambiguous_parent_types:
         if node is not None:
             return _is_last_identifier_child(node)
         return False

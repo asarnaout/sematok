@@ -35,6 +35,7 @@ def get_config() -> LanguageConfig:
         fixed_parent_types=FIXED_PARENT_TYPES,
         normalize_parent_types=NORMALIZE_PARENT_TYPES,
         structural_names=STRUCTURAL_NAMES,
+        ambiguous_parent_types={"formal_parameter"},
         ident_pattern=r"([a-zA-Z_$][\w$]*)",
         skip_path_patterns=SKIP_PATH_PATTERNS,
         repos=REPOS,

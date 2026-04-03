@@ -244,8 +244,7 @@ NORMALIZE_PARENT_TYPES = {
     "arguments", "binary_expression", "unary_expression",
     "conditional_expression",
     "array", "object", "pair",
-    "arrow_function", "formal_parameters",
-    "required_parameter", "optional_parameter",
+    "arrow_function",
     "jsx_attribute", "jsx_expression",
     "template_substitution",
 }
@@ -550,6 +549,7 @@ def get_config() -> LanguageConfig:
         fixed_parent_types=FIXED_PARENT_TYPES,
         normalize_parent_types=NORMALIZE_PARENT_TYPES,
         structural_names=STRUCTURAL_NAMES,
+        ambiguous_parent_types={"required_parameter", "optional_parameter"},
 
         ident_pattern=r"([a-zA-Z_$][\w$]*)",
 
