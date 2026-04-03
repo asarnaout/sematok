@@ -98,9 +98,9 @@ def test_word_boundary_end_mid_identifier():
 # -- _is_valid_ngram tests --
 
 def test_valid_ngram_rejects_pure_alpha():
-    """Pure alphabetic string is rejected (no punctuation)."""
-    assert _is_valid_ngram("Cancellati") is False
-    assert _is_valid_ngram("something here") is False  # no punctuation
+    """Single-word patterns are rejected; multi-word keyword patterns are now allowed."""
+    assert _is_valid_ngram("Cancellati") is False  # single word
+    assert _is_valid_ngram("something here") is True  # multi-word keyword pattern
 
 
 def test_valid_ngram_rejects_high_whitespace():
