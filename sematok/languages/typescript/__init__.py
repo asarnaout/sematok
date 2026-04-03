@@ -228,7 +228,7 @@ FIXED_PARENT_TYPES = {
     "enum_declaration", "type_alias_declaration",
     "function_declaration", "method_definition",
     "call_expression", "new_expression",
-    "member_expression", "property_identifier",
+    "member_expression",
     "import_statement", "import_specifier",
     "export_statement",
     "decorator",
