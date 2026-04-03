@@ -54,7 +54,7 @@ UNSAFE_NODE_TYPES = {
 
 CANDIDATE_PATTERNS = [re.compile(p) for p in [
     # --- Imports ---
-    r'import\s+"[^"]+"\s*$',
+    r'import\s+"[^"]+"',
     r'import\s+\w+\s+"[^"]+"',
 
     # --- Error handling (Go's #1 boilerplate) ---
@@ -70,10 +70,6 @@ CANDIDATE_PATTERNS = [re.compile(p) for p in [
     # --- Struct / interface declarations ---
     r"type\s+\w+\s+struct\s*\{",
     r"type\s+\w+\s+interface\s*\{",
-
-    # --- Struct tags ---
-    r'`json:"[^"]*"`',
-    r'`(?:json|yaml|xml|db|gorm|bson|mapstructure|toml|env):"[^"]*"',
 
     # --- Goroutines / defer ---
     r"go\s+func\s*\(",
