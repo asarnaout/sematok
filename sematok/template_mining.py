@@ -167,12 +167,9 @@ def normalize_candidate(
     if template == candidate_text:
         return None
 
-    # Reject templates where two placeholders are adjacent with no literal between them
-    if re.search(r"\}\s*\{", template):
-        # Allow if there's at least some whitespace between (like `{0} {1}`)
-        # But reject `{0}{1}` (truly adjacent, no separator)
-        if "{}{" in template.replace(" ", "").replace("\t", ""):
-            pass  # This check is handled by the regex compilation failing
+    # Reject adjacent placeholders with no literal separator
+    if "}{" in template:
+        return None
 
     # Reject pure-placeholder templates (need at least one literal keyword/type)
     without_placeholders = re.sub(r"\{\d+\}", "", template)
