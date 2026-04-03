@@ -456,6 +456,97 @@ def _rebuild_top_n(
     return new_d
 
 
+def _save_scores(
+    d: CompressionDictionary,
+    scores: dict[str, float],
+    file_counts: dict[str, int],
+    repo_counts: dict[str, int],
+    output_path: str,
+) -> None:
+    """Save scoring data to a sidecar JSON file for later re-filtering."""
+    entries = {}
+    for macro in scores:
+        if macro in d.macro_to_pattern:
+            entry_type = "pattern"
+            content = d.macro_to_pattern[macro]
+            category = d.pattern_categories.get(content, "mined")
+            slots = None
+        elif macro in d.macro_to_template:
+            entry_type = "template"
+            content = d.macro_to_template[macro]
+            category = d.template_categories.get(content, "template")
+            slots = d.template_slots[content]
+        else:
+            continue
+        entries[macro] = {
+            "type": entry_type,
+            "content": content,
+            "category": category,
+            "score": scores[macro],
+            "file_count": file_counts.get(macro, 0),
+            "repo_count": repo_counts.get(macro, 0),
+        }
+        if slots is not None:
+            entries[macro]["slots"] = slots
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(entries, f, indent=2, ensure_ascii=False)
+    print(f"Scoring data saved to {output_path} ({len(entries)} entries)")
+
+
+def _load_scores(
+    scores_path: str,
+) -> tuple[CompressionDictionary, dict[str, float], dict[str, int], dict[str, int]]:
+    """Load scoring data from a sidecar file. Returns (dictionary, scores, file_counts, repo_counts)."""
+    with open(scores_path, encoding="utf-8") as f:
+        entries = json.load(f)
+
+    d = CompressionDictionary()
+    scores = {}
+    file_counts = {}
+    repo_counts = {}
+
+    for macro, entry in entries.items():
+        if entry["type"] == "pattern":
+            d.add_pattern(entry["content"], category=entry.get("category", "mined"))
+        elif entry["type"] == "template":
+            d.add_template(entry["content"], entry["slots"], category=entry.get("category", "template"))
+        scores[macro] = entry["score"]
+        file_counts[macro] = entry["file_count"]
+        repo_counts[macro] = entry["repo_count"]
+
+    return d, scores, file_counts, repo_counts
+
+
+def refilter(
+    scores_path: str,
+    output_path: str,
+    min_file_count: int = 0,
+    max_entries: int = 999,
+) -> CompressionDictionary:
+    """Re-filter a scored dictionary with new --min-files / --max-entries thresholds.
+
+    Loads scoring data from a sidecar file and applies filters without
+    re-mining or re-scoring. Note: --min-repos cannot be changed here
+    because it affects the mining phase.
+    """
+    d, scores, file_counts, repo_counts = _load_scores(scores_path)
+    print(f"Loaded {len(scores)} scored entries from {scores_path}")
+
+    new_d = _rebuild_top_n(
+        d, scores, file_counts,
+        min_file_count=min_file_count,
+        repo_counts=repo_counts,
+        min_repo_count=0,
+        max_entries=max_entries,
+    )
+
+    new_d.save(output_path)
+    print(f"\nDictionary saved to {output_path}")
+    print(f"Stats: {new_d.stats()}")
+    return new_d
+
+
 def build_mined_dictionary(
     corpus_dir: Path,
     language: str | LanguageConfig,
@@ -471,6 +562,7 @@ def build_mined_dictionary(
     min_file_count: int = 0,
     max_entries: int = 999,
     tokenizer_name: str = DEFAULT_TOKENIZER,
+    scores_output_path: str | None = None,
 ) -> tuple[CompressionDictionary, list[tuple[str, int, int, float, int]]]:
     """
     Build a compression dictionary by mining broadly, then scoring and trimming.
@@ -587,6 +679,11 @@ def build_mined_dictionary(
             d, corpus_dir, exclude_repos=exclude_repos,
             language=lang, tokenizer_name=tokenizer_name,
         )
+
+        # Save scoring data so we can re-filter without re-mining
+        if scores_output_path:
+            _save_scores(d, scores, file_counts, repo_counts, scores_output_path)
+
         d = _rebuild_top_n(d, scores, file_counts, min_file_count=min_file_count,
                            repo_counts=repo_counts, min_repo_count=min_repos,
                            max_entries=max_entries)
@@ -616,9 +713,25 @@ def main():
     parser.add_argument("--no-ast-templates", action="store_true", help="Skip AST subtree mining")
     parser.add_argument("--max-ast-templates", type=int, default=1000, help="Max AST-mined templates")
     parser.add_argument("--min-files", type=int, default=0, help="Min training files a pattern must appear in (0 = no threshold)")
-    parser.add_argument("--max-entries", type=int, default=999, help="Max entries in final dictionary (default: 999)")
+    parser.add_argument("--max-entries", type=int, default=0, help="Max entries in final dictionary (0 = no cap)")
     parser.add_argument("--verbose", action="store_true", help="Print all accepted patterns")
+    parser.add_argument("--scores-output", type=str, default=None,
+                        help="Save scoring data to this sidecar JSON (for later re-filtering)")
+    parser.add_argument("--refilter", type=str, default=None, metavar="SCORES_JSON",
+                        help="Re-filter from saved scoring data instead of mining "
+                             "(only --min-files, --max-entries, and --output are used)")
     args = parser.parse_args()
+
+    if args.refilter:
+        output_path = args.output
+        if output_path is None:
+            from sematok.languages import get_dictionary_path
+            lang_dict = get_dictionary_path(args.language)
+            output_path = str(lang_dict) if lang_dict else f"sematok/languages/{args.language}/dictionary.json"
+        refilter(args.refilter, output_path,
+                 min_file_count=args.min_files,
+                 max_entries=args.max_entries)
+        return
 
     d, mined = build_mined_dictionary(
         Path(args.corpus),
@@ -635,6 +748,7 @@ def main():
         max_entries=args.max_entries,
         language=args.language,
         tokenizer_name=args.tokenizer,
+        scores_output_path=args.scores_output,
     )
 
     from sematok.languages import get_dictionary_path

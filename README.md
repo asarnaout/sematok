@@ -126,10 +126,25 @@ python -m data.download --language csharp
 
 ### Step 2: Mine Dictionary
 
-First, run a full analysis mine with relaxed thresholds to see the threshold
-analysis tables. This mines broadly (`--min-repos 0`) and scores every
-candidate against the full corpus. The output includes a `--min-files`
-threshold table and a per-entry frequency distribution with repo counts:
+Mining produces a dictionary of boilerplate patterns. Three parameters
+control what ends up in the final dictionary:
+
+- **`--min-files`** — minimum number of files a pattern must appear in
+  (filters rare patterns)
+- **`--min-repos`** — minimum number of repos a pattern must appear in
+  (filters project-specific patterns). Affects mining, so changing it
+  requires a full re-mine.
+- **`--max-entries`** — hard cap on dictionary size (limits how many new
+  tokens the model needs to learn). Unlike the other two, this is a
+  training capacity constraint, not a quality filter.
+
+All three values are derived from the data, not guessed upfront.
+
+#### Step 2a: Analysis mine
+
+Run a full mine with relaxed thresholds. This mines broadly and scores
+every candidate against the full corpus. Use `--scores-output` to save
+the scoring data for later re-filtering:
 
 ```bash
 python -m sematok.mining \
@@ -138,11 +153,21 @@ python -m sematok.mining \
     --output out/analysis_csharp.json \
     --min-files 1 \
     --min-repos 0 \
-    --max-entries 0
+    --max-entries 0 \
+    --scores-output out/analysis_csharp_scores.json
 ```
 
-Then run `repo_distribution` on the analysis dictionary to choose
-`--min-repos` (shows how many entries survive at each threshold):
+This is the slow step (hours). It produces:
+- `out/analysis_csharp.json` — unfiltered dictionary with all candidates
+- `out/analysis_csharp_scores.json` — per-entry scores, file counts, and
+  repo counts (used by `--refilter` to avoid re-mining)
+- A `--min-files threshold analysis` table printed to stdout (shows how
+  many entries and what % of impact survives at each threshold)
+
+#### Step 2b: Choose `--min-repos`
+
+Run `repo_distribution` on the analysis dictionary. This shows how many
+entries survive at each `--min-repos` threshold:
 
 ```bash
 python -m sematok.repo_distribution \
@@ -151,7 +176,9 @@ python -m sematok.repo_distribution \
     --dictionary out/analysis_csharp.json
 ```
 
-Then mine the final dictionary with your chosen parameters:
+#### Step 2c: Final mine
+
+Mine the final dictionary with your chosen `--min-files` and `--min-repos`:
 
 ```bash
 python -m sematok.mining \
@@ -159,11 +186,28 @@ python -m sematok.mining \
     --language csharp \
     --output sematok/languages/csharp/dictionary.json \
     --min-files <chosen> \
-    --min-repos <chosen> \
-    --max-entries 999
+    --min-repos <chosen>
 ```
 
-`--max-entries N` sets a hard upper limit on dictionary size (default: 999). The 5-digit macro ID format (`<|M00001|>` through `<|M99999|>`) supports up to 99,999 exact macros and 99,999 templates.
+Check how many entries survived. If the count is too high for training,
+add `--max-entries N` to cap it, or raise `--min-files`.
+
+#### Re-filtering without re-mining
+
+After a full mine, you can adjust `--min-files` and `--max-entries`
+instantly using saved scoring data (no re-mining or re-scoring needed):
+
+```bash
+python -m sematok.mining \
+    --refilter out/analysis_csharp_scores.json \
+    --output sematok/languages/csharp/dictionary.json \
+    --language csharp \
+    --min-files <new_value> \
+    --max-entries <new_value>
+```
+
+Note: `--min-repos` cannot be changed via `--refilter` because it affects
+the mining phase. Changing it requires a full re-mine.
 
 ### Step 3: Measure Compression
 
@@ -231,12 +275,14 @@ Four-configuration perplexity comparison plus functional correctness (generation
 
 To train a single model that handles multiple languages:
 
-1. Mine each language independently:
+1. Mine each language independently (follow Step 2 above for each):
    ```bash
-   python -m sematok.mining --language csharp --corpus data/raw_cs \
-       --output sematok/languages/csharp/dictionary.json --min-files 500
-   python -m sematok.mining --language python --corpus data/raw_py \
-       --output sematok/languages/python/dictionary.json --min-files 500
+   python -m sematok.mining --language csharp --corpus data/raw_csharp \
+       --output sematok/languages/csharp/dictionary.json \
+       --min-files <chosen> --min-repos <chosen>
+   python -m sematok.mining --language python --corpus data/raw_python \
+       --output sematok/languages/python/dictionary.json \
+       --min-files <chosen> --min-repos <chosen>
    ```
 
 2. Merge dictionaries (assigns non-overlapping macro IDs):
@@ -249,9 +295,9 @@ To train a single model that handles multiple languages:
 
 3. Prepare training data per language using the **merged** dictionary, then concatenate. This is important -- the merged dictionary has different IDs than the per-language ones, and the training data must match the tokenizer:
    ```bash
-   python -m data.prepare --language csharp --corpus data/raw_cs \
+   python -m data.prepare --language csharp --corpus data/raw_csharp \
        --dictionary merged_dictionary.json --output data/ft_cs
-   python -m data.prepare --language python --corpus data/raw_py \
+   python -m data.prepare --language python --corpus data/raw_python \
        --dictionary merged_dictionary.json --output data/ft_py
    cat data/ft_cs/train.jsonl data/ft_py/train.jsonl > data/ft_mixed/train.jsonl
    cat data/ft_cs/eval.jsonl data/ft_py/eval.jsonl > data/ft_mixed/eval.jsonl
