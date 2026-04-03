@@ -1,7 +1,5 @@
 # Experiment Results
 
-Base model: `Qwen/Qwen2.5-Coder-1.5B-Instruct`
-
 ## Mining
 
 | Language | Corpus Files | Exact | Templates | Total | Auto --min-files | --min-repos |
@@ -10,7 +8,7 @@ Base model: `Qwen/Qwen2.5-Coder-1.5B-Instruct`
 | Python | | | | | | |
 | Java | | | | | | |
 | TypeScript | | | | | | |
-| Go | | | | | | |
+| Go | 51,459 | 850 | 56 | 906 | 200 | 2 |
 
 ## Compression
 
@@ -22,7 +20,7 @@ Measured with `sematok.measure` (2000-file sample, Qwen tokenizer).
 | Python | | | | | | |
 | Java | | | | | | |
 | TypeScript | | | | | | |
-| Go | | | | | | |
+| Go | 3,262,635 | 299,801 | 3,040 | 302,841 | 9.28% | 54.8 |
 
 ## Training
 

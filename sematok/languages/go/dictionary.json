@@ -1,0 +1,4592 @@
+{
+  "patterns": [
+    {
+      "pattern": "t *testing.T) {",
+      "macro": "<|M00001|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if err != nil {",
+      "macro": "<|M00002|>",
+      "category": "error"
+    },
+    {
+      "pattern": ", err := ",
+      "macro": "<|M00003|>",
+      "category": "error"
+    },
+    {
+      "pattern": "t.Errorf(",
+      "macro": "<|M00004|>",
+      "category": "test"
+    },
+    {
+      "pattern": "); err != nil {",
+      "macro": "<|M00005|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if err != nil {\n\t\treturn nil, err\n\t}",
+      "macro": "<|M00006|>",
+      "category": "error"
+    },
+    {
+      "pattern": ", func(t *testing.T) {",
+      "macro": "<|M00007|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for i := 0; i < b.N; i++ {",
+      "macro": "<|M00008|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "assert.Equal(t,",
+      "macro": "<|M00009|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "b *testing.B) {",
+      "macro": "<|M00010|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "require.NoError(t, err)",
+      "macro": "<|M00011|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= append(",
+      "macro": "<|M00012|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "type ",
+      "macro": "<|M00013|>",
+      "category": "type"
+    },
+    {
+      "pattern": "func (",
+      "macro": "<|M00014|>",
+      "category": "function"
+    },
+    {
+      "pattern": ", ok := ",
+      "macro": "<|M00015|>",
+      "category": "expression"
+    },
+    {
+      "pattern": "t.Fatalf(",
+      "macro": "<|M00016|>",
+      "category": "test"
+    },
+    {
+      "pattern": ", error) {",
+      "macro": "<|M00017|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " != nil {",
+      "macro": "<|M00018|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if err != nil {\n\t\treturn err\n\t}",
+      "macro": "<|M00019|>",
+      "category": "error"
+    },
+    {
+      "pattern": "if err :=",
+      "macro": "<|M00020|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " struct {",
+      "macro": "<|M00021|>",
+      "category": "type"
+    },
+    {
+      "pattern": "for i := 0; i <",
+      "macro": "<|M00022|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func (c ",
+      "macro": "<|M00023|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "} else {",
+      "macro": "<|M00024|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ctx context.Context,",
+      "macro": "<|M00025|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "t.Parallel()",
+      "macro": "<|M00026|>",
+      "category": "test"
+    },
+    {
+      "pattern": "return nil, fmt.Errorf(",
+      "macro": "<|M00027|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "t.Fatal(err)",
+      "macro": "<|M00028|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ") == 0 {",
+      "macro": "<|M00029|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " []string{",
+      "macro": "<|M00030|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " == nil {",
+      "macro": "<|M00031|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "t.Error(",
+      "macro": "<|M00032|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= range ",
+      "macro": "<|M00033|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "require.Equal(t,",
+      "macro": "<|M00034|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func (s ",
+      "macro": "<|M00035|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ") error {",
+      "macro": "<|M00036|>",
+      "category": "function"
+    },
+    {
+      "pattern": "t.Run(tc.name, func(t *testing.T) {",
+      "macro": "<|M00037|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return fmt.Errorf(",
+      "macro": "<|M00038|>",
+      "category": "error"
+    },
+    {
+      "pattern": "func (m ",
+      "macro": "<|M00039|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "t.Run(tt.name, func(t *testing.T) {",
+      "macro": "<|M00040|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return nil, ",
+      "macro": "<|M00041|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ", func() {",
+      "macro": "<|M00042|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return nil",
+      "macro": "<|M00043|>",
+      "category": "expression"
+    },
+    {
+      "pattern": ":= &",
+      "macro": "<|M00044|>",
+      "category": "expression"
+    },
+    {
+      "pattern": "t.Run(",
+      "macro": "<|M00045|>",
+      "category": "test"
+    },
+    {
+      "pattern": ") (",
+      "macro": "<|M00046|>",
+      "category": "function"
+    },
+    {
+      "pattern": "func (p ",
+      "macro": "<|M00047|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return nil, err",
+      "macro": "<|M00048|>",
+      "category": "error"
+    },
+    {
+      "pattern": "if !ok {",
+      "macro": "<|M00049|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "interface{}) ",
+      "macro": "<|M00050|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, tc := range testCases {",
+      "macro": "<|M00051|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if err == nil {",
+      "macro": "<|M00052|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " float64",
+      "macro": "<|M00053|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "tests := []struct {",
+      "macro": "<|M00054|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "} else if ",
+      "macro": "<|M00055|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func (e ",
+      "macro": "<|M00056|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "t *testing.T,",
+      "macro": "<|M00057|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, tt := range tests {",
+      "macro": "<|M00058|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ") bool {",
+      "macro": "<|M00059|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " []byte(",
+      "macro": "<|M00060|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for i := range",
+      "macro": "<|M00061|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func (r ",
+      "macro": "<|M00062|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {",
+      "macro": "<|M00063|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "WriteString(",
+      "macro": "<|M00064|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= fmt.Sprintf(",
+      "macro": "<|M00065|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return nil, errors.New(",
+      "macro": "<|M00066|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "http.MethodGet,",
+      "macro": "<|M00067|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "assert.NoError(t, err)",
+      "macro": "<|M00068|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return err",
+      "macro": "<|M00069|>",
+      "category": "error"
+    },
+    {
+      "pattern": " func(ctx context.Context,",
+      "macro": "<|M00070|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string, args ..",
+      "macro": "<|M00071|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ") string {",
+      "macro": "<|M00072|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "fmt.Sprintf(",
+      "macro": "<|M00073|>",
+      "category": "format"
+    },
+    {
+      "pattern": "go func() {",
+      "macro": "<|M00074|>",
+      "category": "concurrency"
+    },
+    {
+      "pattern": "= errors.New(",
+      "macro": "<|M00075|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "t.Fatal(",
+      "macro": "<|M00076|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[]interface{}{",
+      "macro": "<|M00077|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func (t ",
+      "macro": "<|M00078|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Equal(t,",
+      "macro": "<|M00079|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "testCases := []struct {",
+      "macro": "<|M00080|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ", fmt.Sprintf(",
+      "macro": "<|M00081|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "context.Background(),",
+      "macro": "<|M00082|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Name:     ",
+      "macro": "<|M00083|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func(context.Context, ",
+      "macro": "<|M00084|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "defer func() {",
+      "macro": "<|M00085|>",
+      "category": "concurrency"
+    },
+    {
+      "pattern": "string) (bool, error) {",
+      "macro": "<|M00086|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " map[string]any{",
+      "macro": "<|M00087|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "map[string]interface{}",
+      "macro": "<|M00088|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ", false,",
+      "macro": "<|M00089|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[]string{",
+      "macro": "<|M00090|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "_, err =",
+      "macro": "<|M00091|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "w http.ResponseWriter, r *http.Request) {",
+      "macro": "<|M00092|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return errors.New(",
+      "macro": "<|M00093|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if _, err :=",
+      "macro": "<|M00094|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= make([]",
+      "macro": "<|M00095|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ") ([]byte, error) {",
+      "macro": "<|M00096|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Error(t, err)",
+      "macro": "<|M00097|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= []byte(",
+      "macro": "<|M00098|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func (b ",
+      "macro": "<|M00099|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if _, ok :=",
+      "macro": "<|M00100|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "!= nil && ",
+      "macro": "<|M00101|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "fmt.Println(",
+      "macro": "<|M00102|>",
+      "category": "format"
+    },
+    {
+      "pattern": "string) error {",
+      "macro": "<|M00103|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string) string {",
+      "macro": "<|M00104|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "float64) ",
+      "macro": "<|M00105|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ")); err != nil {",
+      "macro": "<|M00106|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "     true,",
+      "macro": "<|M00107|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ") (string, error) {",
+      "macro": "<|M00108|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "); err == nil {",
+      "macro": "<|M00109|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " (int, error) {",
+      "macro": "<|M00110|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "interface{}",
+      "macro": "<|M00111|>",
+      "category": "function"
+    },
+    {
+      "pattern": "fmt.Printf(",
+      "macro": "<|M00112|>",
+      "category": "format"
+    },
+    {
+      "pattern": " string) ",
+      "macro": "<|M00113|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ", error)",
+      "macro": "<|M00114|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= func(",
+      "macro": "<|M00115|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " map[string]",
+      "macro": "<|M00116|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string) (",
+      "macro": "<|M00117|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "require.NoError(t,",
+      "macro": "<|M00118|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string) {",
+      "macro": "<|M00119|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "panic(err)",
+      "macro": "<|M00120|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ctx, cancel := context.WithTimeout(context.Background(),",
+      "macro": "<|M00121|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func (l ",
+      "macro": "<|M00122|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func (f ",
+      "macro": "<|M00123|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " map[string]string{",
+      "macro": "<|M00124|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " bool) {",
+      "macro": "<|M00125|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ", fmt.Errorf(",
+      "macro": "<|M00126|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, n := range",
+      "macro": "<|M00127|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return fmt.Sprintf(",
+      "macro": "<|M00128|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "resp, err :=",
+      "macro": "<|M00129|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string) bool {",
+      "macro": "<|M00130|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string) (net.Conn, error)",
+      "macro": "<|M00131|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "assert.True(t,",
+      "macro": "<|M00132|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func init() {",
+      "macro": "<|M00133|>",
+      "category": "function"
+    },
+    {
+      "pattern": "func (d ",
+      "macro": "<|M00134|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func (w ",
+      "macro": "<|M00135|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(type) {",
+      "macro": "<|M00136|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "   = 0x8",
+      "macro": "<|M00137|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func (a ",
+      "macro": "<|M00138|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= []string{",
+      "macro": "<|M00139|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[]byte) ([]byte, error) {",
+      "macro": "<|M00140|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func() {",
+      "macro": "<|M00141|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return 0, err",
+      "macro": "<|M00142|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= time.Now()",
+      "macro": "<|M00143|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= fmt.Sprintf(",
+      "macro": "<|M00144|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for k, v := range",
+      "macro": "<|M00145|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= make([]byte,",
+      "macro": "<|M00146|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "var err error",
+      "macro": "<|M00147|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "fmt.Fprintf(",
+      "macro": "<|M00148|>",
+      "category": "format"
+    },
+    {
+      "pattern": " interface {",
+      "macro": "<|M00149|>",
+      "category": "type"
+    },
+    {
+      "pattern": "ctx context.Context) error {",
+      "macro": "<|M00150|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "require.Error(t, err)",
+      "macro": "<|M00151|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ctx context.Context) ",
+      "macro": "<|M00152|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func main() {",
+      "macro": "<|M00153|>",
+      "category": "function"
+    },
+    {
+      "pattern": ") (err error) {",
+      "macro": "<|M00154|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, tc := range tests {",
+      "macro": "<|M00155|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "key string,",
+      "macro": "<|M00156|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ctx := context.Background()",
+      "macro": "<|M00157|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Context) error {",
+      "macro": "<|M00158|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= make([]string, 0, len(",
+      "macro": "<|M00159|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "...string) ",
+      "macro": "<|M00160|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "* time.Millisecond)",
+      "macro": "<|M00161|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "assert.Nil(t,",
+      "macro": "<|M00162|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Context, ",
+      "macro": "<|M00163|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return 0,",
+      "macro": "<|M00164|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for i := 0; i < len",
+      "macro": "<|M00165|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "t.Cleanup(func() {",
+      "macro": "<|M00166|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Context) ",
+      "macro": "<|M00167|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ") (any, error) {",
+      "macro": "<|M00168|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return 0",
+      "macro": "<|M00169|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "http.StatusOK",
+      "macro": "<|M00170|>",
+      "category": "http"
+    },
+    {
+      "pattern": "return nil, nil, err",
+      "macro": "<|M00171|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "mu.Unlock()",
+      "macro": "<|M00172|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "100 * time.Millisecond",
+      "macro": "<|M00173|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "time.Second)",
+      "macro": "<|M00174|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " String() string {",
+      "macro": "<|M00175|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= make(map[string]",
+      "macro": "<|M00176|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "name string) ",
+      "macro": "<|M00177|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "time.Duration) ",
+      "macro": "<|M00178|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Response, error) {",
+      "macro": "<|M00179|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func (h ",
+      "macro": "<|M00180|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err error) {",
+      "macro": "<|M00181|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " func() ",
+      "macro": "<|M00182|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Write([]byte",
+      "macro": "<|M00183|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ", errors.New(",
+      "macro": "<|M00184|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "mu.Lock()",
+      "macro": "<|M00185|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "var _ ",
+      "macro": "<|M00186|>",
+      "category": "type"
+    },
+    {
+      "pattern": "        []string",
+      "macro": "<|M00187|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= []string{",
+      "macro": "<|M00188|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return nil, nil",
+      "macro": "<|M00189|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " time.Now()",
+      "macro": "<|M00190|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for j := 0; j <",
+      "macro": "<|M00191|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "require.NoError(t, err,",
+      "macro": "<|M00192|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "t.Helper()",
+      "macro": "<|M00193|>",
+      "category": "test"
+    },
+    {
+      "pattern": "func (i ",
+      "macro": "<|M00194|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "}); err != nil {",
+      "macro": "<|M00195|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= range c",
+      "macro": "<|M00196|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[]string,",
+      "macro": "<|M00197|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[]float64",
+      "macro": "<|M00198|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, test := range tests {",
+      "macro": "<|M00199|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err := json.Marshal",
+      "macro": "<|M00200|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Kind() == reflect",
+      "macro": "<|M00201|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ctx); err != nil {",
+      "macro": "<|M00202|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "RUnlock()",
+      "macro": "<|M00203|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Close(); err != nil {",
+      "macro": "<|M00204|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ctx context.Context) (int, error) {",
+      "macro": "<|M00205|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " MarshalJSON() ([]byte, error) {",
+      "macro": "<|M00206|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if err =",
+      "macro": "<|M00207|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "panic(fmt.Sprintf(",
+      "macro": "<|M00208|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "); i++ {",
+      "macro": "<|M00209|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " - 1; i >= 0; i-- {",
+      "macro": "<|M00210|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " (interface{}, error) {",
+      "macro": "<|M00211|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, v := range",
+      "macro": "<|M00212|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "time.Time) ",
+      "macro": "<|M00213|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "res, err :=",
+      "macro": "<|M00214|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, c := range",
+      "macro": "<|M00215|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func() error {",
+      "macro": "<|M00216|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "     int32",
+      "macro": "<|M00217|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if len(s",
+      "macro": "<|M00218|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for i := 1; i <",
+      "macro": "<|M00219|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " _, err :=",
+      "macro": "<|M00220|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "any) error {",
+      "macro": "<|M00221|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ") != nil {",
+      "macro": "<|M00222|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "v := reflect.ValueOf",
+      "macro": "<|M00223|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " map[string][",
+      "macro": "<|M00224|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= range s",
+      "macro": "<|M00225|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string) (string, error) {",
+      "macro": "<|M00226|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Err(); err != nil {",
+      "macro": "<|M00227|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "map[string]any{",
+      "macro": "<|M00228|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "s string) ",
+      "macro": "<|M00229|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ") string { return",
+      "macro": "<|M00230|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " func(i, j int) bool {",
+      "macro": "<|M00231|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[]byte, err error) {",
+      "macro": "<|M00232|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "struct{}",
+      "macro": "<|M00233|>",
+      "category": "expression"
+    },
+    {
+      "pattern": "var wg sync.WaitGroup",
+      "macro": "<|M00234|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "     int64",
+      "macro": "<|M00235|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "require.True(t,",
+      "macro": "<|M00236|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "defer cancel()",
+      "macro": "<|M00237|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err := client",
+      "macro": "<|M00238|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "    false,",
+      "macro": "<|M00239|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "r := range",
+      "macro": "<|M00240|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "time.Now()",
+      "macro": "<|M00241|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ctx context.Context) (",
+      "macro": "<|M00242|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, s := range",
+      "macro": "<|M00243|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "t.Context()",
+      "macro": "<|M00244|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for i := 0; i < n",
+      "macro": "<|M00245|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return nil, nil, fmt.Errorf(",
+      "macro": "<|M00246|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= strings.Split",
+      "macro": "<|M00247|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= make(chan struct{})",
+      "macro": "<|M00248|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "os.Exit(",
+      "macro": "<|M00249|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, c",
+      "macro": "<|M00250|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ").String()",
+      "macro": "<|M00251|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "t.Run(test.name, func(t *testing.T) {",
+      "macro": "<|M00252|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "* time.Second",
+      "macro": "<|M00253|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= range m",
+      "macro": "<|M00254|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "name string,",
+      "macro": "<|M00255|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " (bool, error) {",
+      "macro": "<|M00256|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "wg.Add(1)",
+      "macro": "<|M00257|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= make(",
+      "macro": "<|M00258|>",
+      "category": "expression"
+    },
+    {
+      "pattern": "      uint64",
+      "macro": "<|M00259|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err := os.ReadFile",
+      "macro": "<|M00260|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func (c *Client)",
+      "macro": "<|M00261|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= func(ctx context.Context,",
+      "macro": "<|M00262|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "* time.Second)",
+      "macro": "<|M00263|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " []string{}",
+      "macro": "<|M00264|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "case <-ctx.Done():",
+      "macro": "<|M00265|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "uintptr(unsafe.Pointer",
+      "macro": "<|M00266|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "== nil ||",
+      "macro": "<|M00267|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "s := range",
+      "macro": "<|M00268|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err := io.ReadAll(resp.Body)",
+      "macro": "<|M00269|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if _, err := io",
+      "macro": "<|M00270|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "float64 {",
+      "macro": "<|M00271|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= map[string]",
+      "macro": "<|M00272|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, p",
+      "macro": "<|M00273|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string, string",
+      "macro": "<|M00274|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "case <-time.After",
+      "macro": "<|M00275|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "    = 0x20",
+      "macro": "<|M00276|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= []struct {",
+      "macro": "<|M00277|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "context.Context, ",
+      "macro": "<|M00278|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "time.Millisecond)",
+      "macro": "<|M00279|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[]interface{}",
+      "macro": "<|M00280|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "IsNil() {",
+      "macro": "<|M00281|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err := io.ReadAll",
+      "macro": "<|M00282|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(nil)).Elem()",
+      "macro": "<|M00283|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " Error() string {",
+      "macro": "<|M00284|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "c); err != nil {",
+      "macro": "<|M00285|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "map[string]",
+      "macro": "<|M00286|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if v, ok :=",
+      "macro": "<|M00287|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "map[string]any)",
+      "macro": "<|M00288|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "interface{}) {",
+      "macro": "<|M00289|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " map[string]any",
+      "macro": "<|M00290|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "int) bool {",
+      "macro": "<|M00291|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= filepath.Join",
+      "macro": "<|M00292|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "     map[string]",
+      "macro": "<|M00293|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, p := range",
+      "macro": "<|M00294|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "os.Getenv(",
+      "macro": "<|M00295|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "err := c",
+      "macro": "<|M00296|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return false, err",
+      "macro": "<|M00297|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= &cobra.Command{",
+      "macro": "<|M00298|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "    = 0x10",
+      "macro": "<|M00299|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ", 10, 64)",
+      "macro": "<|M00300|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " struct{}{}",
+      "macro": "<|M00301|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "log.Fatal(",
+      "macro": "<|M00302|>",
+      "category": "logging"
+    },
+    {
+      "pattern": ":= make(chan",
+      "macro": "<|M00303|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= int64",
+      "macro": "<|M00304|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "t.Run(test.desc, func(t *testing.T) {",
+      "macro": "<|M00305|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ") []byte {",
+      "macro": "<|M00306|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if !strings",
+      "macro": "<|M00307|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= t.TempDir()",
+      "macro": "<|M00308|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[]byte) error {",
+      "macro": "<|M00309|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "NotNil(t,",
+      "macro": "<|M00310|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "w io.Writer",
+      "macro": "<|M00311|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, f := range",
+      "macro": "<|M00312|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "conn, err :=",
+      "macro": "<|M00313|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "b []byte,",
+      "macro": "<|M00314|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "v string) ",
+      "macro": "<|M00315|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= make([]int,",
+      "macro": "<|M00316|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err.Error())",
+      "macro": "<|M00317|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if len(args) ",
+      "macro": "<|M00318|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Value, error) {",
+      "macro": "<|M00319|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string) ",
+      "macro": "<|M00320|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " == 0 ||",
+      "macro": "<|M00321|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "reflect.TypeOf(",
+      "macro": "<|M00322|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "context.WithValue(ctx,",
+      "macro": "<|M00323|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= regexp.MustCompile(",
+      "macro": "<|M00324|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "err = json.Unmarshal",
+      "macro": "<|M00325|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string) ([]string, error) {",
+      "macro": "<|M00326|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= func() ",
+      "macro": "<|M00327|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Error(t, err",
+      "macro": "<|M00328|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ") int64 {",
+      "macro": "<|M00329|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[]uint64",
+      "macro": "<|M00330|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func(ctx context.Context,",
+      "macro": "<|M00331|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "result = append(result,",
+      "macro": "<|M00332|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ") []string {",
+      "macro": "<|M00333|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "      uint32",
+      "macro": "<|M00334|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "struct{ ",
+      "macro": "<|M00335|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " = struct{}{}",
+      "macro": "<|M00336|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Request) ",
+      "macro": "<|M00337|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "resp, err ",
+      "macro": "<|M00338|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " func() {",
+      "macro": "<|M00339|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "strings.Contains(err.Error(),",
+      "macro": "<|M00340|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "String() ",
+      "macro": "<|M00341|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "base64.StdEncoding.EncodeToString",
+      "macro": "<|M00342|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "err != nil {",
+      "macro": "<|M00343|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, test := range",
+      "macro": "<|M00344|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "*x509.Certificate",
+      "macro": "<|M00345|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " make(map[string]",
+      "macro": "<|M00346|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ctx context.Context, params ",
+      "macro": "<|M00347|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " fmt.Sprintf(",
+      "macro": "<|M00348|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, f",
+      "macro": "<|M00349|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "assert.NoError(t,",
+      "macro": "<|M00350|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Len(); i++ {",
+      "macro": "<|M00351|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Kind() == reflect.Ptr ",
+      "macro": "<|M00352|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if err != nil && ",
+      "macro": "<|M00353|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "err = fmt.Errorf(",
+      "macro": "<|M00354|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "reflect.ValueOf",
+      "macro": "<|M00355|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "path string,",
+      "macro": "<|M00356|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return true, nil",
+      "macro": "<|M00357|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " Name() string {",
+      "macro": "<|M00358|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "int, err error) {",
+      "macro": "<|M00359|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "data []byte) ",
+      "macro": "<|M00360|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if err := json.Unmarshal",
+      "macro": "<|M00361|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "{ return nil }",
+      "macro": "<|M00362|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if errors.As(err, ",
+      "macro": "<|M00363|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, s",
+      "macro": "<|M00364|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err := net",
+      "macro": "<|M00365|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return nil, false",
+      "macro": "<|M00366|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "key string) ",
+      "macro": "<|M00367|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return 0, fmt.Errorf(",
+      "macro": "<|M00368|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "f, err := os.Open",
+      "macro": "<|M00369|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, m := range",
+      "macro": "<|M00370|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "resp.Body.Close()",
+      "macro": "<|M00371|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for i, v := range",
+      "macro": "<|M00372|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " Close() error {",
+      "macro": "<|M00373|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= reflect.TypeOf",
+      "macro": "<|M00374|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "p := range",
+      "macro": "<|M00375|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ctx context.Context, m",
+      "macro": "<|M00376|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " i < len",
+      "macro": "<|M00377|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= range []struct {",
+      "macro": "<|M00378|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "defer resp.Body.Close(",
+      "macro": "<|M00379|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "b []byte) ",
+      "macro": "<|M00380|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= nil && ",
+      "macro": "<|M00381|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(unsafe.Pointer(",
+      "macro": "<|M00382|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if err != nil ||",
+      "macro": "<|M00383|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "req, err := http",
+      "macro": "<|M00384|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err := os",
+      "macro": "<|M00385|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " 10 * time.Second",
+      "macro": "<|M00386|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "http.StatusNotFound",
+      "macro": "<|M00387|>",
+      "category": "http"
+    },
+    {
+      "pattern": "[]byte) (",
+      "macro": "<|M00388|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if strings.Contains",
+      "macro": "<|M00389|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= make([]",
+      "macro": "<|M00390|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Len() == 0 {",
+      "macro": "<|M00391|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err != nil {",
+      "macro": "<|M00392|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if m == nil {",
+      "macro": "<|M00393|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " bool { return",
+      "macro": "<|M00394|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return false, nil",
+      "macro": "<|M00395|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= make(map[string]",
+      "macro": "<|M00396|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "err.Error())",
+      "macro": "<|M00397|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "map[string]string{",
+      "macro": "<|M00398|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "t *testing.T, ctx context.Context) {",
+      "macro": "<|M00399|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if value, ok :=",
+      "macro": "<|M00400|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, opt := range opts {",
+      "macro": "<|M00401|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if _, err := os.Stat",
+      "macro": "<|M00402|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "buf := make([]byte,",
+      "macro": "<|M00403|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " map[string]string",
+      "macro": "<|M00404|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "bool) error {",
+      "macro": "<|M00405|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Kind() != reflect",
+      "macro": "<|M00406|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "context.Background())",
+      "macro": "<|M00407|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= make([]string, len",
+      "macro": "<|M00408|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "b []byte) (int, error) {",
+      "macro": "<|M00409|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "t *testing.T) ",
+      "macro": "<|M00410|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "int) (err error) {",
+      "macro": "<|M00411|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "resp, err := client",
+      "macro": "<|M00412|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " nil, nil)",
+      "macro": "<|M00413|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "* time.Millisecond",
+      "macro": "<|M00414|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "fd protoreflect.FieldDescriptor",
+      "macro": "<|M00415|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "    int64",
+      "macro": "<|M00416|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "opts = append(opts,",
+      "macro": "<|M00417|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "strings.HasSuffix",
+      "macro": "<|M00418|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "errors.As(err, ",
+      "macro": "<|M00419|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= fmt.Errorf(",
+      "macro": "<|M00420|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return func(ctx context.Context,",
+      "macro": "<|M00421|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "require.NotNil(t,",
+      "macro": "<|M00422|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ").Elem()",
+      "macro": "<|M00423|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if errors.Is(err,",
+      "macro": "<|M00424|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= map[string]struct",
+      "macro": "<|M00425|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for k := range",
+      "macro": "<|M00426|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return false, fmt.Errorf(",
+      "macro": "<|M00427|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= uint64",
+      "macro": "<|M00428|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Name:    ",
+      "macro": "<|M00429|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[]string) {",
+      "macro": "<|M00430|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " func(ctx context.Context) ",
+      "macro": "<|M00431|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "context.WithValue(",
+      "macro": "<|M00432|>",
+      "category": "context"
+    },
+    {
+      "pattern": "string, err error) {",
+      "macro": "<|M00433|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= map[string]",
+      "macro": "<|M00434|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if strings.HasPrefix",
+      "macro": "<|M00435|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " == 0 &&",
+      "macro": "<|M00436|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "30 * time.Second",
+      "macro": "<|M00437|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if !errors.Is(err,",
+      "macro": "<|M00438|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err := url.Parse",
+      "macro": "<|M00439|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err := x509",
+      "macro": "<|M00440|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "time.Second,",
+      "macro": "<|M00441|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "out = append(out,",
+      "macro": "<|M00442|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[]byte) {",
+      "macro": "<|M00443|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "grpc.WithTransportCredentials(insecure.NewCredentials())",
+      "macro": "<|M00444|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Do(func() {",
+      "macro": "<|M00445|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err := strconv.Atoi",
+      "macro": "<|M00446|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= map[string]string{",
+      "macro": "<|M00447|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "      []byte",
+      "macro": "<|M00448|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[]byte) []byte {",
+      "macro": "<|M00449|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, r := range",
+      "macro": "<|M00450|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if err := json.Unmarshal(data, ",
+      "macro": "<|M00451|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "log.Printf(",
+      "macro": "<|M00452|>",
+      "category": "logging"
+    },
+    {
+      "pattern": "ctx context.Context, req ",
+      "macro": "<|M00453|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "len(b) > 0 {",
+      "macro": "<|M00454|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= reflect.ValueOf",
+      "macro": "<|M00455|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[]string) error {",
+      "macro": "<|M00456|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "path string) ",
+      "macro": "<|M00457|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "} else if err != nil {",
+      "macro": "<|M00458|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "n := len",
+      "macro": "<|M00459|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[]byte) (int, error) {",
+      "macro": "<|M00460|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "   int64",
+      "macro": "<|M00461|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, k := range",
+      "macro": "<|M00462|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "err := r",
+      "macro": "<|M00463|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "errors.New(",
+      "macro": "<|M00464|>",
+      "category": "error"
+    },
+    {
+      "pattern": "map[string]string) ",
+      "macro": "<|M00465|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "key, value",
+      "macro": "<|M00466|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ") == nil {",
+      "macro": "<|M00467|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "err := p",
+      "macro": "<|M00468|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if len(s) ",
+      "macro": "<|M00469|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ctx.Err()",
+      "macro": "<|M00470|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, name := range",
+      "macro": "<|M00471|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err.Error(),",
+      "macro": "<|M00472|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string) ([]byte, error) {",
+      "macro": "<|M00473|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func(_ context.Context,",
+      "macro": "<|M00474|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " Execute(c *x509.Certificate) *lint.LintResult {",
+      "macro": "<|M00475|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= func() ",
+      "macro": "<|M00476|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, e := range",
+      "macro": "<|M00477|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string) []string {",
+      "macro": "<|M00478|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " (int64, error) {",
+      "macro": "<|M00479|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "float64)",
+      "macro": "<|M00480|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ") reflect.Type {",
+      "macro": "<|M00481|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "err error) error {",
+      "macro": "<|M00482|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "err := m",
+      "macro": "<|M00483|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "chan struct{}",
+      "macro": "<|M00484|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "int) error {",
+      "macro": "<|M00485|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "err := os.WriteFile",
+      "macro": "<|M00486|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[]byte) (n int, err error) {",
+      "macro": "<|M00487|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " interface{} {",
+      "macro": "<|M00488|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "   true,",
+      "macro": "<|M00489|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "_ context.Context,",
+      "macro": "<|M00490|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= range [",
+      "macro": "<|M00491|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, tc := range",
+      "macro": "<|M00492|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "nil); err != nil {",
+      "macro": "<|M00493|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return nil, nil,",
+      "macro": "<|M00494|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ", func() ",
+      "macro": "<|M00495|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "context.DeadlineExceeded",
+      "macro": "<|M00496|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ") uint64 {",
+      "macro": "<|M00497|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ok bool) {",
+      "macro": "<|M00498|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "IsZero() {",
+      "macro": "<|M00499|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if i > 0 ",
+      "macro": "<|M00500|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "v); err != nil {",
+      "macro": "<|M00501|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "..); err != nil {",
+      "macro": "<|M00502|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err := strconv.ParseInt",
+      "macro": "<|M00503|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "}, fmt.Errorf(",
+      "macro": "<|M00504|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "err error) bool {",
+      "macro": "<|M00505|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err.Error()",
+      "macro": "<|M00506|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " error) {",
+      "macro": "<|M00507|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "IsValid() {",
+      "macro": "<|M00508|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "key, value ",
+      "macro": "<|M00509|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= 0x4000",
+      "macro": "<|M00510|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for i :=",
+      "macro": "<|M00511|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "int64) {",
+      "macro": "<|M00512|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " ([]string, error) {",
+      "macro": "<|M00513|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Exec(ctx); err != nil {",
+      "macro": "<|M00514|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[]string) ",
+      "macro": "<|M00515|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " []string ",
+      "macro": "<|M00516|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ") (string,",
+      "macro": "<|M00517|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "New: func() any {",
+      "macro": "<|M00518|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if err == nil &&",
+      "macro": "<|M00519|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "fmt.Errorf(",
+      "macro": "<|M00520|>",
+      "category": "format"
+    },
+    {
+      "pattern": " ok := err.",
+      "macro": "<|M00521|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " errors.New(",
+      "macro": "<|M00522|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ctx context.Context) {",
+      "macro": "<|M00523|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "map[string]bool",
+      "macro": "<|M00524|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "    map[string]string",
+      "macro": "<|M00525|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func New(",
+      "macro": "<|M00526|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " CheckApplies(c *x509.Certificate) bool {",
+      "macro": "<|M00527|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return reflect.TypeOf((",
+      "macro": "<|M00528|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, t := range",
+      "macro": "<|M00529|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " UnmarshalJSON(data []byte) error {",
+      "macro": "<|M00530|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "uint64) ",
+      "macro": "<|M00531|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if _, err ",
+      "macro": "<|M00532|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "nil, nil, nil",
+      "macro": "<|M00533|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "float64,",
+      "macro": "<|M00534|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ctx, cancel := context.WithCancel",
+      "macro": "<|M00535|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "m := range",
+      "macro": "<|M00536|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "id, err :=",
+      "macro": "<|M00537|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string) (string,",
+      "macro": "<|M00538|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " []struct {",
+      "macro": "<|M00539|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "*assert.CollectT) {",
+      "macro": "<|M00540|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "    uint16",
+      "macro": "<|M00541|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "sync.WaitGroup",
+      "macro": "<|M00542|>",
+      "category": "concurrency"
+    },
+    {
+      "pattern": "if len(b) ",
+      "macro": "<|M00543|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= io.EOF {",
+      "macro": "<|M00544|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= make(chan error, 1)",
+      "macro": "<|M00545|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "errors.Is(err,",
+      "macro": "<|M00546|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string, error) {",
+      "macro": "<|M00547|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " Setup(t *testing.T) ",
+      "macro": "<|M00548|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "bool, error) {",
+      "macro": "<|M00549|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "make(chan ",
+      "macro": "<|M00550|>",
+      "category": "concurrency"
+    },
+    {
+      "pattern": "defer f.Close(",
+      "macro": "<|M00551|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "c := range",
+      "macro": "<|M00552|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Reader) ",
+      "macro": "<|M00553|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "   make(chan struct{}),",
+      "macro": "<|M00554|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "client, err ",
+      "macro": "<|M00555|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "    true,",
+      "macro": "<|M00556|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if runtime.GOOS ==",
+      "macro": "<|M00557|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "data, err :=",
+      "macro": "<|M00558|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "      sync.RWMutex",
+      "macro": "<|M00559|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= make([]byte,",
+      "macro": "<|M00560|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return &lint.LintResult{Status: lint.Pass}",
+      "macro": "<|M00561|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, o := range opts {",
+      "macro": "<|M00562|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "unsafe.Pointer(",
+      "macro": "<|M00563|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Error(t,",
+      "macro": "<|M00564|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "err := json.Unmarshal",
+      "macro": "<|M00565|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "} else if len",
+      "macro": "<|M00566|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= []byte",
+      "macro": "<|M00567|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "*os.File",
+      "macro": "<|M00568|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "buf []byte) ",
+      "macro": "<|M00569|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " context.Context {",
+      "macro": "<|M00570|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for i := len",
+      "macro": "<|M00571|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if err == io.EOF {",
+      "macro": "<|M00572|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "switch v ",
+      "macro": "<|M00573|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if err !=",
+      "macro": "<|M00574|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if err := os.MkdirAll",
+      "macro": "<|M00575|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "os.Remove(",
+      "macro": "<|M00576|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " Unwrap() error ",
+      "macro": "<|M00577|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if i == 0 ",
+      "macro": "<|M00578|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= uint32",
+      "macro": "<|M00579|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= uint64",
+      "macro": "<|M00580|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= make(map[string]string)",
+      "macro": "<|M00581|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if v != nil {",
+      "macro": "<|M00582|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string) (err error) {",
+      "macro": "<|M00583|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "err := s",
+      "macro": "<|M00584|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Len() > 0 {",
+      "macro": "<|M00585|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "case err != nil:",
+      "macro": "<|M00586|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= make(map[string]struct{}",
+      "macro": "<|M00587|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "int, error) {",
+      "macro": "<|M00588|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return true,",
+      "macro": "<|M00589|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return out,",
+      "macro": "<|M00590|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "os.IsNotExist(err) {",
+      "macro": "<|M00591|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err := strconv.ParseUint",
+      "macro": "<|M00592|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "uint64(0)",
+      "macro": "<|M00593|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string) error",
+      "macro": "<|M00594|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Name() string {",
+      "macro": "<|M00595|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, item := range",
+      "macro": "<|M00596|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for key, value := range",
+      "macro": "<|M00597|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "  uint64",
+      "macro": "<|M00598|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return nil, errors.Wrapf(err,",
+      "macro": "<|M00599|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return n, err",
+      "macro": "<|M00600|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "error) error {",
+      "macro": "<|M00601|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Selector) {",
+      "macro": "<|M00602|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= time.Now()",
+      "macro": "<|M00603|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if v == nil {",
+      "macro": "<|M00604|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "== 0 && len",
+      "macro": "<|M00605|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "io.Reader,",
+      "macro": "<|M00606|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string, opts ..",
+      "macro": "<|M00607|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "http.StatusInternalServerError",
+      "macro": "<|M00608|>",
+      "category": "http"
+    },
+    {
+      "pattern": "[]interface{}) ",
+      "macro": "<|M00609|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= make(map",
+      "macro": "<|M00610|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "!= nil",
+      "macro": "<|M00611|>",
+      "category": "expression"
+    },
+    {
+      "pattern": "go func(",
+      "macro": "<|M00612|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "len(p) > 0 {",
+      "macro": "<|M00613|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func(ctx ",
+      "macro": "<|M00614|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "context.TODO()",
+      "macro": "<|M00615|>",
+      "category": "context"
+    },
+    {
+      "pattern": "uint32) ",
+      "macro": "<|M00616|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(err error) ",
+      "macro": "<|M00617|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[]byte) ",
+      "macro": "<|M00618|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ctx context.Context) int {",
+      "macro": "<|M00619|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "i := range",
+      "macro": "<|M00620|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " map[string]struct{}",
+      "macro": "<|M00621|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "r io.Reader) ",
+      "macro": "<|M00622|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " nil, err",
+      "macro": "<|M00623|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for i := range ps {",
+      "macro": "<|M00624|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return &lint.LintResult{Status: lint.Error}",
+      "macro": "<|M00625|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= uint32",
+      "macro": "<|M00626|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "bool, err error) {",
+      "macro": "<|M00627|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "}, time.Second*10, time.Millisecond*10)",
+      "macro": "<|M00628|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " Less(i, j int) bool {",
+      "macro": "<|M00629|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "      []string",
+      "macro": "<|M00630|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "  uint32",
+      "macro": "<|M00631|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " name string,",
+      "macro": "<|M00632|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func(context.Context) ",
+      "macro": "<|M00633|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ctx context.Context, opts",
+      "macro": "<|M00634|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " nil, nil,",
+      "macro": "<|M00635|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return false,",
+      "macro": "<|M00636|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "v any) error {",
+      "macro": "<|M00637|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= make([]byte, len",
+      "macro": "<|M00638|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "    int32",
+      "macro": "<|M00639|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " reflect.ValueOf",
+      "macro": "<|M00640|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "io.Writer)",
+      "macro": "<|M00641|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "err := ctx",
+      "macro": "<|M00642|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " Swap(i, j int) {",
+      "macro": "<|M00643|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return nil, errors.Wrap(err,",
+      "macro": "<|M00644|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "v != nil {",
+      "macro": "<|M00645|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "(err error) {",
+      "macro": "<|M00646|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ", []byte",
+      "macro": "<|M00647|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string, fields ...string) ",
+      "macro": "<|M00648|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "   int32",
+      "macro": "<|M00649|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " fmt.Errorf(",
+      "macro": "<|M00650|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " uint32 {",
+      "macro": "<|M00651|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "math.MaxInt32)",
+      "macro": "<|M00652|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Source: ",
+      "macro": "<|M00653|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "IsDir() ",
+      "macro": "<|M00654|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "     sync.Mutex",
+      "macro": "<|M00655|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "uint64) {",
+      "macro": "<|M00656|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "New: func()",
+      "macro": "<|M00657|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= map[string]struct{}{",
+      "macro": "<|M00658|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "; err != nil &&",
+      "macro": "<|M00659|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err == nil {",
+      "macro": "<|M00660|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "os.WriteFile(",
+      "macro": "<|M00661|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "byte) bool ",
+      "macro": "<|M00662|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "     uint32",
+      "macro": "<|M00663|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ") ([]byte, error)",
+      "macro": "<|M00664|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "   uint64",
+      "macro": "<|M00665|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " make([]byte,",
+      "macro": "<|M00666|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err := os.Open",
+      "macro": "<|M00667|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= map[string]string{",
+      "macro": "<|M00668|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "); err == nil ",
+      "macro": "<|M00669|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "EventuallyWithT(t,",
+      "macro": "<|M00670|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= json.NewDecoder",
+      "macro": "<|M00671|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "lint.RegisterLint(&lint.Lint{",
+      "macro": "<|M00672|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Name:   ",
+      "macro": "<|M00673|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "sync.Mutex",
+      "macro": "<|M00674|>",
+      "category": "concurrency"
+    },
+    {
+      "pattern": "for _, v",
+      "macro": "<|M00675|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " value := range",
+      "macro": "<|M00676|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "     uint64",
+      "macro": "<|M00677|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err := io",
+      "macro": "<|M00678|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "== nil",
+      "macro": "<|M00679|>",
+      "category": "expression"
+    },
+    {
+      "pattern": "ctx context.Context, name string,",
+      "macro": "<|M00680|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "time.Time)",
+      "macro": "<|M00681|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "IsValid() ",
+      "macro": "<|M00682|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= append([]string",
+      "macro": "<|M00683|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string) ([",
+      "macro": "<|M00684|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, fn := range",
+      "macro": "<|M00685|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "k := range",
+      "macro": "<|M00686|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[]string)",
+      "macro": "<|M00687|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ctx context.Context) ([]",
+      "macro": "<|M00688|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= append([",
+      "macro": "<|M00689|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "f := range",
+      "macro": "<|M00690|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err: fmt.Errorf(",
+      "macro": "<|M00691|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if err := os",
+      "macro": "<|M00692|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "type Config struct {",
+      "macro": "<|M00693|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "reflect.TypeOf((",
+      "macro": "<|M00694|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= make([]string, 0, len(fields))",
+      "macro": "<|M00695|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "int64, err error) {",
+      "macro": "<|M00696|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "ctx context.Context) [",
+      "macro": "<|M00697|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "msg: err.Error()",
+      "macro": "<|M00698|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[]string) (",
+      "macro": "<|M00699|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "   uint32",
+      "macro": "<|M00700|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "b := make([]byte,",
+      "macro": "<|M00701|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "!= nil ||",
+      "macro": "<|M00702|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if errors.Is(err, io.EOF) {",
+      "macro": "<|M00703|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return out, nil",
+      "macro": "<|M00704|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "sync.Once",
+      "macro": "<|M00705|>",
+      "category": "concurrency"
+    },
+    {
+      "pattern": " c := range",
+      "macro": "<|M00706|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " (io.ReadCloser, error)",
+      "macro": "<|M00707|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "io.Reader) ",
+      "macro": "<|M00708|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "nil, false",
+      "macro": "<|M00709|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "    uint32",
+      "macro": "<|M00710|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "       []string",
+      "macro": "<|M00711|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if err ==",
+      "macro": "<|M00712|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Save(ctx context.Context) ",
+      "macro": "<|M00713|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " Len() int {",
+      "macro": "<|M00714|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= filepath.Join",
+      "macro": "<|M00715|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= make(map[int]struct",
+      "macro": "<|M00716|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ", err: errors.New(",
+      "macro": "<|M00717|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " p := range",
+      "macro": "<|M00718|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "r io.Reader",
+      "macro": "<|M00719|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "v := range",
+      "macro": "<|M00720|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= make(chan struct{})",
+      "macro": "<|M00721|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "data []byte",
+      "macro": "<|M00722|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err := os.Stat",
+      "macro": "<|M00723|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "   []byte",
+      "macro": "<|M00724|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Body.Close()",
+      "macro": "<|M00725|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "io.ReadCloser",
+      "macro": "<|M00726|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ") error ",
+      "macro": "<|M00727|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for key,",
+      "macro": "<|M00728|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "    map[string]",
+      "macro": "<|M00729|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "uint32) {",
+      "macro": "<|M00730|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " sync.RWMutex",
+      "macro": "<|M00731|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string) ([]any, error) {",
+      "macro": "<|M00732|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "String() string {",
+      "macro": "<|M00733|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[]byte, error) {",
+      "macro": "<|M00734|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " (Value, error) {",
+      "macro": "<|M00735|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ":= range fields {",
+      "macro": "<|M00736|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "f.Close()",
+      "macro": "<|M00737|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " uint64 ",
+      "macro": "<|M00738|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "    []byte",
+      "macro": "<|M00739|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "    uint64",
+      "macro": "<|M00740|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " Save(ctx context.Context) ",
+      "macro": "<|M00741|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " errors.Wrapf(err,",
+      "macro": "<|M00742|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= make(map[int",
+      "macro": "<|M00743|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " uint32 ",
+      "macro": "<|M00744|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ") lint.LintInterface {",
+      "macro": "<|M00745|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if err != nil && !errors.Is(err,",
+      "macro": "<|M00746|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "case err ",
+      "macro": "<|M00747|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " 0 && len",
+      "macro": "<|M00748|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return errors.Wrap(",
+      "macro": "<|M00749|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= make(map[string]string)",
+      "macro": "<|M00750|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "   []string",
+      "macro": "<|M00751|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "true, nil",
+      "macro": "<|M00752|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " len(ps) ",
+      "macro": "<|M00753|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "err = os",
+      "macro": "<|M00754|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ") ([]byte,",
+      "macro": "<|M00755|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "name string, args ",
+      "macro": "<|M00756|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " Len() int ",
+      "macro": "<|M00757|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " nil, nil",
+      "macro": "<|M00758|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "reflect.ValueOf(v)",
+      "macro": "<|M00759|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return nil, errors.Errorf(",
+      "macro": "<|M00760|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "io.Writer,",
+      "macro": "<|M00761|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err error)",
+      "macro": "<|M00762|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= strconv.Atoi",
+      "macro": "<|M00763|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " s := range",
+      "macro": "<|M00764|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " r := range",
+      "macro": "<|M00765|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "options); err != nil {",
+      "macro": "<|M00766|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "  map[string]",
+      "macro": "<|M00767|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err == nil",
+      "macro": "<|M00768|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "  uint16",
+      "macro": "<|M00769|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " (map[string]string, error) {",
+      "macro": "<|M00770|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "errors.Errorf(",
+      "macro": "<|M00771|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if os.IsNotExist(err) {",
+      "macro": "<|M00772|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, o := range",
+      "macro": "<|M00773|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= make(map",
+      "macro": "<|M00774|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " []byte ",
+      "macro": "<|M00775|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "error) {",
+      "macro": "<|M00776|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "    []string",
+      "macro": "<|M00777|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "chan struct{})",
+      "macro": "<|M00778|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string, args ",
+      "macro": "<|M00779|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "false, nil",
+      "macro": "<|M00780|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "len(fields) > 0 {",
+      "macro": "<|M00781|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= make(chan",
+      "macro": "<|M00782|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "context.Context) ",
+      "macro": "<|M00783|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "  []string",
+      "macro": "<|M00784|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string) [",
+      "macro": "<|M00785|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Source:        lint.RFC5280,",
+      "macro": "<|M00786|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " (uint64, error) {",
+      "macro": "<|M00787|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Source:        lint.CABFBaselineRequirements,",
+      "macro": "<|M00788|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "semver.Version",
+      "macro": "<|M00789|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "     []string",
+      "macro": "<|M00790|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Name() string",
+      "macro": "<|M00791|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "[]byte {",
+      "macro": "<|M00792|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= map[string][",
+      "macro": "<|M00793|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "v interface{}",
+      "macro": "<|M00794|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "buf []byte",
+      "macro": "<|M00795|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Kind() ==",
+      "macro": "<|M00796|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "     []byte",
+      "macro": "<|M00797|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func() error",
+      "macro": "<|M00798|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "value, ok :=",
+      "macro": "<|M00799|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string) bool",
+      "macro": "<|M00800|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "uint64 {",
+      "macro": "<|M00801|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "b []byte",
+      "macro": "<|M00802|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "i, err := strconv.ParseInt(v, 0,",
+      "macro": "<|M00803|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "   uint16",
+      "macro": "<|M00804|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ") != nil",
+      "macro": "<|M00805|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "v == nil {",
+      "macro": "<|M00806|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "log.G(ctx).WithError(err)",
+      "macro": "<|M00807|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "semver.Version ",
+      "macro": "<|M00808|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " err := strconv.ParseFloat(v, 64)",
+      "macro": "<|M00809|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return nil, errors",
+      "macro": "<|M00810|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "IsZero() ",
+      "macro": "<|M00811|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "]struct {",
+      "macro": "<|M00812|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "context.Context) (",
+      "macro": "<|M00813|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "fields ...string) ",
+      "macro": "<|M00814|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "IsZero()",
+      "macro": "<|M00815|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "string, opts ",
+      "macro": "<|M00816|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "v string)",
+      "macro": "<|M00817|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "b, err := strconv.ParseBool(v)",
+      "macro": "<|M00818|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "log.G(ctx)",
+      "macro": "<|M00819|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "interface{} {",
+      "macro": "<|M00820|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "semver.Version, error) {",
+      "macro": "<|M00821|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "IsNotFound(err) {",
+      "macro": "<|M00822|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= 0 && len",
+      "macro": "<|M00823|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "init() {",
+      "macro": "<|M00824|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "time.Duration)",
+      "macro": "<|M00825|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "runtime.GOOS ",
+      "macro": "<|M00826|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "data, err ",
+      "macro": "<|M00827|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Citation:",
+      "macro": "<|M00828|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Lint:     ",
+      "macro": "<|M00829|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "return util.IsExtInCert(c, util",
+      "macro": "<|M00830|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= semver.Version{Major:",
+      "macro": "<|M00831|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "if value, ok := os.LookupEnv",
+      "macro": "<|M00832|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "EffectiveDate: util.CABEffectiveDate,",
+      "macro": "<|M00833|>",
+      "category": "mined"
+    },
+    {
+      "pattern": ".WithError(err)",
+      "macro": "<|M00834|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "context.Context) {",
+      "macro": "<|M00835|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, item := range strings.Split",
+      "macro": "<|M00836|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "EffectiveDate: util",
+      "macro": "<|M00837|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "for _, v := range vars {",
+      "macro": "<|M00838|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "= semver",
+      "macro": "<|M00839|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "Context, name",
+      "macro": "<|M00840|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "}).PkgPath()",
+      "macro": "<|M00841|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "IsNotFound(err)",
+      "macro": "<|M00842|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "func (cli *Client)",
+      "macro": "<|M00843|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "runtime.GOOS",
+      "macro": "<|M00844|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " c); err != nil {",
+      "macro": "<|M00845|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "...string)",
+      "macro": "<|M00846|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "log.G(ctx).WithFields(log.Fields{",
+      "macro": "<|M00847|>",
+      "category": "mined"
+    },
+    {
+      "pattern": " optFns ...func(",
+      "macro": "<|M00848|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "defer ensureReaderClosed(resp)",
+      "macro": "<|M00849|>",
+      "category": "mined"
+    },
+    {
+      "pattern": "resp, err := cli.post(ctx,",
+      "macro": "<|M00850|>",
+      "category": "mined"
+    }
+  ],
+  "templates": [
+    {
+      "template": "(*{0})(nil)",
+      "macro": "<|T00001|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "int64({0})",
+      "macro": "<|T00002|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "float64({0})",
+      "macro": "<|T00003|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "int32({0})",
+      "macro": "<|T00004|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "uint64({0})",
+      "macro": "<|T00005|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "strconv.Itoa({0})",
+      "macro": "<|T00006|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "int64(len({0}))",
+      "macro": "<|T00007|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "var {0} []string",
+      "macro": "<|T00008|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "var {0} bytes.Buffer",
+      "macro": "<|T00009|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "var {0} int64",
+      "macro": "<|T00010|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "w.Write({0})",
+      "macro": "<|T00011|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "uint32({0})",
+      "macro": "<|T00012|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "bytes.NewReader({0})",
+      "macro": "<|T00013|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "reflect.DeepEqual({0}, {1})",
+      "macro": "<|T00014|>",
+      "slots": 2,
+      "category": "ast_template"
+    },
+    {
+      "template": "bytes.Equal({0}, {1})",
+      "macro": "<|T00015|>",
+      "slots": 2,
+      "category": "ast_template"
+    },
+    {
+      "template": "return &{0}, nil",
+      "macro": "<|T00016|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "var {0} uint64",
+      "macro": "<|T00017|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "bytes.NewBuffer({0})",
+      "macro": "<|T00018|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "strings.ToLower({0})",
+      "macro": "<|T00019|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "var {0} []byte",
+      "macro": "<|T00020|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "var {0} strings.Builder",
+      "macro": "<|T00021|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "var {0} int32",
+      "macro": "<|T00022|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "var {0} uint32",
+      "macro": "<|T00023|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "return {0}[0], nil",
+      "macro": "<|T00024|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "return string({0})",
+      "macro": "<|T00025|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "return len({0})",
+      "macro": "<|T00026|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "return {0}[0]",
+      "macro": "<|T00027|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "sort.Strings({0})",
+      "macro": "<|T00028|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "time.Duration({0})",
+      "macro": "<|T00029|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "strings.TrimSpace({0})",
+      "macro": "<|T00030|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "return len({0}), nil",
+      "macro": "<|T00031|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "strings.NewReader({0})",
+      "macro": "<|T00032|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "uint16({0})",
+      "macro": "<|T00033|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "uint64(len({0}))",
+      "macro": "<|T00034|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "time.Since({0})",
+      "macro": "<|T00035|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "{0}[{1}] = true",
+      "macro": "<|T00036|>",
+      "slots": 2,
+      "category": "ast_template"
+    },
+    {
+      "template": "uint8({0})",
+      "macro": "<|T00037|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "l := len({0})",
+      "macro": "<|T00038|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "return string({0}), nil",
+      "macro": "<|T00039|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "defer close({0})",
+      "macro": "<|T00040|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "var {0} []int",
+      "macro": "<|T00041|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "delete({0}, {1})",
+      "macro": "<|T00042|>",
+      "slots": 2,
+      "category": "ast_template"
+    },
+    {
+      "template": "filepath.Dir({0})",
+      "macro": "<|T00043|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "return int({0})",
+      "macro": "<|T00044|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "return append({0}, opts...)",
+      "macro": "<|T00045|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "filepath.Base({0})",
+      "macro": "<|T00046|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "copy({0}, {1})",
+      "macro": "<|T00047|>",
+      "slots": 2,
+      "category": "ast_template"
+    },
+    {
+      "template": "proto.Marshal({0})",
+      "macro": "<|T00048|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "{0}[{1}] = value",
+      "macro": "<|T00049|>",
+      "slots": 2,
+      "category": "ast_template"
+    },
+    {
+      "template": "match := re.FindStringSubmatch({0})",
+      "macro": "<|T00050|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "filepath.Join({0}, {1})",
+      "macro": "<|T00051|>",
+      "slots": 2,
+      "category": "ast_template"
+    },
+    {
+      "template": "var {0} []error",
+      "macro": "<|T00052|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "len(*{0})",
+      "macro": "<|T00053|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "return {0}[:{1}]",
+      "macro": "<|T00054|>",
+      "slots": 2,
+      "category": "ast_template"
+    },
+    {
+      "template": "os.RemoveAll({0})",
+      "macro": "<|T00055|>",
+      "slots": 1,
+      "category": "ast_template"
+    },
+    {
+      "template": "*{0} = err",
+      "macro": "<|T00056|>",
+      "slots": 1,
+      "category": "ast_template"
+    }
+  ]
+}
