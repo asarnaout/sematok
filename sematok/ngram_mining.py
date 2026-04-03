@@ -172,6 +172,7 @@ def ngram_pass2(
     max_files: int | None,
     file_extension: str,
     max_length: int = MAX_PATTERN_LENGTH,
+    min_frequency: int = MIN_FREQUENCY,
 ) -> tuple[Counter, dict[str, set[str]]]:
     """
     Pass 2: Extend surviving 8-grams to full-length patterns.
@@ -214,7 +215,7 @@ def ngram_pass2(
 
         # Periodic pruning
         if file_idx > 0 and file_idx % PASS2_PRUNE_INTERVAL == 0:
-            cutoff = max(3, file_idx // 1000)
+            cutoff = min(min_frequency, max(3, file_idx // 1000))
             before = len(pattern_counter)
             pruned_keys = {k for k, v in pattern_counter.items() if v < cutoff}
             for k in pruned_keys:
@@ -316,6 +317,7 @@ def mine_ngram_patterns(
     pattern_counter, pattern_repos = ngram_pass2(
         corpus_dir, survivors, file_to_repo, exclude_set,
         max_files, file_extension=lang.file_extension, max_length=max_pattern_length,
+        min_frequency=min_frequency,
     )
 
     print("N-gram mining: Filtering and scoring...")
