@@ -153,7 +153,7 @@ def ngram_pass1(
 
         # Periodic pruning to control memory
         if file_idx > 0 and file_idx % PASS1_PRUNE_INTERVAL == 0:
-            cutoff = max(2, file_idx // (PASS1_PRUNE_INTERVAL // 2))
+            cutoff = min(pass1_threshold, max(2, file_idx // (PASS1_PRUNE_INTERVAL // 2)))
             before = len(counter)
             counter = Counter({k: v for k, v in counter.items() if v >= cutoff})
             pruned = before - len(counter)
