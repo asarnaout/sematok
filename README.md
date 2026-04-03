@@ -38,10 +38,6 @@ pip install tree-sitter tree-sitter-c-sharp tree-sitter-python tree-sitter-java 
 pip install transformers torch unsloth peft bitsandbytes accelerate datasets
 ```
 
-All training commands accept `--model` to specify any HuggingFace model. The default is `Qwen/Qwen2.5-Coder-1.5B-Instruct`. Token Distillation and LoRA target modules assume a LLaMA-family architecture (`model.model.layers`, `model.model.embed_tokens`). This covers Qwen, Mistral, LLaMA, and most recent open-weight code models.
-
-Use `--target-modules` in the fine-tuning step to override LoRA targets for non-standard architectures.
-
 ### Step 1: Download Corpus
 
 ```bash
@@ -125,7 +121,7 @@ python -m training.fine_tune \
     --output models/sematok-finetuned
 ```
 
-LoRA continued pre-training (CLM). QLoRA 4-bit, rank 16, 1 epoch.
+LoRA continued pre-training (CLM). QLoRA 4-bit, rank 16, 1 epoch. LoRA targets assume a LLaMA-family architecture (Qwen, Mistral, LLaMA). Use `--target-modules` to override for non-standard architectures.
 
 ### Step 7: Evaluate
 
