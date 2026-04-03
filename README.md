@@ -138,12 +138,23 @@ selects quality thresholds:
 - **`--min-repos`** defaults to 2 (filters single-repo patterns). Override
   with `--auto --min-repos 3` if needed.
 - **`--max-entries`** is not auto-selected (it's a training capacity
-  constraint). Pass `--max-entries N` to cap dictionary size if the
-  surviving entry count is too high for your model.
+  constraint — depends on your model size and training budget).
 
-A scores sidecar is saved alongside the dictionary, allowing you to
-adjust `--min-files` or `--max-entries` later via `--refilter` without
-re-mining. For details and full manual control over all thresholds, see
+If the dictionary has too many entries for your model, trim it instantly
+without re-mining:
+
+```bash
+python -m sematok.mining \
+    --refilter sematok/languages/csharp/dictionary_scores.json \
+    --output sematok/languages/csharp/dictionary.json \
+    --language csharp \
+    --max-entries 800
+```
+
+This uses scoring data saved during `--auto` to keep only the top N
+entries by impact. You can also raise `--min-files` to be more selective.
+
+For full manual control over all thresholds, see
 [Manual Mining Workflow](docs/manual-mining.md).
 
 ### Step 3: Measure Compression
