@@ -174,6 +174,12 @@ def normalize_candidate(
         if "{}{" in template.replace(" ", "").replace("\t", ""):
             pass  # This check is handled by the regex compilation failing
 
+    # Reject pure-placeholder templates (need at least one literal keyword/type)
+    without_placeholders = re.sub(r"\{\d+\}", "", template)
+    without_punctuation = re.sub(r"[^a-zA-Z]", "", without_placeholders)
+    if len(without_punctuation) < 2:
+        return None
+
     return template, unique_args
 
 
