@@ -68,6 +68,35 @@ It uses a two-pass Apriori-pruned approach to stay memory-efficient:
 
 **Pass 2: Extension.** Revisit the corpus. At every position where a surviving 8-gram starts, try extending it to longer lengths (up to 120 characters), stopping at word boundaries. Count the resulting full-length patterns.
 
+Example -- given this line in a source file:
+
+```
+using System.Collections.Generic;
+```
+
+Pass 1 extracts 8-grams at word boundaries:
+
+```
+using Sy  ← position 0 (start of line = word boundary)
+System.C  ← position 6 (prev char is space)
+Collecti  ← position 13 (prev char is '.')
+Generic;  ← position 25 (prev char is '.')
+```
+
+Suppose `using Sy` appears in 60,000+ files and survives the threshold. In pass 2, the pipeline revisits every position where `using Sy` starts and tries extending:
+
+```
+using Sy          (8 chars)
+using Sys         (9)
+...
+using System      (12, word boundary ✓)
+using System.     (13, word boundary ✓)
+...
+using System.Collections.Generic;   (33, word boundary ✓)
+```
+
+Each extension that lands on a word boundary is counted as a candidate. After pass 2, `using System.Collections.Generic;` has a file count and repo count, and enters the scoring pipeline like any other candidate.
+
 After pass 2, quality filters are applied:
 - Must not be a single identifier or pure whitespace
 - Must contain at least one punctuation/operator character
