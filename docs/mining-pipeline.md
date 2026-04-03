@@ -24,7 +24,13 @@ There is also a regex-guided template channel, but in practice the AST channel d
 
 Before any mining happens, every source file is parsed with tree-sitter. The parser identifies **unsafe regions** -- string literals, comments, and character literals -- where compression would be destructive. Everything outside those regions is a **safe zone**.
 
-All four mining channels operate exclusively within safe zones. This means no pattern will ever match inside a string literal or comment (unless the language config explicitly marks certain comment types as safe, like C# XML doc comments `///`).
+This matters because boilerplate patterns can appear inside strings without being boilerplate:
+
+```csharp
+var example = "{ get; set; }";   // without safe zones, this becomes: var example = "<|M004|>";
+```
+
+All four mining channels operate exclusively within safe zones. No pattern will ever be discovered in or applied to a string literal or comment.
 
 ## Channel 1: Seed Patterns
 
