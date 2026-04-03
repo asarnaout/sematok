@@ -107,40 +107,62 @@ The regex and n-gram results are merged (union, deduplicated) before being added
 
 ## Channel 4: AST Subtree Mining (Templates)
 
-This is the most powerful channel. It discovers **parameterized patterns** -- boilerplate where the structure is fixed but identifiers vary.
-
-For example, these three lines are all instances of the same pattern:
+This channel discovers **parameterized patterns** -- boilerplate where the structure is fixed but identifiers vary. For example, these three lines are all instances of the same pattern:
 
 ```csharp
-this._logger = logger;
-this._options = options;
-this._context = context;
+this.bar = bar;
+this.logger = logger;
+this.name = name;
 ```
 
-The AST channel discovers the template `this.{0} = {0};` that captures all of them.
+Here's how the AST channel discovers the template that captures all of them.
 
-### How it works
+### Step 1: Parse and walk the tree
 
-1. **Parse every file** with tree-sitter to get a full AST
-2. **Walk the tree** looking for nodes at configured root types (e.g., `expression_statement`, `return_statement`, `local_declaration_statement`). These are the kinds of AST nodes that tend to contain boilerplate.
-3. **For each candidate subtree**, check:
-   - Is it within a safe zone?
-   - Is the source text between 8 and 200 characters?
-   - Is the tree depth between 2 and 6 levels? (Too shallow = trivial, too deep = overly specific)
-4. **Normalize identifiers** within the subtree. This is the core insight: tree-sitter tells us the role of each identifier via its parent node type.
+Tree-sitter parses `this.bar = bar;` into an AST:
 
-### Identifier normalization
+```
+expression_statement                  ← configured as a subtree root type
+└── assignment_expression
+    ├── member_access_expression
+    │   ├── this
+    │   └── identifier: "bar"         ← parent is member_access
+    └── identifier: "bar"             ← parent is assignment
+```
 
-Not all identifiers should become slots. The language config defines three categories:
+The pipeline walks the full AST looking for nodes at configured root types (e.g., `expression_statement`, `return_statement`). When it finds one, it extracts the subtree.
 
-- **Fixed parent types** -- the identifier defines the pattern's structure (e.g., class names, method names, type names). These stay as literal text.
-- **Normalize parent types** -- the identifier is a user-chosen name (e.g., variable assignments, arguments, field accesses). These become `{0}`, `{1}`, etc.
-- **Structural names** -- well-known identifiers that should never be normalized regardless of context (e.g., `string`, `int`, `var`, `null`, `Task`).
+### Step 2: Decide which identifiers to normalize
 
-When the same identifier appears multiple times in a subtree, it gets the same slot index. This enables patterns like `this.{0} = {0};` where the field name and the parameter name must match.
+Not every identifier should become a slot. Tree-sitter tells us the **role** of each identifier through its parent node type. The language config classifies parent types into two categories:
 
-5. **Count frequency** across the corpus (deduplicated per file, tracked per repo)
-6. **Filter and score** -- same thresholds as other channels: minimum frequency, repo diversity, token span
+- **Fixed** -- the identifier defines the pattern (type names, method names). Keep as literal text.
+- **Normalize** -- the identifier is a user-chosen name (variable assignments, arguments, field accesses). Replace with `{0}`, `{1}`, etc.
+
+Well-known names like `string`, `int`, `var`, `Task` are never normalized regardless of context.
+
+Applied to our example:
+
+```
+identifier: "bar"   parent: member_access   → normalize  → {0}
+identifier: "bar"   parent: assignment       → normalize  → {0} (same text = same slot)
+```
+
+### Step 3: Build the template
+
+Replace normalized identifiers with their slots:
+
+```
+this.bar = bar;      → this.{0} = {0};
+this.logger = logger;  → this.{0} = {0};
+this.name = name;      → this.{0} = {0};
+```
+
+All three lines collapse to the same template. At compression time, `this.logger = logger;` becomes `<|T00001:logger|>`.
+
+### Step 4: Count and filter
+
+Templates are counted across the corpus (deduplicated per file, tracked per repo) and filtered by the same thresholds as other channels: minimum frequency, repo diversity, and BPE token span.
 
 ## Scoring Phase
 
