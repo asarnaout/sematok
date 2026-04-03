@@ -265,7 +265,11 @@ def _score_on_corpus(
     for f in tqdm(files, desc="Scoring"):
         repo = file_to_repo.get(f.name, "unknown")
         repo_total_files[repo] += 1
-        source = f.read_text(encoding="utf-8", errors="replace")
+        try:
+            source = f.read_text(encoding="utf-8", errors="replace")
+        except Exception:
+            repo_total_files[repo] -= 1
+            continue
         try:
             safe_ranges = get_safe_ranges(source)
         except Exception:
