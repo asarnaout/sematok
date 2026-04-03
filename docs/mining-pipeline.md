@@ -142,12 +142,6 @@ When the same identifier appears multiple times in a subtree, it gets the same s
 5. **Count frequency** across the corpus (deduplicated per file, tracked per repo)
 6. **Filter and score** -- same thresholds as other channels: minimum frequency, repo diversity, token span
 
-### Why AST over regex for templates?
-
-Regex-guided template mining also exists (it runs candidate regexes and then normalizes the matches). But it can only find templates within patterns that a regex already matches. The AST channel needs no regexes -- it walks the tree structurally, so it discovers patterns that no human anticipated.
-
-In practice, the AST channel produces the vast majority of templates. For C#, the regex template channel found 7 templates from 1,702 candidates while the AST channel found 172 in the final dictionary.
-
 ## Scoring Phase
 
 After all four channels have contributed candidates, the pipeline enters the scoring phase. This is the most computationally expensive step.
