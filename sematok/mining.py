@@ -456,6 +456,23 @@ def _rebuild_top_n(
     return new_d
 
 
+def _auto_select_min_files(
+    scores: dict[str, float],
+    file_counts: dict[str, int],
+) -> int:
+    """Find the highest --min-files threshold retaining >=90% of total impact."""
+    total_impact = sum(scores.values())
+    if total_impact == 0:
+        return 0
+    thresholds = [0, 10, 50, 100, 200, 500, 1000, 2000, 5000]
+    best = 0
+    for t in thresholds:
+        impact = sum(s for m, s in scores.items() if file_counts.get(m, 0) >= t)
+        if impact / total_impact >= 0.90:
+            best = t
+    return best
+
+
 def _save_scores(
     d: CompressionDictionary,
     scores: dict[str, float],
@@ -563,6 +580,7 @@ def build_mined_dictionary(
     max_entries: int = 999,
     tokenizer_name: str = DEFAULT_TOKENIZER,
     scores_output_path: str | None = None,
+    auto_min_files: bool = False,
 ) -> tuple[CompressionDictionary, list[tuple[str, int, int, float, int]]]:
     """
     Build a compression dictionary by mining broadly, then scoring and trimming.
@@ -572,6 +590,9 @@ def build_mined_dictionary(
        with generous internal limits
     2. Score every entry by actual corpus impact on a file sample
     3. Keep entries that pass --min-files, --min-repos, and --max-entries filters
+
+    If auto_min_files=True, --min-files is auto-selected from the scoring
+    data (highest threshold retaining >=90% of total impact).
 
     Dictionary size is determined by the quality filters. An optional
     --max-entries cap limits the total count. The 5-digit macro ID format
@@ -673,7 +694,7 @@ def build_mined_dictionary(
     print(f"\nTotal candidates before scoring: {total_before} ({d.size} exact + {d.template_count} templates)")
 
     # --- Phase 2: Score on corpus and trim ---
-    needs_trim = min_file_count > 0 or min_repos > 0 or max_entries > 0
+    needs_trim = min_file_count > 0 or min_repos > 0 or max_entries > 0 or auto_min_files
     if needs_trim:
         scores, file_counts, repo_counts = _score_on_corpus(
             d, corpus_dir, exclude_repos=exclude_repos,
@@ -683,6 +704,17 @@ def build_mined_dictionary(
         # Save scoring data so we can re-filter without re-mining
         if scores_output_path:
             _save_scores(d, scores, file_counts, repo_counts, scores_output_path)
+
+        # Auto-select --min-files if requested
+        if auto_min_files:
+            min_file_count = _auto_select_min_files(scores, file_counts)
+            # Calculate stats for the auto-selected threshold
+            surviving = sum(1 for m in scores if file_counts.get(m, 0) >= min_file_count)
+            total_impact = sum(scores.values())
+            retained_impact = sum(s for m, s in scores.items() if file_counts.get(m, 0) >= min_file_count)
+            pct = retained_impact / total_impact * 100 if total_impact > 0 else 0
+            print(f"\nAuto-selected --min-files={min_file_count} "
+                  f"(retains {pct:.1f}% of impact, {surviving} entries)")
 
         d = _rebuild_top_n(d, scores, file_counts, min_file_count=min_file_count,
                            repo_counts=repo_counts, min_repo_count=min_repos,
@@ -720,6 +752,9 @@ def main():
     parser.add_argument("--refilter", type=str, default=None, metavar="SCORES_JSON",
                         help="Re-filter from saved scoring data instead of mining "
                              "(only --min-files, --max-entries, and --output are used)")
+    parser.add_argument("--auto", action="store_true",
+                        help="Auto-select --min-files from corpus data. "
+                             "Uses --min-repos 2 by default (override with --min-repos).")
     args = parser.parse_args()
 
     if args.refilter:
@@ -733,10 +768,29 @@ def main():
                  max_entries=args.max_entries)
         return
 
+    # In auto mode: default min-repos to 2, force scoring, auto-derive scores path
+    if args.auto:
+        import sys
+        min_repos = args.min_repos if "--min-repos" in sys.argv else 2
+        min_files = 1  # force scoring; auto-selection overrides this
+        scores_output = args.scores_output
+        if not scores_output:
+            from sematok.languages import get_dictionary_path
+            output_path = args.output
+            if output_path is None:
+                lang_dict = get_dictionary_path(args.language)
+                output_path = str(lang_dict) if lang_dict else f"sematok/languages/{args.language}/dictionary.json"
+            base = output_path.rsplit(".", 1)[0]
+            scores_output = f"{base}_scores.json"
+    else:
+        min_repos = args.min_repos
+        min_files = args.min_files
+        scores_output = args.scores_output
+
     d, mined = build_mined_dictionary(
         Path(args.corpus),
         include_seeds=not args.no_seeds,
-        min_repos=args.min_repos,
+        min_repos=min_repos,
         max_files=args.max_files,
         exclude_repos=args.exclude_repos,
         use_ngrams=not args.no_ngrams,
@@ -744,11 +798,12 @@ def main():
         max_templates=args.max_templates,
         use_ast_templates=not args.no_ast_templates,
         max_ast_templates=args.max_ast_templates,
-        min_file_count=args.min_files,
+        min_file_count=min_files,
         max_entries=args.max_entries,
         language=args.language,
         tokenizer_name=args.tokenizer,
-        scores_output_path=args.scores_output,
+        scores_output_path=scores_output,
+        auto_min_files=args.auto,
     )
 
     from sematok.languages import get_dictionary_path

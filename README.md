@@ -126,88 +126,35 @@ python -m data.download --language csharp
 
 ### Step 2: Mine Dictionary
 
-Mining produces a dictionary of boilerplate patterns. Three parameters
-control what ends up in the final dictionary:
+```bash
+python -m sematok.mining --corpus data/raw_csharp --language csharp --auto
+```
 
-- **`--min-files`** — minimum number of files a pattern must appear in
-  (filters rare patterns)
-- **`--min-repos`** — minimum number of repos a pattern must appear in
-  (filters project-specific patterns). Affects mining, so changing it
-  requires a full re-mine.
-- **`--max-entries`** — hard cap on dictionary size (limits how many new
-  tokens the model needs to learn). Unlike the other two, this is a
-  training capacity constraint, not a quality filter.
+`--auto` mines the full corpus, scores every candidate, and automatically
+selects quality thresholds:
 
-All three values are derived from the data, not guessed upfront.
+- **`--min-files`** is auto-selected (highest threshold retaining ≥90% of
+  total compression impact)
+- **`--min-repos`** defaults to 2 (filters single-repo patterns). Override
+  with `--auto --min-repos 3` if needed.
+- **`--max-entries`** is not auto-selected (it's a training capacity
+  constraint). Pass `--max-entries N` to cap dictionary size if the
+  surviving entry count is too high for your model.
 
-#### Step 2a: Analysis mine
-
-Run a full mine with relaxed thresholds. This mines broadly and scores
-every candidate against the full corpus. Use `--scores-output` to save
-the scoring data for later re-filtering:
+The command saves a scores sidecar alongside the dictionary. To adjust
+`--min-files` or `--max-entries` after mining without re-running:
 
 ```bash
 python -m sematok.mining \
-    --corpus data/raw_csharp \
-    --language csharp \
-    --output out/analysis_csharp.json \
-    --min-files 1 \
-    --min-repos 0 \
-    --max-entries 0 \
-    --scores-output out/analysis_csharp_scores.json
-```
-
-This is the slow step (hours). It produces:
-- `out/analysis_csharp.json` — unfiltered dictionary with all candidates
-- `out/analysis_csharp_scores.json` — per-entry scores, file counts, and
-  repo counts (used by `--refilter` to avoid re-mining)
-- A `--min-files threshold analysis` table printed to stdout (shows how
-  many entries and what % of impact survives at each threshold)
-
-#### Step 2b: Choose `--min-repos`
-
-Run `repo_distribution` on the analysis dictionary. This shows how many
-entries survive at each `--min-repos` threshold:
-
-```bash
-python -m sematok.repo_distribution \
-    --language csharp \
-    --corpus data/raw_csharp \
-    --dictionary out/analysis_csharp.json
-```
-
-#### Step 2c: Final mine
-
-Mine the final dictionary with your chosen `--min-files` and `--min-repos`:
-
-```bash
-python -m sematok.mining \
-    --corpus data/raw_csharp \
-    --language csharp \
-    --output sematok/languages/csharp/dictionary.json \
-    --min-files <chosen> \
-    --min-repos <chosen>
-```
-
-Check how many entries survived. If the count is too high for training,
-add `--max-entries N` to cap it, or raise `--min-files`.
-
-#### Re-filtering without re-mining
-
-After a full mine, you can adjust `--min-files` and `--max-entries`
-instantly using saved scoring data (no re-mining or re-scoring needed):
-
-```bash
-python -m sematok.mining \
-    --refilter out/analysis_csharp_scores.json \
+    --refilter sematok/languages/csharp/dictionary_scores.json \
     --output sematok/languages/csharp/dictionary.json \
     --language csharp \
     --min-files <new_value> \
     --max-entries <new_value>
 ```
 
-Note: `--min-repos` cannot be changed via `--refilter` because it affects
-the mining phase. Changing it requires a full re-mine.
+For full manual control over all thresholds, see
+[Manual Mining Workflow](docs/manual-mining.md).
 
 ### Step 3: Measure Compression
 
@@ -382,6 +329,10 @@ tests/                      # 96 tests
 ```bash
 pytest
 ```
+
+## Additional Documentation
+
+- [Manual Mining Workflow](docs/manual-mining.md) — Step-by-step mining with full control over `--min-files`, `--min-repos`, and `--max-entries`
 
 ## Prior Art
 
