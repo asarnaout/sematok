@@ -29,7 +29,31 @@ Every language has boilerplate -- access modifiers, import statements, type anno
 | Go | `sematok/languages/go/dictionary.json` |
 | *Your language* | [Add it](docs/adding-a-language.md) |
 
+## Usage
+
+Sematok wraps your LLM calls with a compress/decompress layer -- the same kind of pre/post-processing that RAG, tool use, and prompt caching already do in production LLM pipelines.
+
+```python
+from sematok import Compressor, Decompressor, CompressionDictionary, get_language, get_dictionary_path
+
+lang = get_language("csharp")
+dictionary = CompressionDictionary.load(get_dictionary_path("csharp"), language=lang.name)
+compressor = Compressor(dictionary, lang)
+decompressor = Decompressor(dictionary)
+
+# Before calling your fine-tuned model: compress code to save tokens
+compressed_code = compressor.compress(user_code)
+response = llm.generate(f"{user_instruction}\n```csharp\n{compressed_code}\n```")
+
+# After: expand macros back to normal code (lossless)
+final = decompressor.decompress(response)
+```
+
+The model sees fewer tokens in and generates fewer tokens out. The end user never sees macros.
+
 ## Training a Model
+
+Training teaches a model to understand macro tokens so it can generate compressed code at inference time. If you only need compression/decompression as a pre/post-processing step, skip this section entirely.
 
 Install dependencies:
 
@@ -44,7 +68,9 @@ pip install transformers torch unsloth peft bitsandbytes accelerate datasets
 python -m data.download --language csharp
 ```
 
-### Step 2: Mine Dictionary
+### Step 2: Mine Dictionary (optional)
+
+Skip this step if you are using the shipped dictionaries. Only run this if you want to mine a custom dictionary from your own corpus.
 
 ```bash
 python -m sematok.mining --corpus data/raw_csharp --language csharp --auto
@@ -99,7 +125,7 @@ python -m training.expand_tokenizer \
     --language csharp
 ```
 
-Adds macro tokens and initializes embeddings via Token Distillation ([arXiv:2505.20133](https://arxiv.org/abs/2505.20133)). Use `--no-distill` for faster mean-of-expansion initialization.
+Adds macro tokens to the model's vocabulary and initializes their embeddings via Token Distillation ([arXiv:2505.20133](https://arxiv.org/abs/2505.20133)). Works with any HuggingFace model -- pass `--model` to use a different base. Use `--no-distill` for faster mean-of-expansion initialization.
 
 ### Step 4.5: Embedding Warmup
 
