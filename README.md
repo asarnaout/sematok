@@ -68,6 +68,12 @@ pip install transformers torch unsloth peft bitsandbytes accelerate datasets
 python -m data.download --language csharp
 ```
 
+Or download all supported languages at once:
+
+```bash
+bash data/download_all.sh
+```
+
 ### Step 2: Mine Dictionary (optional)
 
 Skip this step if you are using the shipped dictionaries. Only run this if you want to mine a custom dictionary from your own corpus.

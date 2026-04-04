@@ -13,6 +13,7 @@ import argparse
 import json
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 from tqdm import tqdm
@@ -29,11 +30,17 @@ def clone_repo(org: str, name: str, repos_dir: Path) -> Path:
 
     url = f"https://github.com/{org}/{name}.git"
     print(f"  {org}/{name}: cloning (shallow)...")
-    subprocess.run(
-        ["git", "clone", "--depth", "1", url, str(repo_dir)],
-        check=True,
-        capture_output=True,
-    )
+    try:
+        subprocess.run(
+            ["git", "clone", "--depth", "1", url, str(repo_dir)],
+            check=True,
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError:
+        # Remove partial clone so retries actually retry
+        if repo_dir.exists():
+            shutil.rmtree(repo_dir, ignore_errors=True)
+        raise
     return repo_dir
 
 
@@ -54,6 +61,9 @@ def extract_source_files(
     Only processes repos in *designated_repos* (``"org--name"`` format).
     Filters by length, skips auto-generated files, and renames to sequential numbering.
     """
+    # Clear any previous extraction to prevent stale files
+    if output_dir.exists():
+        shutil.rmtree(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     meta_path = output_dir / "metadata.jsonl"
 
@@ -139,15 +149,31 @@ def main():
 
     # Step 1: Clone repos
     print("Cloning repositories...")
+    failed_repos = []
     for org, name in lang.repos:
         try:
             clone_repo(org, name, repos_dir)
         except subprocess.CalledProcessError as e:
             print(f"  {org}/{name}: FAILED to clone ({e})")
+            failed_repos.append(f"{org}/{name}")
             continue
 
-    # Step 2: Extract source files (only from this language's repos)
+    # Step 1.5: Verify all designated repos were cloned
     designated = {f"{org}--{name}" for org, name in lang.repos}
+    missing = [d for d in sorted(designated) if not (repos_dir / d).exists()]
+    if missing:
+        print(f"\nERROR: {len(missing)} designated repos are missing from {repos_dir}:")
+        for m in missing:
+            print(f"  - {m}")
+        print("Aborting extraction. Fix clone failures and re-run.")
+        sys.exit(1)
+
+    if failed_repos:
+        # All repos exist (maybe from a previous run) but some failed this time
+        print(f"\nWARNING: {len(failed_repos)} repos failed to clone this run "
+              f"(using previously cloned copies): {', '.join(failed_repos)}")
+
+    # Step 2: Extract source files (only from this language's repos)
     extensions = lang.source_extensions or [lang.file_extension]
     ext_label = "/".join(extensions)
     print(f"\nExtracting {ext_label} files from {len(designated)} designated repos...")
@@ -163,8 +189,19 @@ def main():
         designated_repos=designated,
     )
 
-    # Step 3: Summary
+    # Step 3: Verify extraction integrity
     output_dir = Path(output_path)
+    meta_path = output_dir / "metadata.jsonl"
+    file_count = len(list(output_dir.glob(f"*{lang.file_extension}")))
+    meta_count = sum(1 for _ in open(meta_path, encoding="utf-8")) if meta_path.exists() else 0
+    if file_count != meta_count:
+        print(f"\nERROR: Integrity mismatch! {file_count} source files but {meta_count} metadata entries.")
+        sys.exit(1)
+    if file_count != count:
+        print(f"\nERROR: Integrity mismatch! extract returned {count} but {file_count} files on disk.")
+        sys.exit(1)
+
+    # Step 4: Summary
     total_size = sum(f.stat().st_size for f in output_dir.glob(f"*{lang.file_extension}"))
     print(f"\nDone. {count} {lang.name} files ({total_size / 1024 / 1024:.1f} MB) saved to {output_dir}")
     print("License: permissive (MIT, Apache-2.0, or BSD-3-Clause)")
