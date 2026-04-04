@@ -147,16 +147,22 @@ def main():
     repos_dir = Path(args.repos_dir)
     repos_dir.mkdir(parents=True, exist_ok=True)
 
-    # Step 1: Clone repos
+    # Step 1: Clone repos (2 attempts per repo)
     print("Cloning repositories...")
     failed_repos = []
     for org, name in lang.repos:
-        try:
-            clone_repo(org, name, repos_dir)
-        except subprocess.CalledProcessError as e:
-            print(f"  {org}/{name}: FAILED to clone ({e})")
-            failed_repos.append(f"{org}/{name}")
-            continue
+        success = False
+        for attempt in range(1, 3):
+            try:
+                clone_repo(org, name, repos_dir)
+                success = True
+                break
+            except subprocess.CalledProcessError as e:
+                if attempt == 1:
+                    print(f"  {org}/{name}: attempt 1 failed, retrying...")
+                else:
+                    print(f"  {org}/{name}: FAILED after 2 attempts ({e})")
+                    failed_repos.append(f"{org}/{name}")
 
     # Step 1.5: Verify all designated repos were cloned
     designated = {f"{org}--{name}" for org, name in lang.repos}
