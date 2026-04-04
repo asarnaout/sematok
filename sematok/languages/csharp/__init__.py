@@ -350,6 +350,8 @@ SKIP_PATH_PATTERNS = [
     ".designer.cs",
     "assemblyinfo.cs",
     "globalassemblyinfo",
+    ".g.cs",
+    ".pb.cs",
 ]
 
 # ---------------------------------------------------------------------------

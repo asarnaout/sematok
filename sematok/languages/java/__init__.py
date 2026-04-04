@@ -457,6 +457,8 @@ SKIP_PATH_PATTERNS = [
     "/generated-test-sources/",
     "module-info.java",
     "package-info.java",
+    ".pb.java",
+    ".grpc.pb.java",
 ]
 
 # ---------------------------------------------------------------------------

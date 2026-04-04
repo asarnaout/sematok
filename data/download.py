@@ -138,7 +138,7 @@ def main():
     parser.add_argument("--repos-dir", type=str, default="data/repos", help="Where to clone repos")
     parser.add_argument("--max-files", type=int, default=None, help="Max files to extract")
     parser.add_argument("--min-length", type=int, default=100)
-    parser.add_argument("--max-length", type=int, default=50000)
+    parser.add_argument("--max-length", type=int, default=1000000)
     parser.add_argument("--language", type=str, required=True, help="Language config to use (e.g. csharp, python)")
     args = parser.parse_args()
 

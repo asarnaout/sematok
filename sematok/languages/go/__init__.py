@@ -381,6 +381,8 @@ SKIP_PATH_PATTERNS = [
     "/testdata/",          # test fixture data (non-Go files)
     "/third_party/",
     "zz_generated",        # Kubernetes-style generated
+    "_cgo_",               # cgo generated
+    "sqlc/",               # sqlc generated query wrappers
 ]
 
 # ---------------------------------------------------------------------------

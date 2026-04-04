@@ -444,6 +444,7 @@ SKIP_PATH_PATTERNS = [
     "/migrations/",
     "_pb2.py",
     "_pb2_grpc.py",
+    "_pb2_grpc_aio.py",
     "/vendored/",
     "/vendor/",
     "setup.py",
