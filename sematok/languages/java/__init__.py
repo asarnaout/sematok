@@ -522,6 +522,18 @@ REPOS = [
     ("jhy", "jsoup"),                             # MIT
     ("redisson", "redisson"),                     # Apache-2.0
     ("google", "guice"),                          # Apache-2.0
+    # --- HTTP clients (2) ---
+    ("square", "okhttp"),                         # Apache-2.0
+    ("square", "retrofit"),                       # Apache-2.0
+    # --- Document processing (2) ---
+    ("apache", "poi"),                            # Apache-2.0
+    ("apache", "pdfbox"),                         # Apache-2.0
+    # --- Database migrations (1) ---
+    ("flyway", "flyway"),                         # Apache-2.0
+    # --- Job scheduling (1) ---
+    ("quartz-scheduler", "quartz"),               # Apache-2.0
+    # --- Search (1) ---
+    ("apache", "lucene"),                         # Apache-2.0
     # --- Code generation / annotation processing (3) ---
     ("mapstruct", "mapstruct"),                   # Apache-2.0
     ("google", "auto"),                           # Apache-2.0

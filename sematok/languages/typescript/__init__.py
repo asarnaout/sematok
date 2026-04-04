@@ -453,11 +453,13 @@ REPOS = [
     ("MichalLytek", "type-graphql"),              # MIT          | GraphQL schema builder
     ("ReactiveX", "rxjs"),                        # Apache-2.0   | Reactive programming
 
-    # --- UI component libraries (4) ---
+    # --- UI component libraries (6) ---
     ("ant-design", "ant-design"),                 # MIT          | Enterprise React UI
     ("mui", "material-ui"),                       # MIT          | Material Design React
     ("storybookjs", "storybook"),                 # MIT          | Component dev environment
     ("xyflow", "xyflow"),                         # MIT          | React Flow / node-based UI
+    ("mantinedev", "mantine"),                    # MIT          | Modern component library
+    ("styled-components", "styled-components"),   # MIT          | CSS-in-JS styling
 
     # --- Developer tools (5) ---
     ("microsoft", "TypeScript"),                  # Apache-2.0   | TypeScript compiler
@@ -478,6 +480,32 @@ REPOS = [
     ("gcanti", "fp-ts"),                          # MIT          | Functional programming
     ("gcanti", "io-ts"),                          # MIT          | Runtime type validation
     ("vercel", "swr"),                            # MIT          | Stale-while-revalidate
+
+    # --- Rich text editors (3) ---
+    ("facebook", "lexical"),                      # MIT          | Meta's rich text framework
+    ("ueberdosis", "tiptap"),                     # MIT          | ProseMirror wrapper
+    ("ianstormtaylor", "slate"),                  # MIT          | Customizable rich text
+
+    # --- Animation (1) ---
+    ("framer", "motion"),                         # MIT          | React animation library
+
+    # --- Data tables (1) ---
+    ("TanStack", "table"),                        # MIT          | Headless table/data grid
+
+    # --- Drag & drop (1) ---
+    ("clauderic", "dnd-kit"),                     # MIT          | Modern DnD toolkit
+
+    # --- Charting (1) ---
+    ("recharts", "recharts"),                     # MIT          | React charting library
+
+    # --- CMS (1) ---
+    ("payloadcms", "payload"),                    # MIT          | Headless CMS framework
+
+    # --- Email (1) ---
+    ("resend", "react-email"),                    # MIT          | Email template components
+
+    # --- i18n (1) ---
+    ("formatjs", "formatjs"),                     # BSD-3-Clause | Internationalization
 
     # --- Auth (2) ---
     ("nextauthjs", "next-auth"),                  # MIT          | Auth for Next.js

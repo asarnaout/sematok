@@ -411,6 +411,15 @@ REPOS = [
     ("VerifyTests", "Verify"),
     ("dotnet", "BenchmarkDotNet"),
     ("bchavez", "Bogus"),
+    # --- HTTP clients ---
+    ("reactiveui", "Refit"),                    # MIT
+    # --- Background jobs ---
+    ("quartznet", "quartznet"),                 # Apache-2.0
+    # --- Email ---
+    ("jstedfast", "MailKit"),                   # MIT
+    # --- Data import/export ---
+    ("JoshClose", "CsvHelper"),                 # MS-PL / Apache-2.0
+    ("ClosedXML", "ClosedXML"),                 # MIT
     # --- Libraries & utilities ---
     ("autofac", "Autofac"),
     ("FluentValidation", "FluentValidation"),   # Apache-2.0
