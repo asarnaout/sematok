@@ -46,10 +46,12 @@ def extract_source_files(
     max_length: int = 50000,
     max_files: int | None = None,
     skip_path_patterns: list[str] | None = None,
+    designated_repos: set[str] | None = None,
 ) -> int:
     """
-    Walk all cloned repos and copy source files to the output directory.
+    Walk cloned repos and copy source files to the output directory.
 
+    Only processes repos in *designated_repos* (``"org--name"`` format).
     Filters by length, skips auto-generated files, and renames to sequential numbering.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -61,6 +63,10 @@ def extract_source_files(
     with open(meta_path, "w", encoding="utf-8") as meta_f:
         for repo_dir in sorted(repos_dir.iterdir()):
             if not repo_dir.is_dir():
+                continue
+
+            # Only extract from repos designated for this language
+            if designated_repos is not None and repo_dir.name not in designated_repos:
                 continue
 
             repo_name = repo_dir.name
@@ -140,10 +146,11 @@ def main():
             print(f"  {org}/{name}: FAILED to clone ({e})")
             continue
 
-    # Step 2: Extract source files
+    # Step 2: Extract source files (only from this language's repos)
+    designated = {f"{org}--{name}" for org, name in lang.repos}
     extensions = lang.source_extensions or [lang.file_extension]
     ext_label = "/".join(extensions)
-    print(f"\nExtracting {ext_label} files...")
+    print(f"\nExtracting {ext_label} files from {len(designated)} designated repos...")
     count = extract_source_files(
         repos_dir,
         Path(output_path),
@@ -153,6 +160,7 @@ def main():
         max_length=args.max_length,
         max_files=args.max_files,
         skip_path_patterns=lang.skip_path_patterns,
+        designated_repos=designated,
     )
 
     # Step 3: Summary

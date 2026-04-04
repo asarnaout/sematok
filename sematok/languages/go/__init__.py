@@ -388,70 +388,107 @@ SKIP_PATH_PATTERNS = [
 # ---------------------------------------------------------------------------
 
 REPOS = [
-    # --- Web frameworks & HTTP routers (4) ---
+    # --- Web frameworks & HTTP routers (5) ---
     ("gin-gonic", "gin"),                     # MIT          | Most popular Go web framework
     ("gofiber", "fiber"),                     # MIT          | Express-inspired, fasthttp-based
     ("labstack", "echo"),                     # MIT          | High-perf minimalist framework
     ("go-chi", "chi"),                        # MIT          | Lightweight idiomatic router
+    ("gorilla", "mux"),                       # BSD-3-Clause | Classic HTTP router
 
-    # --- API & microservices (5) ---
+    # --- API & microservices (8) ---
     ("grpc", "grpc-go"),                      # Apache-2.0   | gRPC for Go
     ("go-kit", "kit"),                        # MIT          | Microservices toolkit
     ("go-kratos", "kratos"),                  # MIT          | Microservice framework (Bilibili)
     ("zeromicro", "go-zero"),                 # MIT          | Cloud-native microservices
     ("twitchtv", "twirp"),                    # Apache-2.0   | Simple RPC framework (Twitch)
+    ("99designs", "gqlgen"),                  # MIT          | GraphQL framework
+    ("go-swagger", "go-swagger"),             # Apache-2.0   | OpenAPI codegen & validation
+    ("grpc-ecosystem", "grpc-gateway"),       # BSD-3-Clause | gRPC/REST bridge
 
-    # --- Cloud infrastructure & DevOps (5) ---
+    # --- Cloud infrastructure & DevOps (7) ---
     ("prometheus", "prometheus"),             # Apache-2.0   | Monitoring & alerting
     ("prometheus", "client_golang"),          # Apache-2.0   | Prometheus client library
     ("argoproj", "argo-cd"),                  # Apache-2.0   | GitOps continuous delivery
     ("pulumi", "pulumi"),                     # Apache-2.0   | Infrastructure as code
     ("dapr", "dapr"),                         # Apache-2.0   | Distributed app runtime
+    ("crossplane", "crossplane"),             # Apache-2.0   | K8s-native cloud resources
+    ("cert-manager", "cert-manager"),         # Apache-2.0   | K8s certificate management
 
-    # --- Container & orchestration (4) ---
+    # --- Container & orchestration (7) ---
     ("moby", "moby"),                         # Apache-2.0   | Docker engine
     ("containerd", "containerd"),             # Apache-2.0   | Container runtime
     ("helm", "helm"),                         # Apache-2.0   | Kubernetes package manager
     ("derailed", "k9s"),                      # Apache-2.0   | Kubernetes TUI dashboard
+    ("docker", "cli"),                        # Apache-2.0   | Docker CLI
+    ("docker", "compose"),                    # Apache-2.0   | Docker Compose v2
+    ("containerd", "nerdctl"),                # Apache-2.0   | Docker-compatible CLI
 
-    # --- Database drivers & ORMs (5) ---
+    # --- Kubernetes tooling (4) ---
+    ("kubernetes", "client-go"),              # Apache-2.0   | Official K8s client library
+    ("GoogleContainerTools", "skaffold"),     # Apache-2.0   | K8s dev workflow
+    ("rancher", "rancher"),                   # Apache-2.0   | K8s multi-cluster management
+    ("nektos", "act"),                        # MIT          | Run GitHub Actions locally
+
+    # --- Database & storage (9) ---
     ("go-gorm", "gorm"),                      # MIT          | Most popular Go ORM
     ("jmoiron", "sqlx"),                      # MIT          | Extensions to database/sql
     ("jackc", "pgx"),                         # MIT          | PostgreSQL driver
     ("redis", "go-redis"),                    # BSD-2-Clause | Redis client
     ("ent", "ent"),                           # Apache-2.0   | Entity framework (Meta)
+    ("dgraph-io", "badger"),                  # Apache-2.0   | Embedded KV store
+    ("etcd-io", "bbolt"),                     # MIT          | B+tree KV store
+    ("cockroachdb", "pebble"),                # BSD-3-Clause | LSM storage engine
+    ("elastic", "go-elasticsearch"),          # Apache-2.0   | Elasticsearch client
 
-    # --- CLI tools & TUI frameworks (4) ---
+    # --- Distributed systems (3) ---
+    ("etcd-io", "etcd"),                      # Apache-2.0   | Distributed KV store
+    ("dgraph-io", "dgraph"),                  # Apache-2.0   | Distributed graph database
+    ("hyperledger", "fabric"),                # Apache-2.0   | Enterprise blockchain
+
+    # --- CLI tools & TUI frameworks (6) ---
     ("spf13", "cobra"),                       # Apache-2.0   | CLI framework
     ("spf13", "viper"),                       # MIT          | Configuration management
     ("charmbracelet", "bubbletea"),           # MIT          | TUI framework
     ("charmbracelet", "lipgloss"),            # MIT          | Terminal styling
+    ("cli", "cli"),                           # MIT          | GitHub CLI
+    ("jesseduffield", "lazygit"),             # MIT          | Git TUI
 
-    # --- Networking & proxies (4) ---
+    # --- Networking & proxies (7) ---
     ("caddyserver", "caddy"),                 # Apache-2.0   | HTTP/2 web server
     ("traefik", "traefik"),                   # MIT          | Cloud-native reverse proxy
     ("coredns", "coredns"),                   # Apache-2.0   | DNS server
     ("valyala", "fasthttp"),                  # MIT          | High-perf HTTP
+    ("quic-go", "quic-go"),                   # MIT          | QUIC/HTTP3 implementation
+    ("miekg", "dns"),                         # BSD-3-Clause | DNS library
+    ("go-resty", "resty"),                    # MIT          | HTTP client library
 
-    # --- Messaging & streaming (3) ---
+    # --- Messaging & streaming (4) ---
     ("nats-io", "nats-server"),               # Apache-2.0   | Cloud-native messaging
     ("nsqio", "nsq"),                         # MIT          | Realtime distributed messaging
     ("segmentio", "kafka-go"),                # MIT          | Kafka client
+    ("Shopify", "sarama"),                    # MIT          | Kafka client (original)
 
-    # --- Cryptography & security (3) ---
+    # --- Cryptography & security (5) ---
     ("FiloSottile", "age"),                   # BSD-3-Clause | Simple file encryption
     ("cloudflare", "cfssl"),                  # BSD-2-Clause | PKI/TLS toolkit
     ("smallstep", "certificates"),            # Apache-2.0   | Private CA / ACME server
+    ("gitleaks", "gitleaks"),                 # MIT          | Secret detection in code
+    ("casbin", "casbin"),                     # Apache-2.0   | Authorization library
 
-    # --- Testing & mocking (3) ---
+    # --- Testing & mocking (4) ---
     ("stretchr", "testify"),                  # MIT          | Test assertions & mocks
     ("onsi", "ginkgo"),                       # MIT          | BDD testing framework
     ("vektra", "mockery"),                    # BSD-3-Clause | Mock code generator
+    ("brianvoe", "gofakeit"),                 # MIT          | Fake data generator
 
-    # --- Logging & observability (3) ---
+    # --- Logging & observability (6) ---
     ("uber-go", "zap"),                       # MIT          | Structured logging
     ("sirupsen", "logrus"),                   # MIT          | Structured logging (classic)
+    ("rs", "zerolog"),                        # MIT          | Zero-allocation logging
     ("open-telemetry", "opentelemetry-go"),   # Apache-2.0   | Distributed tracing
+    ("open-telemetry", "opentelemetry-collector"),  # Apache-2.0 | Observability collector
+    ("jaegertracing", "jaeger"),              # Apache-2.0   | Distributed tracing
+    ("VictoriaMetrics", "VictoriaMetrics"),   # Apache-2.0   | Time-series database
 
     # --- Data structures & utilities (2) ---
     ("emirpasic", "gods"),                    # BSD-2-Clause | Go data structures
@@ -467,12 +504,30 @@ REPOS = [
     ("panjf2000", "ants"),                    # MIT          | Goroutine pool
     ("hibiken", "asynq"),                     # MIT          | Distributed task queue
 
-    # --- Build tools & code generation (2) ---
+    # --- Build tools & code generation (5) ---
     ("google", "wire"),                       # Apache-2.0   | Compile-time DI
     ("swaggo", "swag"),                       # MIT          | Swagger doc generator
+    ("goreleaser", "goreleaser"),             # MIT          | Build & release automation
+    ("sqlc-dev", "sqlc"),                     # MIT          | SQL-to-Go codegen
+    ("bufbuild", "buf"),                      # Apache-2.0   | Protobuf tooling
 
-    # --- Blockchain & distributed systems (1) ---
-    ("hyperledger", "fabric"),                # Apache-2.0   | Enterprise blockchain
+    # --- Validation & configuration (3) ---
+    ("go-playground", "validator"),            # MIT          | Struct validation
+    ("knadh", "koanf"),                       # MIT          | Flexible config library
+    ("mitchellh", "mapstructure"),            # MIT          | Map-to-struct decoding
+
+    # --- Static site & content (1) ---
+    ("gohugoio", "hugo"),                     # Apache-2.0   | Static site generator
+
+    # --- Git & VCS (1) ---
+    ("go-gitea", "gitea"),                    # MIT          | Self-hosted Git platform
+
+    # --- Storage & file sync (1) ---
+    ("rclone", "rclone"),                     # MIT          | Cloud storage sync
+
+    # --- Cloud-native networking (2) ---
+    ("cilium", "cilium"),                     # Apache-2.0   | eBPF networking for K8s
+    ("istio", "istio"),                       # Apache-2.0   | Service mesh
 
     # --- AI / ML (1) ---
     ("ollama", "ollama"),                     # MIT          | Local LLM runner
@@ -480,12 +535,36 @@ REPOS = [
     # --- Image processing (1) ---
     ("disintegration", "imaging"),            # MIT          | Image processing library
 
-    # --- Authentication & authorization (2) ---
-    ("casbin", "casbin"),                     # Apache-2.0   | Authorization library
+    # --- Document processing (2) ---
+    ("pdfcpu", "pdfcpu"),                     # Apache-2.0   | PDF manipulation
+    ("qax-os", "excelize"),                   # BSD-3-Clause | Excel file library
+
+    # --- Authentication (1) ---
     ("golang-jwt", "jwt"),                    # MIT          | JWT implementation
 
     # --- WebSocket (1) ---
     ("gorilla", "websocket"),                 # BSD-2-Clause | WebSocket implementation
+
+    # --- HTTP client & API (1) ---
+    ("google", "go-github"),                  # BSD-3-Clause | GitHub API client
+
+    # --- Filesystem & scheduling (4) ---
+    ("fsnotify", "fsnotify"),                 # BSD-3-Clause | File system notifications
+    ("spf13", "afero"),                       # Apache-2.0   | Filesystem abstraction
+    ("robfig", "cron"),                       # MIT          | Cron expression library
+    ("go-co-op", "gocron"),                   # MIT          | Job scheduling
+
+    # --- Resilience (2) ---
+    ("sony", "gobreaker"),                    # MIT          | Circuit breaker
+    ("allegro", "bigcache"),                  # Apache-2.0   | Fast concurrent cache
+
+    # --- Dependency injection (1) ---
+    ("uber-go", "fx"),                        # MIT          | DI framework
+
+    # --- Expression & email (3) ---
+    ("expr-lang", "expr"),                    # MIT          | Expression language
+    ("jordan-wright", "email"),               # MIT          | Email sending
+    ("google", "uuid"),                       # BSD-3-Clause | UUID generation
 ]
 
 EVAL_REPOS = [

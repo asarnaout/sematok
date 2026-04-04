@@ -455,7 +455,7 @@ SKIP_PATH_PATTERNS = [
 # ---------------------------------------------------------------------------
 
 REPOS = [
-    # --- Web frameworks & web apps (8) ---
+    # --- Web frameworks & web apps (17) ---
     ("django", "django"),                     # BSD-3-Clause
     ("pallets", "flask"),                     # BSD-3-Clause
     ("tiangolo", "fastapi"),                  # MIT
@@ -464,7 +464,16 @@ REPOS = [
     ("tornadoweb", "tornado"),               # Apache-2.0
     ("encode", "starlette"),                  # BSD-3-Clause
     ("wagtail", "wagtail"),                   # BSD-3-Clause
-    # --- Data science / ML / deep learning (8) ---
+    ("vitalik", "django-ninja"),             # MIT
+    ("falconry", "falcon"),                  # Apache-2.0
+    ("django", "channels"),                  # BSD-3-Clause
+    ("Pylons", "pyramid"),                   # BSD (Repoze)
+    ("bottlepy", "bottle"),                  # MIT
+    ("litestar-org", "litestar"),            # MIT
+    ("pallets", "werkzeug"),                 # BSD-3-Clause
+    ("pallets", "jinja"),                    # BSD-3-Clause
+    ("benoitc", "gunicorn"),                 # MIT
+    # --- Data science / ML / deep learning (10) ---
     ("pandas-dev", "pandas"),                 # BSD-3-Clause
     ("scikit-learn", "scikit-learn"),          # BSD-3-Clause
     ("huggingface", "transformers"),           # Apache-2.0
@@ -473,10 +482,14 @@ REPOS = [
     ("dask", "dask"),                         # BSD-3-Clause
     ("mlflow", "mlflow"),                     # Apache-2.0
     ("gradio-app", "gradio"),                 # Apache-2.0
-    # --- Numerical / scientific computing (3) ---
+    ("wandb", "wandb"),                      # MIT
+    ("langchain-ai", "langchain"),           # MIT
+    # --- Numerical / scientific computing (5) ---
     ("numpy", "numpy"),                       # BSD-3-Clause
     ("scipy", "scipy"),                       # BSD-3-Clause
     ("sympy", "sympy"),                       # BSD-3-Clause
+    ("pydata", "xarray"),                    # Apache-2.0
+    ("networkx", "networkx"),                # BSD-3-Clause
     # --- Visualization (4) ---
     ("matplotlib", "matplotlib"),             # PSF-2.0
     ("bokeh", "bokeh"),                       # BSD-3-Clause
@@ -489,7 +502,7 @@ REPOS = [
     ("Textualize", "textual"),               # MIT
     ("httpie", "cli"),                        # BSD-3-Clause
     ("tqdm", "tqdm"),                         # MIT
-    # --- DevOps / infrastructure / cloud (7) ---
+    # --- DevOps / infrastructure / cloud (9) ---
     ("apache", "airflow"),                    # Apache-2.0
     ("docker", "docker-py"),                  # Apache-2.0
     ("kubernetes-client", "python"),          # Apache-2.0
@@ -497,15 +510,23 @@ REPOS = [
     ("saltstack", "salt"),                    # Apache-2.0
     ("spotify", "luigi"),                     # Apache-2.0
     ("dagster-io", "dagster"),               # Apache-2.0
+    ("fabric", "fabric"),                    # BSD-2-Clause
+    ("pyinvoke", "invoke"),                  # BSD-2-Clause
+    # --- Data engineering (3) ---
+    ("PrefectHQ", "prefect"),                # Apache-2.0
+    ("dbt-labs", "dbt-core"),                # Apache-2.0
+    ("great-expectations", "great_expectations"),  # Apache-2.0
     # --- Networking / async / protocols (4) ---
     ("aio-libs", "aiohttp"),                  # Apache-2.0
     ("encode", "httpx"),                      # BSD-3-Clause
     ("encode", "uvicorn"),                    # BSD-3-Clause
     ("mitmproxy", "mitmproxy"),              # MIT
-    # --- Testing frameworks & tools (3) ---
+    # --- Testing frameworks & tools (5) ---
     ("pytest-dev", "pytest"),                 # MIT
     ("locustio", "locust"),                   # MIT
     ("robotframework", "robotframework"),     # Apache-2.0
+    ("tox-dev", "tox"),                      # MIT
+    ("getmoto", "moto"),                     # Apache-2.0
     # --- Database / ORM / data storage (3) ---
     ("sqlalchemy", "sqlalchemy"),             # MIT
     ("sqlalchemy", "alembic"),               # MIT
@@ -514,13 +535,18 @@ REPOS = [
     ("pydantic", "pydantic"),                # MIT
     ("python-attrs", "attrs"),               # MIT
     ("marshmallow-code", "marshmallow"),     # MIT
-    # --- Task queue / job processing (2) ---
+    # --- Task queue / messaging (3) ---
     ("celery", "celery"),                    # BSD-3-Clause
     ("rq", "rq"),                            # BSD-2-Clause
+    ("celery", "kombu"),                     # BSD-3-Clause
     # --- Security / cryptography (3) ---
     ("pyca", "cryptography"),                # Apache-2.0 + BSD
     ("PyCQA", "bandit"),                     # Apache-2.0
     ("Yelp", "detect-secrets"),              # Apache-2.0
+    # --- Auth (3) ---
+    ("authlib", "authlib"),                  # BSD-3-Clause
+    ("oauthlib", "oauthlib"),                # BSD-3-Clause
+    ("jpadilla", "PyJWT"),                   # MIT
     # --- NLP / text processing (2) ---
     ("explosion", "spaCy"),                   # MIT
     ("nltk", "nltk"),                         # Apache-2.0
@@ -537,12 +563,33 @@ REPOS = [
     ("kivy", "kivy"),                        # MIT
     ("beeware", "toga"),                     # BSD-3-Clause
     ("r0x0r", "pywebview"),                  # BSD-3-Clause
+    # --- Type checking / code quality (2) ---
+    ("python", "mypy"),                      # MIT
+    ("psf", "black"),                        # MIT
+    # --- Monitoring / observability (3) ---
+    ("getsentry", "sentry-python"),          # MIT
+    ("open-telemetry", "opentelemetry-python"),  # Apache-2.0
+    ("prometheus", "client_python"),         # Apache-2.0
+    # --- Configuration (2) ---
+    ("theskumar", "python-dotenv"),          # BSD-3-Clause
+    ("dynaconf", "dynaconf"),               # MIT
+    # --- Logging (2) ---
+    ("Delgan", "loguru"),                    # MIT
+    ("hynek", "structlog"),                  # MIT/Apache-2.0
+    # --- Data formats (2) ---
+    ("yaml", "pyyaml"),                      # MIT
+    ("python-openxml", "python-docx"),       # MIT
     # --- Documentation tools (2) ---
     ("mkdocs", "mkdocs"),                    # BSD-2-Clause
     ("sphinx-doc", "sphinx"),                # BSD-2-Clause
     # --- Package management / build tools (2) ---
     ("python-poetry", "poetry"),             # MIT
     ("pypa", "pip"),                          # MIT
+    # --- Utilities (4) ---
+    ("jd", "tenacity"),                      # Apache-2.0
+    ("gorakhargosh", "watchdog"),            # Apache-2.0
+    ("cookiecutter", "cookiecutter"),         # BSD-3-Clause
+    ("python-pendulum", "pendulum"),         # MIT
 ]
 
 EVAL_REPOS = [
