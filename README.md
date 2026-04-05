@@ -119,7 +119,7 @@ python -m sematok.measure --corpus data/raw_csharp --language csharp
 python -m data.prepare --corpus data/raw_csharp --language csharp --output data/finetune
 ```
 
-Produces `train.jsonl` and `eval.jsonl`. Training data uses a 75/25 compressed/original mix (configurable via `--compress-ratio`). Eval data is 100% compressed.
+Compresses each source file using the macro dictionary (replacing boilerplate with macro tokens) and writes the results as JSONL. Training data uses a 75/25 compressed/original mix (configurable via `--compress-ratio`). Eval data is 100% compressed. The split is repo-balanced: entire repos are held out for evaluation, not individual files.
 
 ### Step 4: Expand Tokenizer
 
