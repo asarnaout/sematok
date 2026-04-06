@@ -211,8 +211,11 @@ def _partial_forward(
     device = input_ids.device
     position_ids = torch.arange(seq_len, device=device).unsqueeze(0)
 
+    # Compute rotary embeddings (required by newer transformers)
+    position_embeddings = model.model.rotary_emb(hidden, position_ids)
+
     for layer in model.model.layers[:num_layers]:
-        layer_out = layer(hidden, position_ids=position_ids)
+        layer_out = layer(hidden, position_ids=position_ids, position_embeddings=position_embeddings)
         hidden = layer_out[0]
 
     return hidden
@@ -319,8 +322,9 @@ def distill_embedding(
 
             seq_len = hidden.shape[1]
             position_ids = torch.arange(seq_len, device=device).unsqueeze(0)
+            position_embeddings = model.model.rotary_emb(hidden, position_ids)
             for layer in model.model.layers[:target_layer]:
-                layer_out = layer(hidden, position_ids=position_ids)
+                layer_out = layer(hidden, position_ids=position_ids, position_embeddings=position_embeddings)
                 hidden = layer_out[0]
 
             # Compare suffix positions: same content, shifted indices
