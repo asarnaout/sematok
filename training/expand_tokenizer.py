@@ -202,23 +202,11 @@ def _partial_forward(
     """Forward through embed_tokens + first num_layers transformer layers.
 
     Returns hidden states [batch, seq_len, hidden_size].
-    Only runs through the first few layers (not all 28 + lm_head).
+    Uses the model's own forward method to avoid internal API dependencies.
     """
-    hidden = model.model.embed_tokens(input_ids)
-
-    # Build causal attention mask and position ids
-    seq_len = input_ids.shape[1]
-    device = input_ids.device
-    position_ids = torch.arange(seq_len, device=device).unsqueeze(0)
-
-    # Compute rotary embeddings (required by newer transformers)
-    position_embeddings = model.model.rotary_emb(hidden, position_ids)
-
-    for layer in model.model.layers[:num_layers]:
-        layer_out = layer(hidden, position_ids=position_ids, position_embeddings=position_embeddings)
-        hidden = layer_out[0]
-
-    return hidden
+    outputs = model(input_ids, output_hidden_states=True, use_cache=False)
+    # hidden_states[0] = embedding output, [i] = after layer i-1
+    return outputs.hidden_states[num_layers]
 
 
 def _find_expansion_span(
@@ -312,20 +300,22 @@ def distill_embedding(
             # Write our optimized embedding into the model temporarily
             embed_layer.weight.data[token_id] = new_embed.data
 
-            # Candidate forward -- need grad through embedding lookup
-            # Manually do embed + layers so gradient flows through new_embed
-            all_embeds = embed_layer.weight.data[new_tensor[0]].clone()
-            # Replace the new token position with our parameter (gradient-connected)
+            # Candidate forward -- use a hook to inject gradient-connected embedding
             new_token_pos = len(prefix)
-            all_embeds[new_token_pos] = new_embed
-            hidden = all_embeds.unsqueeze(0)
 
-            seq_len = hidden.shape[1]
-            position_ids = torch.arange(seq_len, device=device).unsqueeze(0)
-            position_embeddings = model.model.rotary_emb(hidden, position_ids)
-            for layer in model.model.layers[:target_layer]:
-                layer_out = layer(hidden, position_ids=position_ids, position_embeddings=position_embeddings)
-                hidden = layer_out[0]
+            def _make_hook(embed_param, pos):
+                def hook(module, input, output):
+                    out = output.clone()
+                    out[0, pos] = embed_param
+                    return out
+                return hook
+
+            hook = embed_layer.register_forward_hook(_make_hook(new_embed, new_token_pos))
+            try:
+                outputs = model(new_tensor, output_hidden_states=True, use_cache=False)
+                hidden = outputs.hidden_states[target_layer]
+            finally:
+                hook.remove()
 
             # Compare suffix positions: same content, shifted indices
             # Original: suffix starts at span_start + len(expansion_ids)
