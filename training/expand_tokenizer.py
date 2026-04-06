@@ -272,6 +272,19 @@ def distill_embedding(
     if not prepared:
         return None
 
+    # Pre-compute reference hidden states and candidate tensors.
+    # These are constant across all optimization steps because:
+    #   - ref uses orig_ids (original sub-tokens, never contains token_id)
+    #   - new_tensor is built from fixed prefix/suffix + constant token_id
+    ref_cache = []
+    with torch.no_grad():
+        for orig_ids, prefix, suffix, span_start in prepared:
+            orig_tensor = torch.tensor([orig_ids], device=device)
+            ref_hidden = _partial_forward(model, orig_tensor, target_layer)
+            new_ids = prefix + [token_id] + suffix
+            new_tensor = torch.tensor([new_ids], device=device)
+            ref_cache.append((ref_hidden, new_tensor, prefix, suffix, span_start))
+
     # Initialize from mean-of-expansion as starting point
     with torch.no_grad():
         init_embed = embed_layer.weight[expansion_ids].mean(dim=0).clone()
@@ -282,33 +295,23 @@ def distill_embedding(
 
     num_compare = 10  # compare this many positions after the expansion boundary
 
+    def _make_hook(embed_param, pos):
+        def hook(module, input, output):
+            out = output.clone()
+            out[0, pos] = embed_param
+            return out
+        return hook
+
     for step in range(num_steps):
         total_loss = torch.tensor(0.0, device=device)
         count = 0
 
-        for orig_ids, prefix, suffix, span_start in prepared:
-            orig_tensor = torch.tensor([orig_ids], device=device)
-
-            # Reference hidden states (no grad needed)
-            with torch.no_grad():
-                ref_hidden = _partial_forward(model, orig_tensor, target_layer)
-
-            # Build replacement input ids
-            new_ids = prefix + [token_id] + suffix
-            new_tensor = torch.tensor([new_ids], device=device)
-
+        for ref_hidden, new_tensor, prefix, suffix, span_start in ref_cache:
             # Write our optimized embedding into the model temporarily
             embed_layer.weight.data[token_id] = new_embed.data
 
             # Candidate forward -- use a hook to inject gradient-connected embedding
             new_token_pos = len(prefix)
-
-            def _make_hook(embed_param, pos):
-                def hook(module, input, output):
-                    out = output.clone()
-                    out[0, pos] = embed_param
-                    return out
-                return hook
 
             hook = embed_layer.register_forward_hook(_make_hook(new_embed, new_token_pos))
             try:
