@@ -22,6 +22,13 @@ Measured with `sematok.measure` (2000-file sample, Qwen tokenizer).
 | TypeScript | 2,074,408 | 181,117 | 1,102 | 182,219 | 8.78% | 37.5 |
 | Go | 5,884,020 | 422,151 | 12,507 | 434,658 | 7.39% | 70.2 |
 
+## Training Configuration
+
+- **Base model**: Qwen/Qwen2.5-Coder-7B-Instruct
+- **Approach**: Per-language LoRA adapters (one LoRA per language, no dictionary merging)
+- **Embedding init**: Token Distillation (arXiv:2505.20133) with `--distill-steps 50 --distill-contexts 10`, layer 4
+- **Hardware**: RunPod H100 SXM 1x, 28 vCPU (Intel Xeon Platinum 8480+), 251 GB RAM
+
 ## Training
 
 | Language | Distill Loss | Warmup Loss | Fine-Tune Loss | Epochs |
