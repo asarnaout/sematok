@@ -594,7 +594,7 @@ def main():
     print(f"  Original vocab size: {original_vocab_size}")
 
     model = AutoModelForCausalLM.from_pretrained(
-        args.model, dtype=torch.float32, device_map="auto",
+        args.model, torch_dtype=torch.float16, device_map="auto",
     )
 
     # Add tokens (normalized=False prevents tokenizer from stripping special chars)
