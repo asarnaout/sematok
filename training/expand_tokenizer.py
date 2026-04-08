@@ -289,16 +289,19 @@ def distill_embedding(
     with torch.no_grad():
         init_embed = embed_layer.weight[expansion_ids].mean(dim=0).clone()
 
-    # The parameter we optimize
-    new_embed = torch.nn.Parameter(init_embed.clone())
+    # Optimize in float32 to avoid overflow in AdamW's second moment
+    # estimates (float16 max ~65504, squared gradients easily exceed this).
+    # Cast back to model dtype when injecting into the model.
+    model_dtype = embed_layer.weight.dtype
+    new_embed = torch.nn.Parameter(init_embed.float())
     optimizer = torch.optim.AdamW([new_embed], lr=lr)
 
     num_compare = 10  # compare this many positions after the expansion boundary
 
-    def _make_hook(embed_param, pos):
+    def _make_hook(embed_param, pos, dtype):
         def hook(module, input, output):
             out = output.clone()
-            out[0, pos] = embed_param
+            out[0, pos] = embed_param.to(dtype)
             return out
         return hook
 
@@ -308,12 +311,12 @@ def distill_embedding(
 
         for ref_hidden, new_tensor, prefix, suffix, span_start in ref_cache:
             # Write our optimized embedding into the model temporarily
-            embed_layer.weight.data[token_id] = new_embed.data
+            embed_layer.weight.data[token_id] = new_embed.data.to(model_dtype)
 
             # Candidate forward -- use a hook to inject gradient-connected embedding
             new_token_pos = len(prefix)
 
-            hook = embed_layer.register_forward_hook(_make_hook(new_embed, new_token_pos))
+            hook = embed_layer.register_forward_hook(_make_hook(new_embed, new_token_pos, model_dtype))
             try:
                 outputs = model(new_tensor, output_hidden_states=True, use_cache=False)
                 hidden = outputs.hidden_states[target_layer]
@@ -344,7 +347,10 @@ def distill_embedding(
         loss.backward()
         optimizer.step()
 
-    return new_embed.detach()
+    result = new_embed.detach().to(model_dtype)
+    if torch.isnan(result).any():
+        return None  # fall back to mean-of-expansion
+    return result
 
 
 def init_embeddings_distilled(
