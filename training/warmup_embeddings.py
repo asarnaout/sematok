@@ -70,7 +70,12 @@ def _mask_original_rows(grad: torch.Tensor, original_vocab_size: int) -> torch.T
 
 
 def load_model(model_path: str, max_seq_length: int):
-    """Load the expanded model in 4-bit quantization via Unsloth."""
+    """Load the expanded model in float16 via Unsloth.
+
+    Warmup trains only embedding rows on a frozen model, so 4-bit
+    quantization is unnecessary and triggers Unsloth's adapter requirement.
+    Float16 (~15 GB for 7B) fits comfortably on 24-32 GB GPUs.
+    """
     validate_expanded_vocab(model_path)
 
     print(f"Loading model: {model_path}")
@@ -78,11 +83,11 @@ def load_model(model_path: str, max_seq_length: int):
         model_name=model_path,
         max_seq_length=max_seq_length,
         dtype=None,
-        load_in_4bit=True,
+        load_in_4bit=False,
         local_files_only=True,
     )
     print(f"  Vocab size: {len(tokenizer)}")
-    print(f"  4-bit quantized, max_seq_length={max_seq_length}")
+    print(f"  float16, max_seq_length={max_seq_length}")
     return model, tokenizer
 
 
