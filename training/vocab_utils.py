@@ -3,6 +3,28 @@
 import json
 from pathlib import Path
 
+# ---------------------------------------------------------------------------
+# Workaround: transformers 4.57+ tokenizer loading passes _config as a plain
+# dict when loading from a local directory, but then accesses _config.model_type
+# (attribute access).  Wrap _from_pretrained so dict configs get converted to a
+# SimpleNamespace first.
+# ---------------------------------------------------------------------------
+try:
+    import transformers.tokenization_utils_base as _ttub
+    _orig_from_pretrained = _ttub.PreTrainedTokenizerBase._from_pretrained
+
+    @classmethod
+    def _patched_from_pretrained(cls, *args, **kwargs):
+        cfg = kwargs.get("_config")
+        if isinstance(cfg, dict):
+            from types import SimpleNamespace
+            kwargs["_config"] = SimpleNamespace(**cfg)
+        return _orig_from_pretrained.__func__(cls, *args, **kwargs)
+
+    _ttub.PreTrainedTokenizerBase._from_pretrained = _patched_from_pretrained
+except Exception:
+    pass  # If transformers isn't installed yet or API changed, skip
+
 
 def validate_expanded_vocab(model_path: str) -> int:
     """Check that a model directory contains a properly vocabulary-expanded model.
