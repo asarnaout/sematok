@@ -26,8 +26,10 @@ Measured with `sematok.measure` (2000-file sample, Qwen tokenizer).
 
 - **Base model**: Qwen/Qwen2.5-Coder-7B-Instruct
 - **Approach**: Per-language LoRA adapters (one LoRA per language, no dictionary merging)
-- **Embedding init**: Token Distillation (arXiv:2505.20133) with `--distill-steps 50 --distill-contexts 10`, layer 4
-- **Hardware**: RunPod H100 SXM 1x, 28 vCPU (Intel Xeon Platinum 8480+), 251 GB RAM
+- **Embedding init**: Token Distillation (arXiv:2505.20133) with `--distill-steps 50 --distill-contexts 10`, layer 4, float16 model with float32 optimization
+- **Embedding warmup**: 1,500 steps, embedding-only training (frozen transformer), LR 1e-3
+- **LoRA**: QLoRA 4-bit, rank 16, alpha 32, dropout 0, RSLoRA, all attention + MLP + embedding layers
+- **Hardware**: RunPod RTX 5090 1x, 32 GB VRAM
 
 ## Training
 
