@@ -183,14 +183,20 @@ def create_trainer(model, tokenizer, train_dataset, eval_dataset, args):
     total_steps = len(train_dataset) // effective_batch * args.epochs
 
     print(f"\nTraining configuration:")
+    if args.max_steps > 0:
+        total_steps = args.max_steps
     print(f"  LR: {args.lr}")
     print(f"  Batch: {args.batch_size} x {args.grad_accum} = {effective_batch} effective")
-    print(f"  Epochs: {args.epochs}, ~{total_steps:,} steps")
+    if args.max_steps > 0:
+        print(f"  Max steps: {args.max_steps}")
+    else:
+        print(f"  Epochs: {args.epochs}, ~{total_steps:,} steps")
     print(f"  Warmup: {args.warmup_steps} steps")
 
     training_args = UnslothTrainingArguments(
         output_dir=args.output or args.model,
         num_train_epochs=args.epochs,
+        max_steps=args.max_steps,
         per_device_train_batch_size=args.batch_size,
         gradient_accumulation_steps=args.grad_accum,
         learning_rate=args.lr,
@@ -288,6 +294,10 @@ def main():
     parser.add_argument("--grad-accum", type=int, default=DEFAULT_GRAD_ACCUM)
     parser.add_argument("--max-seq-length", type=int, default=DEFAULT_MAX_SEQ_LENGTH)
     parser.add_argument("--warmup-steps", type=int, default=DEFAULT_WARMUP_STEPS)
+    parser.add_argument(
+        "--max-steps", type=int, default=-1,
+        help="Stop after this many steps (default: -1 = full epochs)",
+    )
 
     args = parser.parse_args()
 
