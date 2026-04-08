@@ -204,13 +204,31 @@ def create_trainer(model, tokenizer, train_dataset, eval_dataset, args):
         optim="adamw_8bit",
     )
 
+    # Pre-tokenize: Unsloth 2026.4+ expects input_ids in the dataset
+    def tokenize(examples):
+        return tokenizer(
+            examples["text"],
+            truncation=True,
+            max_length=args.max_seq_length,
+            padding=False,
+        )
+
+    train_dataset = train_dataset.map(
+        tokenize, batched=True, remove_columns=["text"],
+        desc="Tokenizing train",
+    )
+    if eval_dataset is not None:
+        eval_dataset = eval_dataset.map(
+            tokenize, batched=True, remove_columns=["text"],
+            desc="Tokenizing eval",
+        )
+
     trainer = UnslothTrainer(
         model=model,
         tokenizer=tokenizer,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
         args=training_args,
-        dataset_text_field="text",
         max_seq_length=args.max_seq_length,
         packing=False,
     )
