@@ -53,7 +53,7 @@ DEFAULT_LR = 2e-4
 DEFAULT_EMBEDDING_LR_FACTOR = 0.1  # embedding_lr = lr * this
 DEFAULT_LORA_R = 16
 DEFAULT_LORA_ALPHA_FACTOR = 2  # alpha = r * this
-DEFAULT_LORA_DROPOUT = 0.05
+DEFAULT_LORA_DROPOUT = 0  # Must be 0 for Unsloth speed patches to activate
 DEFAULT_BATCH_SIZE = 2
 DEFAULT_GRAD_ACCUM = 8
 DEFAULT_EPOCHS = 1
