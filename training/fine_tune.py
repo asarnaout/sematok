@@ -17,6 +17,7 @@ Usage:
 
 import argparse
 import json
+import shutil
 import time
 from pathlib import Path
 
@@ -217,12 +218,13 @@ def create_trainer(model, tokenizer, train_dataset, eval_dataset, args):
     return trainer
 
 
-def save_model(model, tokenizer, output_dir: str):
+def save_model(model, tokenizer, output_dir: str, source_dir: str):
     """Save merged 16-bit model and LoRA adapters.
 
     Saves LoRA adapters first (lightweight, always works), then attempts
     the full merged save. If the merge fails (known issue with tied
     embeddings in PEFT), the LoRA adapters are still available.
+    Copies macro_token_map.json from source model to both outputs.
     """
     lora_dir = output_dir + "-lora"
     merged_dir = output_dir + "-merged"
@@ -230,18 +232,28 @@ def save_model(model, tokenizer, output_dir: str):
     # Save LoRA adapters first -- this is small and reliable
     print(f"\nSaving LoRA adapters to {lora_dir}...")
     model.save_pretrained_merged(lora_dir, tokenizer, save_method="lora")
+    _copy_macro_token_map(source_dir, lora_dir)
     print("  LoRA adapters saved.")
 
     # Attempt full merged save -- may fail with tied embeddings
     print(f"Saving merged 16-bit model to {merged_dir}...")
     try:
         model.save_pretrained_merged(merged_dir, tokenizer, save_method="merged_16bit")
+        _copy_macro_token_map(source_dir, merged_dir)
         print("  Merged model saved.")
     except Exception as e:
         print(f"\n  WARNING: Merged save failed: {e}")
         print(f"  LoRA adapters are safe at {lora_dir}")
         print(f"  Checkpoints are in {output_dir}/")
         print(f"  You can merge manually later -- ask Claude for help.")
+
+
+def _copy_macro_token_map(source_dir: str, dest_dir: str):
+    """Copy macro_token_map.json from source to destination if needed."""
+    source_map = Path(source_dir) / "macro_token_map.json"
+    dest_map = Path(dest_dir) / "macro_token_map.json"
+    if source_map.exists() and str(source_map.resolve()) != str(dest_map.resolve()):
+        shutil.copy2(source_map, dest_map)
 
 
 def main():
@@ -307,7 +319,7 @@ def main():
         if eval_metrics:
             print(f"  Final eval loss: {eval_metrics[-1]['eval_loss']:.4f}")
 
-    save_model(model, tokenizer, args.output)
+    save_model(model, tokenizer, args.output, args.model)
 
     elapsed = time.time() - start
     hours, remainder = divmod(int(elapsed), 3600)
