@@ -74,6 +74,8 @@ Or download all supported languages at once:
 bash data/download_all.sh
 ```
 
+The downloaded corpus is used to mine patterns, initialize token embeddings, and generate eval data. Training data is prepared from a separate, larger-scale source in Step 3.
+
 ### Step 2: Mine Dictionary (optional)
 
 Skip this step if you are using the shipped dictionaries. Only run this if you want to mine a custom dictionary from your own corpus.
