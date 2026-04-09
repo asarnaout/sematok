@@ -24,22 +24,21 @@ Measured with `sematok.measure` (2000-file sample, Qwen tokenizer).
 
 ## Training Configuration
 
-- **Base model**: Qwen/Qwen2.5-Coder-7B-Instruct
-- **Approach**: Per-language LoRA adapters (one LoRA per language, no dictionary merging)
-- **Embedding init**: Token Distillation (arXiv:2505.20133) with `--distill-steps 50 --distill-contexts 10`, layer 4, float16 model with float32 optimization
-- **Embedding warmup**: 1,500 steps, embedding-only training (frozen transformer), LR 1e-3
-- **LoRA**: QLoRA 4-bit, rank 16, alpha 32, dropout 0, RSLoRA, all attention + MLP + embedding layers
-- **Hardware**: RunPod RTX 5090 1x, 32 GB VRAM
-
-## Training
-
-| Language | Distill Loss | Warmup Loss | Fine-Tune Loss | Epochs |
-|----------|-------------|-------------|----------------|--------|
-| C# | | | | |
-| Python | | | | |
-| Java | | | | |
-| TypeScript | | | | |
-| Go | | | | |
+| Parameter | Value |
+|-----------|-------|
+| Base model | Qwen/Qwen2.5-Coder-7B-Instruct |
+| Approach | Per-language LoRA adapters (one LoRA per language) |
+| Embedding init | Token Distillation (arXiv:2505.20133), layer 4, 50 steps, 10 contexts |
+| Embedding warmup | 1,500 steps, frozen transformer, LR 1e-3, cosine schedule |
+| LoRA method | QLoRA 4-bit, rank 16, alpha 32, RSLoRA |
+| LoRA targets | q/k/v/o_proj, gate/up/down_proj, embed_tokens, lm_head |
+| LoRA dropout | 0 |
+| Fine-tune LR | 2e-4 (embeddings: 2e-5) |
+| Fine-tune schedule | Cosine, 500-step warmup |
+| Batch size | 2 x 8 gradient accumulation = 16 effective |
+| Epochs | 1 |
+| Precision | float16 model, float32 distillation optimizer |
+| Hardware | RunPod RTX 5090 1x, 32 GB VRAM |
 
 ## Evaluation
 
