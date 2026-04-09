@@ -1,14 +1,19 @@
 """
-Download and compress StarCoderData for supplemental training.
+Prepare training data from StarCoderData.
 
-Streams the C# subset of bigcode/starcoderdata, compresses each file
-with the existing sematok dictionary, and appends to the training JSONL.
-Does NOT touch eval data.
+Streams a language subset of bigcode/starcoderdata, compresses each file
+with the existing sematok dictionary, and writes training JSONL. This is
+the primary source of training data -- eval data is prepared separately
+from the curated corpus using data.prepare --eval-only.
+
+Filters out files from eval repos to prevent data leakage.
+
+Training data uses a 75/25 compressed/original mix (Token Sugar's ratio).
 
 Usage:
-    python -m data.prepare_starcoder \
-        --language csharp \
-        --output data/finetune/csharp/train_starcoder.jsonl \
+    python -m data.prepare_starcoder \\
+        --language csharp \\
+        --output data/finetune/csharp/train.jsonl \\
         --max-files 1000000
 """
 
@@ -35,6 +40,22 @@ def _compress_file(source: str, compressor: Compressor) -> str:
         return compressor.compress(source, safe_ranges=safe_ranges)
     except Exception:
         return compressor.compress(source)
+
+
+def _build_eval_repo_filter(eval_repos: list[str]) -> set[str]:
+    """Build a set of repo names to exclude from training.
+
+    Eval repos in language configs use "owner--repo" format.
+    StarCoderData uses "owner/repo" in max_stars_repo_name.
+    We normalize both to "owner/repo" for matching.
+    """
+    normalized = set()
+    for repo in eval_repos:
+        # "microsoft--garnet" -> "microsoft/garnet"
+        normalized.add(repo.replace("--", "/"))
+        # Also keep original in case format varies
+        normalized.add(repo)
+    return normalized
 
 
 def prepare_starcoder(
@@ -70,6 +91,11 @@ def prepare_starcoder(
     compressor = Compressor(dictionary, language=lang)
     rng = random.Random(seed)
 
+    # Build eval repo filter to prevent data leakage
+    eval_repos = lang.eval_repos
+    eval_filter = _build_eval_repo_filter(eval_repos)
+    print(f"Filtering out {len(eval_repos)} eval repos to prevent data leakage")
+
     # Stream StarCoderData
     from datasets import load_dataset
     print(f"\nStreaming {STARCODER_DATASET} ({data_dir})...")
@@ -85,15 +111,22 @@ def prepare_starcoder(
     n_compressed = 0
     n_original = 0
     n_skipped = 0
+    n_filtered = 0
+    n_seen = 0
 
     with open(output_path, "w", encoding="utf-8") as out:
-        for i, record in enumerate(tqdm(ds, desc="Processing", total=max_files)):
-            if i >= max_files:
-                break
+        for record in tqdm(ds, desc="Processing", total=max_files):
+            n_seen += 1
 
             content = record.get("content", "")
             if not content or len(content) < 50:
                 n_skipped += 1
+                continue
+
+            # Filter out eval repos
+            repo_name = record.get("max_stars_repo_name", "")
+            if repo_name in eval_filter:
+                n_filtered += 1
                 continue
 
             if rng.random() < compress_ratio:
@@ -105,22 +138,50 @@ def prepare_starcoder(
 
             out.write(json.dumps({"text": text}, ensure_ascii=False) + "\n")
 
+            if n_compressed + n_original >= max_files:
+                break
+
     total = n_compressed + n_original
     print(f"\nDone: {total:,} files written to {output_path}")
     print(f"  Compressed: {n_compressed:,}")
     print(f"  Original: {n_original:,}")
     print(f"  Skipped (too short): {n_skipped:,}")
+    print(f"  Filtered (eval repos): {n_filtered:,}")
+    print(f"  Total streamed: {n_seen:,}")
+
+    # Write metadata
+    meta_path = output_path.parent / "meta_starcoder.json"
+    meta = {
+        "source": STARCODER_DATASET,
+        "data_dir": data_dir,
+        "max_files": max_files,
+        "total_written": total,
+        "compressed": n_compressed,
+        "original": n_original,
+        "skipped": n_skipped,
+        "filtered_eval_repos": n_filtered,
+        "total_streamed": n_seen,
+        "compress_ratio": compress_ratio,
+        "seed": seed,
+        "eval_repos_excluded": eval_repos,
+    }
+    meta_path.write_text(json.dumps(meta, indent=2), encoding="utf-8")
+    print(f"Metadata: {meta_path}")
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Prepare StarCoderData for supplemental training"
+        description="Prepare training data from StarCoderData"
     )
-    parser.add_argument("--language", type=str, required=True)
-    parser.add_argument("--output", type=str, required=True)
-    parser.add_argument("--max-files", type=int, default=1_000_000)
-    parser.add_argument("--compress-ratio", type=float, default=0.75)
-    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--language", type=str, required=True,
+                        help="Language config (e.g. csharp, python)")
+    parser.add_argument("--output", type=str, required=True,
+                        help="Output JSONL path (e.g. data/finetune/csharp/train.jsonl)")
+    parser.add_argument("--max-files", type=int, default=1_000_000,
+                        help="Maximum files to process (default: 1,000,000)")
+    parser.add_argument("--compress-ratio", type=float, default=0.75,
+                        help="Fraction of files to compress (default: 0.75)")
+    parser.add_argument("--seed", type=int, default=42, help="Random seed")
     args = parser.parse_args()
 
     prepare_starcoder(

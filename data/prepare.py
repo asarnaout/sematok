@@ -1,17 +1,18 @@
 """
-Prepare fine-tuning data for continued pre-training.
+Prepare evaluation data from the curated corpus.
 
-Compresses source files using the macro dictionary and outputs JSONL
-with a single "text" field per line. Training frameworks handle tokenization,
-chunking, and sequence packing internally.
+Compresses source files from held-out repos using the macro dictionary
+and outputs eval.jsonl (100% compressed) for measuring macro comprehension.
 
-Training data uses a 75/25 compressed/original mix (Token Sugar's validated ratio).
-Eval data is 100% compressed (to measure macro comprehension).
-
-Repo-balanced splitting: train repos vs held-out eval repos.
+Training data is prepared separately using data.prepare_starcoder, which
+streams from bigcode/starcoderdata for much larger scale training.
 
 Usage:
-    python -m data.prepare --corpus data/raw_cs --output data/finetune --language csharp
+    # Generate eval data only (recommended -- use prepare_starcoder for training):
+    python -m data.prepare --corpus data/raw_csharp --output data/finetune/csharp --language csharp --eval-only
+
+    # Generate both train and eval from curated corpus (small-scale testing):
+    python -m data.prepare --corpus data/raw_csharp --output data/finetune/csharp --language csharp
 """
 
 import argparse
@@ -79,18 +80,20 @@ def prepare_data(
     eval_repos: list[str] | None = None,
     compress_ratio: float = 0.75,
     seed: int = 42,
+    eval_only: bool = False,
 ):
     """
-    Prepare JSONL training data for continued pre-training.
+    Prepare fine-tuning data from the curated corpus.
 
     Args:
         corpus_dir: Directory containing source files and metadata.jsonl.
-        output_dir: Where to write train.jsonl, eval.jsonl, meta.json.
-        dictionary_path: Path to dictionary JSON. Defaults to sematok/dictionary.json.
+        output_dir: Where to write eval.jsonl (and optionally train.jsonl), meta.json.
+        dictionary_path: Path to dictionary JSON. Defaults to language's built-in dictionary.
         eval_repos: Held-out repos for evaluation split.
         compress_ratio: Fraction of train files to compress (rest kept original).
         seed: Random seed for reproducible train/original sampling.
         language: Language name or LanguageConfig instance.
+        eval_only: If True, only generate eval.jsonl (use prepare_starcoder for training).
     """
     lang = get_language(language) if isinstance(language, str) else language
     set_language(lang)
@@ -129,35 +132,38 @@ def prepare_data(
         train_files = source_files
         eval_files = []
 
-    # Process train files
-    train_path = output_dir / "train.jsonl"
+    # Process train files (skip if --eval-only)
     n_compressed = 0
     n_original = 0
     errors = 0
     total_chars_original = 0
     total_chars_compressed = 0
 
-    with open(train_path, "w", encoding="utf-8") as out:
-        for f in tqdm(train_files, desc="Train"):
-            try:
-                source = f.read_text(encoding="utf-8", errors="replace")
-            except Exception:
-                errors += 1
-                continue
+    if eval_only:
+        print("Skipping training data (--eval-only). Use prepare_starcoder for training.")
+    else:
+        train_path = output_dir / "train.jsonl"
+        with open(train_path, "w", encoding="utf-8") as out:
+            for f in tqdm(train_files, desc="Train"):
+                try:
+                    source = f.read_text(encoding="utf-8", errors="replace")
+                except Exception:
+                    errors += 1
+                    continue
 
-            total_chars_original += len(source)
+                total_chars_original += len(source)
 
-            if rng.random() < compress_ratio:
-                text = _compress_file(source, compressor)
-                n_compressed += 1
-            else:
-                text = source
-                n_original += 1
+                if rng.random() < compress_ratio:
+                    text = _compress_file(source, compressor)
+                    n_compressed += 1
+                else:
+                    text = source
+                    n_original += 1
 
-            total_chars_compressed += len(text)
-            out.write(json.dumps({"text": text}, ensure_ascii=False) + "\n")
+                total_chars_compressed += len(text)
+                out.write(json.dumps({"text": text}, ensure_ascii=False) + "\n")
 
-    print(f"Train: {n_compressed} compressed + {n_original} original = {n_compressed + n_original} files")
+        print(f"Train: {n_compressed} compressed + {n_original} original = {n_compressed + n_original} files")
 
     # Process eval files (all compressed)
     eval_path = output_dir / "eval.jsonl"
@@ -188,7 +194,8 @@ def prepare_data(
     all_orig = total_chars_original + eval_chars_original
     all_comp = total_chars_compressed + eval_chars_compressed
     char_reduction = (1 - all_comp / all_orig) * 100 if all_orig > 0 else 0
-    print(f"Char reduction (compressed files): {char_reduction:.1f}%")
+    if all_orig > 0:
+        print(f"Char reduction (compressed files): {char_reduction:.1f}%")
 
     # Write metadata
     meta = {
@@ -196,14 +203,16 @@ def prepare_data(
         "compress_ratio": compress_ratio,
         "seed": seed,
         "split_method": "repo_balanced" if file_to_repo else "all_train",
+        "eval_only": eval_only,
         "eval_repos": eval_repos,
-        "train_files": n_compressed + n_original,
-        "train_compressed": n_compressed,
-        "train_original": n_original,
         "eval_files": n_eval,
-        "char_reduction_pct": round(char_reduction, 2),
         "errors": errors,
     }
+    if not eval_only:
+        meta["train_files"] = n_compressed + n_original
+        meta["train_compressed"] = n_compressed
+        meta["train_original"] = n_original
+        meta["char_reduction_pct"] = round(char_reduction, 2)
     meta_path = output_dir / "meta.json"
     meta_path.write_text(json.dumps(meta, indent=2), encoding="utf-8")
     print(f"Metadata: {meta_path}")
@@ -224,6 +233,10 @@ def main():
         help="Fraction of train files to compress (default: 0.75)",
     )
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
+    parser.add_argument(
+        "--eval-only", action="store_true",
+        help="Only generate eval.jsonl (use prepare_starcoder for training data)",
+    )
     args = parser.parse_args()
 
     prepare_data(
@@ -234,6 +247,7 @@ def main():
         compress_ratio=args.compress_ratio,
         seed=args.seed,
         language=args.language,
+        eval_only=args.eval_only,
     )
 
 
