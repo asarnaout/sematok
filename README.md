@@ -113,13 +113,17 @@ Optionally, measure the compression ratio:
 python -m sematok.measure --corpus data/raw_csharp --language csharp
 ```
 
-### Step 3: Prepare Training Data
+### Step 3: Prepare Data
 
 ```bash
-python -m data.prepare --corpus data/raw_csharp --language csharp --output data/finetune
+# Eval data from held-out curated repos (100% compressed)
+python -m data.prepare --corpus data/raw_csharp --language csharp --output data/finetune/csharp --eval-only
+
+# Training data from StarCoderData (75/25 compressed/original mix)
+python -m data.prepare_starcoder --language csharp --output data/finetune/csharp/train.jsonl --max-files 1000000
 ```
 
-Compresses each source file using the macro dictionary (replacing boilerplate with macro tokens) and writes the results as JSONL. Training data uses a 75/25 compressed/original mix (configurable via `--compress-ratio`). Eval data is 100% compressed. The split is repo-balanced: entire repos are held out for evaluation, not individual files.
+Eval data comes from held-out repos in the curated corpus (repo-balanced split). Training data is streamed from [StarCoderData](https://huggingface.co/datasets/bigcode/starcoderdata), compressed with the macro dictionary, and written as JSONL. Eval repos are automatically filtered from training to prevent data leakage. Requires HuggingFace authentication (`huggingface-cli login`).
 
 ### Step 4: Expand Tokenizer
 
@@ -242,7 +246,8 @@ sematok/                    # Compression engine (language-agnostic)
     merge.py                # Merge per-language dictionaries
 data/
     download.py             # Corpus download from GitHub
-    prepare.py              # JSONL generation for fine-tuning
+    prepare.py              # Eval data from curated corpus
+    prepare_starcoder.py    # Training data from StarCoderData
 training/
     expand_tokenizer.py     # Vocabulary expansion + embedding init
     warmup_embeddings.py    # Embedding-only warmup phase
